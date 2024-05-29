@@ -3,7 +3,7 @@ const app = useApp()
 </script>
 
 <template>
-  <div class="border-b py-1 flex gap-2 items-center">
+  <div class="border-b py-1  flex gap-2 items-center">
 
     <UButton @click="app.sidebar = !app.sidebar" icon="i-heroicons-chevron-double-left-16-solid" variant="ghost"
       color="gray" class="hover:bg-transparent" />

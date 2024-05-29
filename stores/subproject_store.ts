@@ -1,8 +1,6 @@
 import { isApiError } from "~/types/api/error";
-import {
-  type ProjectData,
-  type ProjectMember,
-} from "~/types/data/project/project";
+import { type ProjectMember } from "~/types/data/project/project";
+import type { SubProjectData } from "~/types/data/subproject/subproject";
 
 export const subprojectStore = defineStore("subproject-store", () => {
   const id = ref();
@@ -10,7 +8,7 @@ export const subprojectStore = defineStore("subproject-store", () => {
     getSubproject();
   });
 
-  const subproject = ref<ProjectData>();
+  const subproject = ref<SubProjectData>();
   const pm = ref<ProjectMember>();
   const myrole = ref<Role>();
   const loading = ref(true);
@@ -54,15 +52,21 @@ export const subprojectStore = defineStore("subproject-store", () => {
     loading.value = true;
     subproject.value = undefined;
     try {
-      const response = await api.get<ProjectData>(`/subproject/${id.value}`);
+      const response = await api.get<SubProjectData>(`/subproject/${id.value}`);
       subproject.value = response.data;
       if (subproject.value) {
+        console.log(subproject.value?.findings, "MEMBER");
+
         subproject.value.startDate = new Date(subproject.value.startDate);
         subproject.value.endDate = new Date(subproject.value.endDate);
-        subproject.value.subProjects.forEach((sp) => {
-          sp.startDate = new Date(sp.startDate);
-          sp.endDate = new Date(sp.endDate);
-        });
+        subproject.value.createdAt = new Date(subproject.value.createdAt);
+        pm.value = subproject.value.subprojectMember.find(
+          (m) => m.role === Role.PM
+        );
+        myrole.value = subproject.value.subprojectMember.find(
+          (m) => m.id === app.user?.id
+        )?.role;
+
         subproject.value.recentActivities.forEach((ra) => {
           ra.createdAt = new Date(ra.createdAt);
         });
@@ -73,10 +77,6 @@ export const subprojectStore = defineStore("subproject-store", () => {
           a.createdAt = new Date(a.createdAt);
         });
       }
-      pm.value = response.data?.members.find((m) => m.role === Role.PM);
-      myrole.value = response.data?.members.find(
-        (m) => m.member.id === app.user?.id
-      )?.role;
     } catch (error) {
       if (isApiError(error)) {
         if (error.message === "unauthorized") {

@@ -1,0 +1,35 @@
+<script lang="ts" setup>
+
+
+const store = subprojectStore()
+const subproject = computed(() => store.subproject);
+</script>
+
+<template>
+  <div v-if="subproject" class="px-2 flex flex-col gap-2">
+    <div class="grid grid-cols-9 px-2 gap-2">
+      <div class="col-span-2">
+        <div>Findings</div>
+      </div>
+      <div class="col-span-2">
+        <div>Created By</div>
+      </div>
+      <div class="col-span-2">
+        <div>Risk</div>
+      </div>
+      <div class="col-span-2">
+        <div>Status</div>
+      </div>
+      <div class="col-span-1">
+        <div>Action</div>
+      </div>
+    </div>
+    <FindingsTabItem v-for="i in subproject.findings" :name="i.name" :createdBy="i.createdBy" :risk="'asjsaj'"
+      :id="i.id" :deletable="true" :status="'ashsah'" />
+
+
+
+  </div>
+</template>
+
+<style scoped></style>

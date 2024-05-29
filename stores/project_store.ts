@@ -75,7 +75,7 @@ export const projectStore = defineStore("project-store", () => {
       }
       pm.value = response.data?.members.find((m) => m.role === Role.PM);
       myrole.value = response.data?.members.find(
-        (m) => m.member.id === app.user?.id
+        (m) => m.id === app.user?.id
       )?.role;
     } catch (error) {
       if (isApiError(error)) {
