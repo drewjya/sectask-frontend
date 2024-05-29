@@ -3,4 +3,5 @@ export type VFile = {
   originalName?: string;
   contentType: string;
   id: number;
+  createdAt: Date;
 };

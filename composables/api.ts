@@ -1,6 +1,7 @@
 import type { ApiError } from "~/types/api/error";
 import type { ApiParam } from "~/types/api/param";
 import { isResponse, type SResponse } from "~/types/api/response";
+import type { VFile } from "~/types/data/file";
 const request = async <T>(params: {
   url: string;
   baseUrl: string;
@@ -174,4 +175,39 @@ export const usePublicApi = () => {
     put,
     remove,
   };
+};
+
+export const downloadAs = (file: VFile) => {
+  const url = useRuntimeConfig().public.FILE_URL + file.name;
+  const notif = useNotification();
+  fetch(url)
+    .then((response) => {
+      if (!response.ok) {
+        notif.error({
+          title: "Error",
+          message: "Failed to download the file",
+        });
+        throw new Error("Network response was not ok");
+      }
+      return response.blob();
+    })
+    .then((blob) => {
+      // Create a link element
+      const link = document.createElement("a");
+      // Create a URL for the blob
+      const blobUrl = window.URL.createObjectURL(blob);
+      // Set the href of the link to the blob URL
+      link.href = blobUrl;
+      // Set the download attribute to the new file name
+      link.download = file.originalName ?? file.name;
+      // Append the link to the body (necessary for Firefox)
+      document.body.appendChild(link);
+      // Simulate a click on the link to start the download
+      link.click();
+      // Remove the link from the document
+      document.body.removeChild(link);
+      // Release the blob URL
+      window.URL.revokeObjectURL(blobUrl);
+    })
+    .catch((error) => console.error("Download failed:", error));
 };

@@ -80,7 +80,7 @@ const clickSubProject = async (param: {
     </div>
     <hr>
 
-    <div class="flex flex-col px-2">
+    <div class="flex flex-col px-2" v-if="app.sidebar">
       <UButton label="Search" icon="i-heroicons-magnifying-glass" variant="ghost" size="xs" color="gray" />
       <UButton label="Home" icon="i-heroicons-home" variant="ghost" size="xs" color="gray" @click="$router.push('/')"
         :class="$route.path === '/' ? 'cursor-not-allowed ' : ''" :disable="$route.path === '/'" />
@@ -97,7 +97,8 @@ const clickSubProject = async (param: {
           <UButton icon="i-heroicons-chevron-right-16-solid" variant="ghost" size="xs" color="gray"
             class="transition-all hover:bg-transparent border-0 focus-visible:ring-inset focus-visible:!ring-0 "
             :class="i.expanded ? 'rotate-90' : 'rotate-0'" @click="() => clickProject(i, index)" />
-          <UButton :label="i.project.name" variant="ghost" size="xs" color="gray" icon="i-heroicons-folder-solid" />
+          <UButton :label="i.project.name" variant="ghost" size="xs" color="gray" icon="i-heroicons-folder-solid"
+            @click="$router.push(`/project/${i.project.id}`)" />
         </div>
         <div v-if="i.expanded && i.project.subproject">
           <div class="flex flex-col pl-5" v-for="(sub, subIn) in i.project.subproject">
@@ -110,13 +111,15 @@ const clickSubProject = async (param: {
                   indexSubproject: subIn,
                   subproject: sub
                 })" />
-              <UButton :label="sub.name" variant="ghost" size="xs" color="gray" icon="i-heroicons-folder-solid" />
+              <UButton :label="sub.name" variant="ghost" size="xs" color="gray" icon="i-heroicons-folder-solid"
+                @click="$router.push(`/subproject/${sub.id}`)" />
             </div>
             <div v-if="sub.expanded && sub.findings">
               <div class="flex flex-col pl-7" v-for="(find, subIn) in sub.findings">
                 <div class="flex items-center">
 
-                  <UButton variant="ghost" size="xs" color="gray" icon="i-heroicons-document-solid">
+                  <UButton variant="ghost" size="xs" color="gray" icon="i-heroicons-document-solid"
+                    @click="$router.push(`/finding/${find.id}`)">
                     <div class="text-ellipsis line-clamp-1 w-24">
                       {{ find.name }} + 'asjhasj sahshah ashash' shdshdsh
                     </div>

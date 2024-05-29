@@ -27,6 +27,11 @@ export const useApp = defineStore("sectask-store", () => {
     refreshToken.value = token.refreshToken;
   };
 
+  const navbarLink: {
+    label: string;
+    to: string;
+  }[] = [];
+
   const sidebar = ref(true);
   return {
     getAuthorization,
@@ -35,5 +40,6 @@ export const useApp = defineStore("sectask-store", () => {
     user,
     resetToken,
     sidebar,
+    navbarLink,
   };
 });
