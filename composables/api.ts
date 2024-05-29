@@ -1,5 +1,6 @@
+import type { ApiError } from "~/types/api/error";
 import type { ApiParam } from "~/types/api/param";
-import type { SResponse } from "~/types/api/response";
+import { isResponse, type SResponse } from "~/types/api/response";
 const request = async <T>(params: {
   url: string;
   baseUrl: string;
@@ -10,6 +11,8 @@ const request = async <T>(params: {
   };
 }): Promise<SResponse<T>> => {
   try {
+    console.log(params.param.headers);
+
     const data: SResponse<T> = await $fetch(params.url, {
       baseURL: params.baseUrl,
       method: params.param.method,
@@ -18,9 +21,22 @@ const request = async <T>(params: {
     });
     return data;
   } catch (error) {
-    console.log(error);
+    const data = (error as any).data;
 
-    throw error;
+    if (isResponse(data)) {
+      const err: ApiError = {
+        error: data.error,
+        message: data.message,
+      };
+      throw err;
+    }
+    const err: ApiError = {
+      error: {
+        "@root": "unknown",
+      },
+      message: "unknown",
+    };
+    throw err;
   }
 };
 
@@ -31,7 +47,7 @@ export const usePrivateApi = () => {
   const get = async <T>(url: string) => {
     const response = await request<T>({
       url: url,
-      baseUrl: config.app.baseURL,
+      baseUrl: config.public.API_BASE_URL,
       param: {
         method: "GET",
         headers: {
@@ -44,7 +60,7 @@ export const usePrivateApi = () => {
   const post = async <T>(url: string, param?: ApiParam) => {
     const response = await request<T>({
       url: url,
-      baseUrl: config.app.baseURL,
+      baseUrl: config.public.API_BASE_URL,
       param: {
         method: "POST",
         headers: {
@@ -58,7 +74,7 @@ export const usePrivateApi = () => {
   const put = async <T>(url: string, param?: ApiParam) => {
     const response = await request<T>({
       url: url,
-      baseUrl: config.app.baseURL,
+      baseUrl: config.public.API_BASE_URL,
       param: {
         method: "PUT",
         headers: {
@@ -72,7 +88,7 @@ export const usePrivateApi = () => {
   const remove = async <T>(url: string, param?: ApiParam) => {
     const response = await request<T>({
       url: url,
-      baseUrl: config.app.baseURL,
+      baseUrl: config.public.API_BASE_URL,
       param: {
         method: "DELETE",
         headers: {
@@ -96,7 +112,7 @@ export const usePublicApi = () => {
   const get = async <T>(url: string, headers?: Record<string, string>) => {
     const response = await request<T>({
       url: url,
-      baseUrl: config.app.baseURL,
+      baseUrl: config.public.API_BASE_URL,
       param: {
         method: "GET",
         headers: headers,
@@ -111,7 +127,7 @@ export const usePublicApi = () => {
   ) => {
     const response = await request<T>({
       url: url,
-      baseUrl: config.app.baseURL,
+      baseUrl: config.public.API_BASE_URL,
       param: {
         method: "POST",
         headers: headers,
@@ -127,7 +143,7 @@ export const usePublicApi = () => {
   ) => {
     const response = await request<T>({
       url: url,
-      baseUrl: config.app.baseURL,
+      baseUrl: config.public.API_BASE_URL,
       param: {
         method: "PUT",
         headers: headers,
@@ -143,7 +159,7 @@ export const usePublicApi = () => {
   ) => {
     const response = await request<T>({
       url: url,
-      baseUrl: config.app.baseURL,
+      baseUrl: config.public.API_BASE_URL,
       param: {
         method: "DELETE",
         headers: headers,

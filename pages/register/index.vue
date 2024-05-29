@@ -6,16 +6,14 @@ definePageMeta({
 })
 const form = useFormd({
   schema: z.object({
+    name: z.string().min(6),
     email: z.string().email(),
     password: z.string().min(6),
   }),
   onSubmit: async (event, d) => {
-    await useAuth().login(event.data)
+    await useAuth().register(event.data)
   },
-  initial: {
-    email: "andre@email.com",
-    password: "password"
-  }
+
 })
 </script>
 
@@ -23,6 +21,9 @@ const form = useFormd({
   <div class="flex flex-col justify-center   h-full">
     <div class="  flex flex-col justify-end items-center">
       <vform :form="form" class="flex flex-col gap-4">
+        <UFormGroup label="Name" name="name">
+          <UInput placeholder="Full Name" v-model="form.state.name" />
+        </UFormGroup>
         <UFormGroup label="Email" name="email">
           <UInput placeholder="Email" v-model="form.state.email" />
         </UFormGroup>
@@ -43,8 +44,8 @@ const form = useFormd({
           <hr class="grow">
         </div>
 
-        <div class="text-xs">Don't have an account? click <NuxtLink to="/register" class="underline">here</NuxtLink> to
-          register</div>
+        <div class="text-xs">Already have an account? click <NuxtLink to="/login" class="underline">here</NuxtLink> to
+          login</div>
 
       </vform>
 

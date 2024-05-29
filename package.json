@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@tailwindcss/typography": "^0.5.13",
     "@tiptap/extension-bold": "link:tiptap/extension-bubble-menu@tiptap/extension-bullet-list@tiptap/extension-color@tiptap/extension-document@tiptap/extension-hard-break@tiptap/extension-highlight@tiptap/extension-image@tiptap/extension-italic@tiptap/extension-list-item@tiptap/extension-ordered-list@tiptap/extension-paragraph@tiptap/extension-table@tiptap/extension-table-cell@tiptap/extension-table-header@tiptap/extension-table-row@tiptap/extension-task-item@tiptap/extension-task-list@tiptap/extension-text@tiptap/extension-text-style@tiptap/extension-underline@tiptap/pm",
     "@tiptap/extension-bubble-menu": "^2.4.0",
     "@tiptap/extension-bullet-list": "^2.4.0",
@@ -35,6 +36,7 @@
     "@tiptap/vue-3": "^2.4.0",
     "mustache": "^4.2.0",
     "pinia": "^2.1.7",
+    "tailwindcss": "^3.4.3",
     "uuid": "^9.0.1",
     "vue-advanced-cropper": "^2.8.8",
     "y-prosemirror": "^1.2.5",
@@ -43,6 +45,7 @@
   },
   "devDependencies": {
     "@nuxt/ui": "^2.16.0",
+    "@nuxtjs/google-fonts": "^3.2.0",
     "@pinia/nuxt": "^0.5.1",
     "@samk-dev/nuxt-vcalendar": "^1.0.3",
     "@tiptap/extension-collaboration": "^2.4.0",

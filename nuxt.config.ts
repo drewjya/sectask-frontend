@@ -8,13 +8,19 @@ export default defineNuxtConfig({
     "dayjs-nuxt",
     "@nuxt/ui",
     "@samk-dev/nuxt-vcalendar",
+    "@nuxtjs/google-fonts",
   ],
   css: [
     "@/assets/app.css",
     "vue-advanced-cropper/dist/style.css",
     "vue-advanced-cropper/dist/theme.compact.css",
   ],
-
+  googleFonts: {
+    prefetch: true,
+    families: {
+      Lato: [100, 200, 300, 400, 500, 600, 700],
+    },
+  },
   ui: {
     safelistColors: ["red", "green", "blue", "white", "gray", "slate", "orage"],
   },
@@ -71,8 +77,9 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       REFRESH_TOKEN_KEY: "NOTIX_REFRESHTOKEN_STORAGE_KEY",
-      API_BASE_URL: "http://localhost:3000/",
+      API_BASE_URL: "http://localhost:3000/api",
       WS_BASE_URL: "ws://localhost:3000/ws",
+      FILE_URL: "http://localhost:3000/img/",
       FILE_MAX_SIZE: 5_000_000, // 5MB
     },
   },
