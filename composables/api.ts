@@ -69,7 +69,7 @@ export const usePrivateApi = () => {
     });
     return response;
   };
-  const del = async <T>(url: string, param?: ApiParam) => {
+  const remove = async <T>(url: string, param?: ApiParam) => {
     const response = await request<T>({
       url: url,
       baseUrl: config.app.baseURL,
@@ -87,7 +87,7 @@ export const usePrivateApi = () => {
     get,
     post,
     put,
-    del,
+    remove,
   };
 };
 
@@ -136,7 +136,7 @@ export const usePublicApi = () => {
     });
     return response;
   };
-  const del = async <T>(
+  const remove = async <T>(
     url: string,
     param?: ApiParam,
     headers?: Record<string, string>
@@ -156,6 +156,6 @@ export const usePublicApi = () => {
     get,
     post,
     put,
-    del,
+    remove,
   };
 };
