@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { NewProjectModal } from '#components';
 import type { FindingSidebar, ProjectSidebar, SubprojectSidebar } from '~/types/data/sidebar/project';
 
 const app = useApp()
@@ -68,6 +69,21 @@ const clickSubProject = async (param: {
   projectList.value[param.index].project.subproject[param.indexSubproject].expanded = !param.subproject.expanded
 }
 
+
+const modal = useModal()
+
+
+
+const addProject = () => {
+  modal.open(NewProjectModal, {
+    onClose: () => {
+      modal.close()
+    }
+  })
+}
+
+
+
 </script>
 
 <template>
@@ -86,7 +102,8 @@ const clickSubProject = async (param: {
         :class="$route.path === '/' ? 'cursor-not-allowed ' : ''" :disable="$route.path === '/'" />
       <UButton label="Setting" icon="i-heroicons-pencil-square" variant="ghost" size="xs" color="gray"
         @click="$router.push('/setting')" />
-      <UButton label="Add Project" icon="i-heroicons-plus-circle" variant="ghost" size="xs" color="gray" />
+      <UButton label="Add Project" icon="i-heroicons-plus-circle" variant="ghost" size="xs" color="gray"
+        @click="() => addProject()" />
     </div>
     <hr>
 
