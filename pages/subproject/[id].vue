@@ -111,7 +111,7 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
             </template>
             <template v-else-if="`${$route.query.tab}`.startsWith('reports')">
               <AttachmentsTab :attachments="store.subproject.attachments" :reports="store.subproject.reports"
-                :myRole="store.myrole ?? Role.VIEWER" />
+                :myRole="store.myrole ?? Role.VIEWER" :docId="store.subproject.id" doctype="subproject" />
             </template>
             <template v-else-if="`${$route.query.tab}`.startsWith('updates')">
               <LogsTab :logs="store.subproject.recentActivities" />

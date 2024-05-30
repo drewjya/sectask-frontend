@@ -1,14 +1,35 @@
 <script lang="ts" setup>
 
 
+import { isApiError } from '~/types/api/error';
 import type { VFile } from '~/types/data/file';
 
 
 const props = defineProps<{
   files: VFile[]
   title: string
+  type: string;
+  doctype: string;
+  docId: number;
   canUpload: boolean
 }>()
+const api = usePrivateApi()
+const notif = useNotification()
+const removeFile = async (id: number) => {
+  try {
+    await api.post(`/${props.doctype}/${props.docId}/${props.type}/remove/${id}`)
+    notif.ok({ message: "File removed" })
+    return;
+  } catch (error) {
+    if (isApiError(error)) {
+      notif.error({ message: error.message })
+    } else {
+      notif.error({ message: "Try again later" })
+    }
+  }
+}
+
+const emit = defineEmits(["upload"])
 
 
 const getIcon = (data: VFile) => {
@@ -30,7 +51,8 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
   <div class="flex flex-col gap-2 pb-4">
     <div class="flex justify-between px-2">
       <div class="font-bold text-lg font-['DM Sans']">{{ title }}</div>
-      <UButton icon="i-heroicons-arrow-up-on-square" size="sm" color="white" variant="solid" v-if="canUpload" />
+      <UButton icon="i-heroicons-arrow-up-on-square" size="sm" color="white" variant="solid" v-if="canUpload"
+        @click="() => emit('upload')" />
 
     </div>
 
@@ -44,8 +66,10 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
           <div>{{ formatDate(i.createdAt, "DD MMM YYYY, HH:mm") }}</div>
 
         </div>
-        <div class="grow flex justify-end items-end  h-full">
+        <div class="grow flex justify-end items-end  h-full flex-col">
+          <UButton icon="i-heroicons-x-circle" v-if="canUpload" @click="removeFile(i.id)" variant="ghost" color="red" />
           <UButton icon="i-heroicons-arrow-down-circle" @click="downloadAs(i)" variant="ghost" color="red" />
+
         </div>
       </div>
 

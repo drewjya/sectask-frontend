@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { isApiError } from '~/types/api/error';
 import type { ProjectMember } from '~/types/data/project/project';
+import MemberModal from './member-modal.vue';
 
 const props = defineProps<{
   members: ProjectMember[],
@@ -50,7 +51,16 @@ const getDropdownItem = (value: ProjectMember) => {
   }
   return [[]]
 }
+const modal = useModal()
+const openInviteMember = () => {
+  modal.open(MemberModal, {
+    projectId: props.docId,
+    onClose: () => {
+      modal.close()
+    }
 
+  })
+}
 
 </script>
 
@@ -59,7 +69,7 @@ const getDropdownItem = (value: ProjectMember) => {
     <div class="flex justify-between px-2">
       <div class="text-lg font-bold font-['DM Sans']">Members</div>
       <UButton v-if="canInvite && !isSubproject" label="Invite" icon="i-heroicons-user-plus" size="sm" color="white"
-        variant="solid" />
+        @click="() => openInviteMember()" variant="solid" />
     </div>
     <div class="grid grid-cols-2 px-2 gap-2 text-sm font-bold font-['DM Sans'] place-items-start">
       <div class="col-span-1">
