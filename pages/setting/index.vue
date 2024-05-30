@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PictureModal } from '#components';
+import { ChangePasswordModal, LogoutModal, PictureModal } from '#components';
 import { z } from 'zod';
 import { isApiError } from '~/types/api/error';
 
@@ -66,13 +66,25 @@ const form = useForm({
 })
 
 const modal = useModal()
-const count = ref(0)
-const uploadImage = async () => {
-  count.value += 1
-  modal.open(PictureModal, {
-    count: count.value,
-    onSuccess: () => {
 
+const changePassword = () => {
+  modal.open(ChangePasswordModal, {
+    onClose: () => {
+      modal.close()
+    }
+  })
+}
+
+const logout = () => {
+  modal.open(LogoutModal, {
+    onClose: () => {
+      modal.close()
+    }
+  })
+}
+const uploadImage = async () => {
+  modal.open(PictureModal, {
+    onSuccess: () => {
       modal.close()
     }
   })
@@ -114,10 +126,11 @@ const uploadImage = async () => {
           <UToggle v-model="app.isDark" />
         </SettingItem>
         <SettingItem label="Password" subtitle="Change account password">
-          <UButton variant="outline" size="xs" color="blue">Change</UButton>
+          <UButton variant="outline" size="xs" color="blue" @click="() => changePassword()">Change</UButton>
         </SettingItem>
         <SettingItem label="Logout" subtitle="Logout from this devices">
-          <UButton icon="i-heroicons-arrow-left-end-on-rectangle" variant="soft" size="xs" color="blue">Logout
+          <UButton icon="i-heroicons-arrow-left-end-on-rectangle" variant="soft" size="xs" color="blue"
+            @click="logout()">Logout
           </UButton>
         </SettingItem>
         <SettingItem label="Delete" subtitle="Delete account permanently" class="text-red-600"

@@ -107,18 +107,11 @@ function cropperError() {
 
 
 
-defineProps({
-  count: {
-    type: Number,
-    default: 0
-  }
-})
 
 const emit = defineEmits(['success'])
 
 function onSuccess() {
   emit('success')
-
 }
 </script>
 
