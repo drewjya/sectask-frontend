@@ -2,8 +2,8 @@
 import AddFindingModal from './add-finding-modal.vue';
 
 
-
-const store = subprojectStore()
+const app = useApp()
+const store = subprojectStore(app.user?.id ?? -1)()
 const subproject = computed(() => store.subproject);
 const modal = useModal()
 

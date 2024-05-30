@@ -20,7 +20,8 @@ type UserSearch = {
   name: string
 }
 const selected = ref<UserSearch>()
-const store = projectStore()
+const app = useApp()
+const store = projectStore(app.user?.id ?? -1)()
 
 const inviteMembers = async () => {
   let cerr = 0

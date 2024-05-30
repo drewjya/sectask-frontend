@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import AddSubprojectModal from './add-subproject-modal.vue';
-
-const store = projectStore()
+const app = useApp()
+const store = projectStore(app.user?.id ?? -1)()
 const project = computed(() => store.project);
 
 const modal = useModal()

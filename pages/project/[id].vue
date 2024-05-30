@@ -3,8 +3,8 @@ import { projectStore } from '~/stores/project_store';
 
 
 const router = useRouter()
-const store = projectStore()
 const app = useApp()
+const store = projectStore(app.user?.id ?? -1)()
 const route = useRoute();
 const tabs = [
   {
@@ -25,6 +25,10 @@ const tabs = [
   },
 ];
 
+onBeforeRouteLeave(() => {
+  store.$reset()
+
+})
 const currentTab = computed({
   get() {
     const index = tabs.findIndex((t) => t.key === route.query.tab);
@@ -38,7 +42,10 @@ const currentTab = computed({
 });
 onMounted(() => {
 
-  store.id = Number(route.params.id)
+  if (store.id !== Number(route.params.id)) {
+    store.id = Number(route.params.id)
+
+  }
   const project = store.project
   if (project != undefined) {
     app.navbarLink = [{

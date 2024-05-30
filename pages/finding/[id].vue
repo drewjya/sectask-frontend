@@ -28,6 +28,10 @@ onMounted(() => {
   }
 })
 
+onBeforeRouteLeave(() => {
+  store.$reset()
+
+})
 
 watch(() => store.finding, () => {
   const finding = store.finding

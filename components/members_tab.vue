@@ -51,6 +51,36 @@ const getDropdownItem = (value: ProjectMember) => {
   }
   return [[]]
 }
+
+const removeMember = (value: ProjectMember) => {
+  if (value.role === Role.PM) {
+    return [[]]
+
+  }
+
+  return [[{
+    label: "Remove",
+    icon: "i-heroicons-x-circle",
+    click: async () => {
+      try {
+        await api.remove(`/project/${props.docId}/member`, {
+          body: {
+            userId: value.id
+          }
+        })
+        notif.ok({ message: 'Member removed successfully' })
+
+      } catch (error) {
+        if (isApiError(error)) {
+          return notif.error({ message: error.message })
+        } else {
+          return notif.error({ message: 'Try again later' })
+        }
+      }
+    }
+  }]]
+
+}
 const modal = useModal()
 const openInviteMember = () => {
   modal.open(MemberModal, {
@@ -87,8 +117,13 @@ const openInviteMember = () => {
       </div>
       <div class="col-span-1 flex items-center gap-2">
 
-        <UDropdown :items="getDropdownItem(i)" :popper="{ placement: 'right' }"
+        <UDropdown v-if="isSubproject" :items="getDropdownItem(i)" :popper="{ placement: 'right' }"
           :disabled="[Role.DEVELOPER, Role.PM, Role.TECHNICAL_WRITER].includes(i.role) || !isSubproject || !canInvite">
+          <UButton class="w-full" color="gray" :label="roleLabel(i.role)" variant="ghost" :icon="roleIcon(i.role)"
+            size="md" />
+        </UDropdown>
+        <UDropdown v-else :items="removeMember(i)" :popper="{ placement: 'right' }"
+          :disabled="!canInvite || i.role === Role.PM">
           <UButton class="w-full" color="gray" :label="roleLabel(i.role)" variant="ghost" :icon="roleIcon(i.role)"
             size="md" />
         </UDropdown>

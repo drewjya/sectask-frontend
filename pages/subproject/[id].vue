@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 
-const store = subprojectStore()
 const route = useRoute()
 const app = useApp()
+const store = subprojectStore(app.user?.id ?? -1)()
 onMounted(() => {
 
   store.id = Number(route.params.id)
@@ -21,6 +21,10 @@ onMounted(() => {
   }
 })
 
+onBeforeRouteLeave(() => {
+  store.$reset()
+
+})
 
 
 watch(() => store.subproject, () => {
