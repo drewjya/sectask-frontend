@@ -48,6 +48,10 @@ onMounted(() => {
     store.watcher.ignoreUpdates(() => {
       store.id = Number(route.params.id)
     })
+  } else {
+    if (store.loading) {
+      store.getProject()
+    }
   }
   if (store.name && store.id) {
     app.navbarLink = [{

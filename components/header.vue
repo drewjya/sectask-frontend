@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import ProjectImageModal from './project-image-modal.vue';
+
 
 
 const props = defineProps({
@@ -59,12 +61,31 @@ const isFocused = ref(false);
 
 
 const userCanEditActivePeriode = computed(() => props.userCanUpdateHeader);
+
+const app = useApp()
+const modal = useModal()
+const editImage = () => {
+  modal.open(ProjectImageModal, {
+    projectId: props.id,
+    name: name.value?.toUpperCase() ?? "-",
+    src: props.image,
+    onSuccess: () => {
+      modal.close()
+    }
+  })
+}
 </script>
 
 <template>
   <div class="flex flex-col gap-2 px-8 py-2" v-if="!loading">
     <div class="flex gap-3 items-center">
-      <UAvatar :alt="name?.toUpperCase()" :src="image" size="lg" />
+      <div v-if="type === 'project' && userCanUpdateHeader">
+
+        <UAvatar :alt="name?.toUpperCase()" :src="image" size="lg" @click="editImage()" />
+      </div>
+
+      <UAvatar :alt="name?.toUpperCase()" :src="image" size="lg" v-else />
+
       <UInput v-model="name" :disabled="!userCanEditActivePeriode" :rows="1" placeholder="Untitled" autoresize
         :variant="isFocused ? 'outline' : 'none'" class="mb-1 w-full font-extrabold transition"
         :class="{ 'hover:bg-gray-200 dark:hover:bg-gray-600': userCanUpdateHeader }" size="xl" :ui="{

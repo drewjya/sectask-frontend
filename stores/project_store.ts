@@ -11,6 +11,7 @@ export const projectStore = (userId: number) => {
   return defineStore("project-store_" + userId.toString(), () => {
     const id = ref<number>();
     const loading = ref(true);
+    
     const name = ref<string>();
     const range = ref<RangeDatePickerModel>();
     const picture = ref<VFile>();
@@ -83,8 +84,10 @@ export const projectStore = (userId: number) => {
         return;
       }
       loading.value = true;
-      name.value = undefined;
-      range.value = undefined;
+      watcher.ignoreUpdates(() => {
+        name.value = undefined;
+        range.value = undefined;
+      });
       picture.value = undefined;
       subprojects.value = undefined;
       members.value = undefined;
@@ -172,6 +175,7 @@ export const projectStore = (userId: number) => {
       attachments,
       logs,
       pm,
+      getProject,
       watcher,
       myrole,
       $reset,
