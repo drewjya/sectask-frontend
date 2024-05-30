@@ -2,11 +2,42 @@
 import { projectStore } from '~/stores/project_store';
 
 
-const route = useRoute()
+const router = useRouter()
 const store = projectStore()
 const app = useApp()
+const route = useRoute();
+const tabs = [
+  {
+    label: "Projects",
+    key: "subprojects",
+  },
+  {
+    label: "Members",
+    key: "members",
+  },
+  {
+    label: "Reports & Attachments",
+    key: "reports",
+  },
+  {
+    label: "Updates",
+    key: "updates",
+  },
+];
+
+const currentTab = computed({
+  get() {
+    const index = tabs.findIndex((t) => t.key === route.query.tab);
+    return index === -1 ? 0 : index;
+  },
+  set(value) {
+    router.replace({
+      query: { tab: tabs[value].key },
+    });
+  },
+});
 onMounted(() => {
-  store.currentTab = 0;
+
   store.id = Number(route.params.id)
   const project = store.project
   if (project != undefined) {
@@ -35,8 +66,6 @@ watch(() => store.project, () => {
   }
 })
 
-
-
 const fileUrl = useRuntimeConfig().public.FILE_URL
 
 
@@ -53,10 +82,17 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
     <div class="px-8  grow   overflow-auto">
       <div class="flex flex-col h-full">
 
-        <UTabs v-model="store.currentTab" :items="store.tabs" :ui="{ wrapper: 'space-y-4', }">
+        <UTabs v-model="currentTab" :items="tabs" :ui="{
+          wrapper: 'space-y-4',
+          list: {
+            tab: {
+              size: 'text-xs'
+            },
+          },
+        }">
         </UTabs>
 
-        <div class="grow h-full overflow-y-auto">
+        <div class="grow h-full overflow-auto">
           <template v-if="store.loading">
             <div class="flex size-full items-center justify-center" data-role="loader">
               <USkeleton class=" size-full flex flex-col items-center justify-center opacity-70" />
@@ -79,6 +115,7 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
             </section>
           </template>
         </div>
+
       </div>
 
 

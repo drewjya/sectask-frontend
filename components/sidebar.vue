@@ -4,6 +4,8 @@ import type { FindingSidebar, ProjectSidebar, SubprojectSidebar } from '~/types/
 
 const app = useApp()
 
+
+
 const projectList = ref<{
   project: ProjectSidebar,
   expanded: boolean,

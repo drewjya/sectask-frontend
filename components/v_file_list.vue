@@ -27,7 +27,12 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
 
 <template>
   <div class="flex flex-col gap-2 pb-4">
-    <div>{{ title }}</div>
+    <div class="flex justify-between px-2">
+      <div class="font-bold text-lg font-['DM Sans']">{{ title }}</div>
+      <UButton icon="i-heroicons-arrow-up-on-square" size="sm" color="white" variant="solid" />
+
+    </div>
+
     <div class="bg-gray-200 p-3 rounded h-96 overflow-y-auto flex flex-col gap-2">
       <div v-for="i in files" class="bg-white p-2 flex items-center gap-2">
         <div class="p-4 ">

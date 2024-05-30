@@ -18,35 +18,7 @@ export const subprojectStore = defineStore("subproject-store", () => {
   const app = useApp();
   const router = useRouter();
   const route = useRoute();
-  const currentTab = computed({
-    get() {
-      const index = tabs.findIndex((t) => t.key === route.query.tab);
-      return index === -1 ? 0 : index;
-    },
-    set(value) {
-      router.replace({
-        query: { tab: tabs[value].key },
-      });
-    },
-  });
-  const tabs = [
-    {
-      label: "Findings",
-      key: "findings",
-    },
-    {
-      label: "Members",
-      key: "members",
-    },
-    {
-      label: "Reports & Attachments",
-      key: "reports",
-    },
-    {
-      label: "Updates",
-      key: "updates",
-    },
-  ];
+
   const getSubproject = async () => {
     loading.value = true;
     subproject.value = undefined;
@@ -109,7 +81,5 @@ export const subprojectStore = defineStore("subproject-store", () => {
     subproject,
     pm,
     myrole,
-    tabs,
-    currentTab,
   };
 });

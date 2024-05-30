@@ -19,37 +19,6 @@ export const projectStore = defineStore("project-store", () => {
   const api = usePrivateApi();
   const app = useApp();
   const router = useRouter();
-  const route = useRoute();
-  const tabs = [
-    {
-      label: "Projects",
-      key: "subprojects",
-    },
-    {
-      label: "Members",
-      key: "members",
-    },
-    {
-      label: "Reports & Attachments",
-      key: "reports",
-    },
-    {
-      label: "Updates",
-      key: "updates",
-    },
-  ];
-
-  const currentTab = computed({
-    get() {
-      const index = tabs.findIndex((t) => t.key === route.query.tab);
-      return index === -1 ? 0 : index;
-    },
-    set(value) {
-      router.replace({
-        query: { tab: tabs[value].key },
-      });
-    },
-  });
 
   const getProject = async () => {
     loading.value = true;
@@ -111,7 +80,5 @@ export const projectStore = defineStore("project-store", () => {
     project,
     pm,
     myrole,
-    tabs,
-    currentTab,
   };
 });

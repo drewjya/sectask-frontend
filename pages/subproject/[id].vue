@@ -4,7 +4,7 @@ const store = subprojectStore()
 const route = useRoute()
 const app = useApp()
 onMounted(() => {
-  store.currentTab = 0;
+
   store.id = Number(route.params.id)
   const subproject = store.subproject
   if (subproject != undefined) {
@@ -20,6 +20,8 @@ onMounted(() => {
     app.navbarLink = []
   }
 })
+
+
 
 watch(() => store.subproject, () => {
   const subproject = store.subproject
@@ -37,7 +39,38 @@ watch(() => store.subproject, () => {
   }
 })
 
+const router = useRouter()
 
+
+const currentTab = computed({
+  get() {
+    const index = tabs.findIndex((t) => t.key === route.query.tab);
+    return index === -1 ? 0 : index;
+  },
+  set(value) {
+    router.replace({
+      query: { tab: tabs[value].key },
+    });
+  },
+});
+const tabs = [
+  {
+    label: "Findings",
+    key: "findings",
+  },
+  {
+    label: "Members",
+    key: "members",
+  },
+  {
+    label: "Reports & Attachments",
+    key: "reports",
+  },
+  {
+    label: "Updates",
+    key: "updates",
+  },
+];
 
 
 const fileUrl = useRuntimeConfig().public.FILE_URL
@@ -49,7 +82,16 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
       :project-manager="store.pm?.name ?? '-'" :id="store.subproject.id" :name="store.subproject.name"
       :my-role="store.myrole ? roleLabel(store.myrole) : '-'" />
     <div class="px-8 flex flex-col h-full grow overflow-auto">
-      <UTabs v-model="store.currentTab" :items="store.tabs" :ui="{ wrapper: 'space-y-4', }">
+      <UTabs v-model="currentTab" :items="tabs" :ui="{
+        wrapper: 'space-y-4',
+        list: {
+          width: 'w-full',
+          tab: {
+            size: 'text-xs'
+          },
+        },
+
+      }">
       </UTabs>
 
       <div class="grow h-full overflow-y-auto">
@@ -60,16 +102,16 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
         </template>
         <template v-else>
           <section class="size-full flex-grow">
-            <template v-if="store.currentTab === 0">
+            <template v-if="!route.query.tab || `${$route.query.tab}`.startsWith('findings')">
               <FindingTab />
             </template>
-            <template v-else-if="store.currentTab === 1">
+            <template v-else-if="`${$route.query.tab}`.startsWith('members')">
               <MembersTab :members="store.subproject.subprojectMember" />
             </template>
-            <template v-else-if="store.currentTab === 2">
+            <template v-else-if="`${$route.query.tab}`.startsWith('reports')">
               <AttachmentsTab :attachments="store.subproject.attachments" :reports="store.subproject.reports" />
             </template>
-            <template v-else-if="store.currentTab === 3">
+            <template v-else-if="`${$route.query.tab}`.startsWith('updates')">
               <LogsTab :logs="store.subproject.recentActivities" />
             </template>
           </section>

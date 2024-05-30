@@ -31,17 +31,14 @@ const props = defineProps({
   }
 })
 
-const status = ref("-")
-onMounted(() => {
-  const now = new Date()
-  if (now < props.startDate) {
-    status.value = "Upcoming"
-  } else if (now > props.endDate) {
-    status.value = "Completed"
-  } else {
-    status.value = "Ongoing"
-  }
-})
+
+const status = computed(() => getStatus({
+  startDate: props?.startDate ?? new Date(),
+  endDate: props?.endDate ?? new Date()
+}))
+
+
+const activePeriod = computed(() => `${formatDate(props!.startDate, 'DD MMM, YYYY')} → ${formatDate(props!.endDate, 'DD MMM, YYYY')}`)
 
 </script>
 
@@ -53,14 +50,24 @@ onMounted(() => {
     </div>
     <hr>
     <div class="py-2 bg-white rounded-md px-9 flex flex-col gap-2">
-      <HeaderItem label="Project Status">{{ status }}</HeaderItem>
+      <HeaderItem label="Project Status">
+        <div :style="{
+          color: status.color,
+          backgroundColor: status.color + '10',
+          borderColor: status.color,
+          borderWidth: '1.3px',
+          borderRadius: '8px'
+        }" class="px-2 text-[0.8rem] w-max">{{ status.value }}</div>
+      </HeaderItem>
       <HeaderItem label="Project Manager">
         <div class="flex items-center gap-2">
           <UAvatar :alt="projectManager.toUpperCase()" size="xs" />
-          <div class="text-xs">{{ projectManager }}</div>
+          <div class="text-xs capitalize">{{ projectManager }}</div>
         </div>
       </HeaderItem>
-      <HeaderItem label="Project Active Period">saasj</HeaderItem>
+      <HeaderItem label="Project Active Period">
+        <div class="border p-1 rounded w-max">{{ activePeriod }}</div>
+      </HeaderItem>
       <HeaderItem label="Project My Role">
         <div class="capitalize">
           {{ myRole }}
