@@ -6,7 +6,8 @@ import type { VFile } from '~/types/data/file';
 
 
 const props = defineProps<{
-  files: VFile[]
+  files?: VFile[]
+  loading: boolean;
   title: string
   type: string;
   doctype: string;
@@ -55,8 +56,10 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
         @click="() => emit('upload')" />
 
     </div>
+    <div v-if="loading || !files">
+    </div>
+    <div v-else class="bg-gray-200 p-3 rounded h-96 overflow-y-auto flex flex-col gap-2">
 
-    <div class="bg-gray-200 p-3 rounded h-96 overflow-y-auto flex flex-col gap-2">
       <div v-for="i in files" class="bg-white p-2 flex items-center gap-2">
         <div class="p-4 ">
           <UIcon :name="getIcon(i)" class="text-4xl text-blue-400" />
@@ -72,6 +75,7 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
 
         </div>
       </div>
+
 
     </div>
   </div>

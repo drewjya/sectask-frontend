@@ -9,8 +9,11 @@ export default defineNuxtConfig({
     "@nuxt/ui",
     "@samk-dev/nuxt-vcalendar",
     "@nuxtjs/google-fonts",
-    "@nuxt/image"
+    "@nuxt/image",
   ],
+  devServer: {
+    port: 8800,
+  },
   spaLoadingTemplate: "spa-loading-template.html",
   css: [
     "@/assets/app.css",

@@ -6,15 +6,17 @@ const store = subprojectStore(app.user?.id ?? -1)()
 onMounted(() => {
 
   store.id = Number(route.params.id)
-  const subproject = store.subproject
-  if (subproject != undefined) {
+  const id = store.id
+  const name = store.name
+  const project = store.project
+  if (id && name && project) {
     app.navbarLink = [{
-      label: subproject.project.name,
-      to: `/project/${subproject.project.id}`
+      label: project.name,
+      to: `/project/${project.id}`
     },
     {
-      label: subproject.name,
-      to: `/subproject/${subproject.id}`
+      label: name,
+      to: `/subproject/${id}`
     }]
   } else {
     app.navbarLink = []
@@ -27,16 +29,18 @@ onBeforeRouteLeave(() => {
 })
 
 
-watch(() => store.subproject, () => {
-  const subproject = store.subproject
-  if (subproject != undefined) {
+watch(() => store.project, () => {
+  const id = store.id
+  const name = store.name
+  const project = store.project
+  if (id && name && project) {
     app.navbarLink = [{
-      label: subproject.project.name,
-      to: `/project/${subproject.project.id}`
+      label: project.name,
+      to: `/project/${project.id}`
     },
     {
-      label: subproject.name,
-      to: `/subproject/${subproject.id}`
+      label: name,
+      to: `/subproject/${id}`
     }]
   } else {
     app.navbarLink = []
@@ -81,10 +85,10 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
 </script>
 
 <template>
-  <div v-if="store.subproject" class="flex flex-col grow h-full">
-    <Header :end-date="store.subproject?.endDate" :start-date="store.subproject.startDate"
-      :project-manager="store.pm?.name ?? '-'" :id="store.subproject.id" :name="store.subproject.name"
-      :my-role="store.myrole ? roleLabel(store.myrole) : '-'" />
+  <div class="flex flex-col grow h-full">
+    <Header v-model:range="store.range" v-model:name="store.name" :project-manager="store.pm?.name ?? '-'"
+      :id="store.id ?? -1" :my-role="store.myrole ? roleLabel(store.myrole) : '-'"
+      :userCanUpdateHeader="store.myrole === Role.PM" type="subproject" :loading="store.loading" />
     <div class="px-8 flex flex-col h-full grow overflow-auto">
       <UTabs v-model="currentTab" :items="tabs" :ui="{
         wrapper: 'space-y-4',
@@ -110,15 +114,17 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
               <FindingTab />
             </template>
             <template v-else-if="`${$route.query.tab}`.startsWith('members')">
-              <MembersTab :members="store.subproject.subprojectMember" :canInvite="store.myrole === Role.PM"
-                :isSubproject="true" :doc-id="store.subproject.id" />
+
+              <MembersTab :members="store.members" :canInvite="store.myrole === Role.PM" :isSubproject="true"
+                :doc-id="store.id ?? -1" :loading="store.loading" />
             </template>
             <template v-else-if="`${$route.query.tab}`.startsWith('reports')">
-              <AttachmentsTab :attachments="store.subproject.attachments" :reports="store.subproject.reports"
-                :myRole="store.myrole ?? Role.VIEWER" :docId="store.subproject.id" doctype="subproject" />
+              <AttachmentsTab :attachments="store.attachments" :reports="store.reports"
+                :myRole="store.myrole ?? Role.VIEWER" :docId="store.id ?? -1" doctype="subproject"
+                :loading="store.loading" />
             </template>
             <template v-else-if="`${$route.query.tab}`.startsWith('updates')">
-              <LogsTab :logs="store.subproject.recentActivities" />
+              <LogsTab :logs="store.logs" :loading="store.loading" />
             </template>
           </section>
         </template>

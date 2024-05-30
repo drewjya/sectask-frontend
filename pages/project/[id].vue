@@ -45,30 +45,38 @@ const currentTab = computed({
 onMounted(() => {
 
   if (store.id !== Number(route.params.id)) {
-    store.id = Number(route.params.id)
-
+    store.watcher.ignoreUpdates(() => {
+      store.id = Number(route.params.id)
+    })
   }
-  const project = store.project
-  if (project != undefined) {
+  if (store.name && store.id) {
     app.navbarLink = [{
-      label: project.name,
-      to: `/project/${project.id}`
+      label: store.name,
+      to: `/project/${store.id}`
     }]
   } else {
     app.navbarLink = []
   }
 })
 
-
-
-watch(() => store.project, () => {
-  console.log(store.project);
-
-  const project = store.project
-  if (project != undefined) {
+watch(() => store.name, () => {
+  if (store.name && store.id) {
     app.navbarLink = [{
-      label: project.name,
-      to: `/project/${project.id}`
+      label: store.name,
+      to: `/project/${store.id}`
+    }]
+  } else {
+    app.navbarLink = []
+  }
+})
+
+watch(() => store.id, () => {
+
+
+  if (store.name && store.id) {
+    app.navbarLink = [{
+      label: store.name,
+      to: `/project/${store.id}`
     }]
   } else {
     app.navbarLink = []
@@ -82,11 +90,11 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
 </script>
 
 <template>
-  <div v-if="store.project" class="flex flex-col h-full pb-4 ">
-    <Header :end-date="store.project?.endDate" :start-date="store.project.startDate"
-      :image="store.project.projectPicture ? `${fileUrl}${store.project.projectPicture.name}` : undefined"
-      :project-manager="store.pm?.name ?? '-'" :id="store.project.id" :name="store.project.name"
-      :my-role="store.myrole ? roleLabel(store.myrole) : '-'" />
+  <div class="flex flex-col h-full pb-4 ">
+    <Header :image="store.picture ? `${fileUrl}${store.picture.name}` : undefined" :loading="store.loading"
+      :project-manager="store.pm?.name ?? '-'" :id="store.id ?? -1" v-model:name="store.name"
+      v-model:range="store.range" :my-role="store.myrole ? roleLabel(store.myrole) : '-'"
+      :userCanUpdateHeader="store.myrole === Role.PM" type="project" />
 
     <div class="px-8  grow   overflow-auto">
       <div class="flex flex-col h-full">
@@ -113,15 +121,15 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
                 <SubprojectTab />
               </template>
               <template v-else-if="`${$route.query.tab}`.startsWith('members')">
-                <MembersTab :members="store.project.members" :canInvite="store.myrole === Role.PM" :isSubproject="false"
-                  :doc-id="store.project.id" />
+                <MembersTab :members="store.members" :canInvite="store.myrole === Role.PM" :isSubproject="false"
+                  :doc-id="store.id ?? -1" :loading="store.loading" />
               </template>
               <template v-else-if="`${$route.query.tab}`.startsWith('reports')">
-                <AttachmentsTab :attachments="store.project.attachments" :reports="store.project.reports"
-                  :myRole="store.myrole ?? Role.VIEWER" :docId="store.project.id" doctype="project" />
+                <AttachmentsTab :attachments="store.attachments" :reports="store.reports" :loading="store.loading"
+                  :myRole="store.myrole ?? Role.VIEWER" :docId="store.id ?? -1" doctype="project" />
               </template>
               <template v-else-if="`${$route.query.tab}`.startsWith('updates')">
-                <LogsTab :logs="store.project.recentActivities" />
+                <LogsTab :logs="store.logs" :loading="store.loading" />
               </template>
             </section>
           </template>

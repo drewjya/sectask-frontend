@@ -4,13 +4,13 @@ import AddFindingModal from './add-finding-modal.vue';
 
 const app = useApp()
 const store = subprojectStore(app.user?.id ?? -1)()
-const subproject = computed(() => store.subproject);
+
 const modal = useModal()
 
 const addFindings = () => {
   // modal.openModal('addFindings')
   modal.open(AddFindingModal, {
-    subprojectId: store.subproject?.id ?? -1,
+    subprojectId: store.id ?? -1,
     onClose: () => {
       modal.close()
     }
@@ -18,16 +18,18 @@ const addFindings = () => {
   })
 }
 
+const canEdit = computed(() => store.myrole === Role.PM)
 </script>
 
 <template>
-  <div v-if="subproject" class="px-2 flex flex-col gap-2 ">
+  <div class="px-2 flex flex-col gap-2 ">
     <div class="flex justify-between px-2">
       <div class="text-lg font-bold font-['DM Sans']">Findings</div>
       <UButton label="Add" icon="i-heroicons-plus" size="sm" color="white" variant="solid"
         v-if="store.myrole === Role.CONSULTANT" @click="addFindings()" />
     </div>
-    <div class="grid grid-cols-9 px-2 gap-2 text-sm font-bold font-['DM Sans'] place-items-start">
+    <div class="grid px-2 gap-2 text-sm font-bold font-['DM Sans'] place-items-start"
+      :class="canEdit ? 'grid-cols-9' : 'grid-cols-8'">
       <div class="col-span-2">
         <div>Findings</div>
       </div>
@@ -40,12 +42,16 @@ const addFindings = () => {
       <div class="col-span-2">
         <div>Status</div>
       </div>
-      <div class="col-span-1">
+      <div class="col-span-1" v-if="canEdit">
         <div>Action</div>
       </div>
     </div>
-    <FindingsTabItem v-for="i in subproject.findings" :name="i.name" :createdBy="i.createdBy" :risk="'asjsaj'"
-      :id="i.id" :deletable="true" :status="'ashsah'" />
+    <div v-if="store.loading && !store.findings"></div>
+    <div v-else>
+
+      <FindingsTabItem v-for="i in store.findings" :name="i.name" :createdBy="i.createdBy" :risk="'asjsaj'" :id="i.id"
+        :deletable="canEdit" :status="'ashsah'" />
+    </div>
 
 
 

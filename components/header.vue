@@ -1,21 +1,15 @@
 <script lang="ts" setup>
 
+
 const props = defineProps({
-  name: {
-    type: String,
-    required: true
+  userCanUpdateHeader: {
+    type: Boolean,
+    required: true,
+
   },
   image: {
     type: String,
     required: false,
-  },
-  startDate: {
-    type: Date,
-    required: true,
-  },
-  endDate: {
-    type: Date,
-    required: true,
   },
   myRole: {
     type: String,
@@ -25,28 +19,59 @@ const props = defineProps({
     type: Number,
     required: true
   },
+  type: {
+    type: String,
+    required: true
+  },
   projectManager: {
     type: String,
     required: true
+  },
+  loading: {
+    type: Boolean,
+    required: true
+
   }
+
+})
+
+
+const name = defineModel('name', {
+  required: true,
+  type: String
+})
+
+
+const range = defineModel('range', {
+  required: true,
+  type: Object as PropType<RangeDatePickerModel>
+})
+watch(name, (value) => {
+  console.log(value)
 })
 
 
 const status = computed(() => getStatus({
-  startDate: props?.startDate ?? new Date(),
-  endDate: props?.endDate ?? new Date()
+  startDate: range.value.start ?? new Date(),
+  endDate: range.value.end ?? new Date()
 }))
+const isFocused = ref(false);
 
 
-const activePeriod = computed(() => `${formatDate(props!.startDate, 'DD MMM, YYYY')} → ${formatDate(props!.endDate, 'DD MMM, YYYY')}`)
-
+const userCanEditActivePeriode = computed(() => props.userCanUpdateHeader);
 </script>
 
 <template>
-  <div class="flex flex-col gap-2 px-8 py-2">
+  <div class="flex flex-col gap-2 px-8 py-2" v-if="!loading">
     <div class="flex gap-3 items-center">
-      <UAvatar :alt="name.toUpperCase()" :src="image" size="lg" />
-      <div class="capitalize text-lg font-bold font-['Lato']">{{ name }}</div>
+      <UAvatar :alt="name?.toUpperCase()" :src="image" size="lg" />
+      <UInput v-model="name" :disabled="!userCanEditActivePeriode" :rows="1" placeholder="Untitled" autoresize
+        :variant="isFocused ? 'outline' : 'none'" class="mb-1 w-full font-extrabold transition"
+        :class="{ 'hover:bg-gray-200 dark:hover:bg-gray-600': userCanUpdateHeader }" size="xl" :ui="{
+          size: { xl: 'text-3xl tracking-wide' },
+          padding: { xl: 'px-2 py-1' },
+          base: 'disabled:cursor-not-allowed disabled:opacity-100 ',
+        }" @focus="isFocused = true" @blur="isFocused = false" />
     </div>
     <hr>
     <div class="py-2 bg-white rounded-md px-9 flex flex-col gap-2">
@@ -66,7 +91,9 @@ const activePeriod = computed(() => `${formatDate(props!.startDate, 'DD MMM, YYY
         </div>
       </HeaderItem>
       <HeaderItem label="Project Active Period">
-        <div class="border p-1 rounded w-max">{{ activePeriod }}</div>
+        <div class=" w-max">
+          <RangeDatePicker v-model="range" :disabled="!userCanEditActivePeriode" variant="solid" color="white" />
+        </div>
       </HeaderItem>
       <HeaderItem label="Project My Role">
         <div class="capitalize">

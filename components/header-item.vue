@@ -10,7 +10,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="flex gap-3 items-center ">
+  <div class="grid grid-cols-2 gap-3 items-center ">
     <div class=" text-[0.9rem]  text-[#68707D] flex-1 flex justify-between items-center text-['DM Sans']">
       <div>{{ label }}</div>
       <div>:</div>

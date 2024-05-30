@@ -1,14 +1,28 @@
 import { isApiError } from "~/types/api/error";
-import { type ProjectMember } from "~/types/data/project/project";
-import type { SubProjectData } from "~/types/data/subproject/subproject";
+import type { VFile } from "~/types/data/file";
+import { type LogData, type ProjectMember } from "~/types/data/project/project";
+import type { FindingSidebar } from "~/types/data/sidebar/project";
+import type {
+  FindingSubproject,
+  SubProjectData,
+} from "~/types/data/subproject/subproject";
 
 export const subprojectStore = (subprojectId: number) => {
   return defineStore("subproject-store_" + subprojectId.toString(), () => {
-    const id = ref();
-    const subproject = ref<SubProjectData>();
+    const id = ref<number>();
+    const loading = ref(true);
+    const name = ref<string>();
+    const range = ref<RangeDatePickerModel>();
+    const findings = ref<FindingSubproject[]>();
+    const project = ref<FindingSidebar>();
+    const members = ref<ProjectMember[]>();
+    const reports = ref<VFile[]>();
+    const attachments = ref<VFile[]>();
+    const logs = ref<LogData[]>();
+    const createdAt = ref<Date>();
+
     const pm = ref<ProjectMember>();
     const myrole = ref<Role>();
-    const loading = ref(true);
     const notif = useNotification();
 
     const api = usePrivateApi();
@@ -21,7 +35,14 @@ export const subprojectStore = (subprojectId: number) => {
 
     function $reset() {
       id.value = undefined;
-      subproject.value = undefined;
+      name.value = undefined;
+      range.value = undefined;
+      findings.value = undefined;
+      project.value = undefined;
+      members.value = undefined;
+      reports.value = undefined;
+      attachments.value = undefined;
+      logs.value = undefined;
       pm.value = undefined;
       myrole.value = undefined;
       loading.value = true;
@@ -31,33 +52,50 @@ export const subprojectStore = (subprojectId: number) => {
       if (!id.value) {
         return;
       }
+      name.value = undefined;
+      range.value = undefined;
+      findings.value = undefined;
+      project.value = undefined;
+      members.value = undefined;
+      reports.value = undefined;
+      attachments.value = undefined;
+      logs.value = undefined;
       loading.value = true;
-      subproject.value = undefined;
+
       try {
         const response = await api.get<SubProjectData>(
           `/subproject/${id.value}`
         );
-        subproject.value = response.data;
-        if (subproject.value) {
-          console.log(subproject.value?.findings, "MEMBER");
-
-          subproject.value.startDate = new Date(subproject.value.startDate);
-          subproject.value.endDate = new Date(subproject.value.endDate);
-          subproject.value.createdAt = new Date(subproject.value.createdAt);
-          pm.value = subproject.value.subprojectMember.find(
+        const subproject = response.data;
+        if (subproject) {
+          range.value = {
+            start: new Date(subproject.startDate),
+            end: new Date(subproject.endDate),
+          };
+          name.value = subproject.name;
+          id.value = subproject.id;
+          logs.value = subproject.recentActivities ?? [];
+          reports.value = subproject.reports ?? [];
+          members.value = subproject.subprojectMember ?? [];
+          attachments.value = subproject.attachments ?? [];
+          project.value = subproject.project;
+          findings.value = subproject.findings ?? [];
+          pm.value = subproject.subprojectMember.find(
             (m) => m.role === Role.PM
           );
-          myrole.value = subproject.value.subprojectMember.find(
+          myrole.value = subproject.subprojectMember.find(
             (m) => m.id === app.user?.id
           )?.role;
 
-          subproject.value.recentActivities.forEach((ra) => {
+          console.log();
+
+          logs.value.forEach((ra) => {
             ra.createdAt = new Date(ra.createdAt);
           });
-          subproject.value.reports.forEach((r) => {
+          reports.value.forEach((r) => {
             r.createdAt = new Date(r.createdAt);
           });
-          subproject.value.attachments.forEach((a) => {
+          attachments.value.forEach((a) => {
             a.createdAt = new Date(a.createdAt);
           });
         }
@@ -91,10 +129,19 @@ export const subprojectStore = (subprojectId: number) => {
     return {
       id,
       loading,
-      subproject,
+      project,
       pm,
       myrole,
       $reset,
+
+      name,
+      range,
+      findings,
+
+      members,
+      reports,
+      attachments,
+      logs,
     };
   });
 };

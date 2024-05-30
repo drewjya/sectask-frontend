@@ -6,11 +6,14 @@ import { isApiError } from '~/types/api/error';
 
 const api = usePrivateApi()
 const props = defineProps<{
-  attachments: VFile[]
-  reports: VFile[]
+  attachments?: VFile[]
+  reports?: VFile[]
   myRole: Role,
   doctype: string,
-  docId: number
+  docId: number,
+  loading: boolean
+
+
 }>()
 
 const reportFileDialog = useFileDialog({
@@ -75,11 +78,11 @@ const upload = async (param: { files?: FileList | null, type: string }) => {
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 ">
     <VFileList title="Reports" :files="props.reports" :canUpload="myRole === Role.TECHNICAL_WRITER" @upload="() => {
       reportFileDialog.open()
-    }" type="report" :doctype="doctype" :docId="docId" />
+    }" type="report" :doctype="doctype" :docId="docId" :loading="loading" />
     <VFileList title="Attachment" :files="props.attachments" :canUpload="myRole === Role.DEVELOPER" @upload="() => {
 
       attachmentFileDialog.open()
-    }" type="attachment" :doctype="doctype" :docId="docId" />
+    }" type="attachment" :doctype="doctype" :docId="docId" :loading="loading" />
 
   </div>
 </template>

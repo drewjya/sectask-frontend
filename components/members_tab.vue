@@ -4,10 +4,11 @@ import type { ProjectMember } from '~/types/data/project/project';
 import MemberModal from './member-modal.vue';
 
 const props = defineProps<{
-  members: ProjectMember[],
+  members?: ProjectMember[],
   canInvite: boolean
   isSubproject: boolean,
   docId: number
+  loading: boolean
 }>()
 const api = usePrivateApi()
 const notif = useNotification()
@@ -110,24 +111,29 @@ const openInviteMember = () => {
       </div>
     </div>
 
-    <div class="grid grid-cols-2 bg-white rounded-md border py-4 px-2 font-['DM Sans'] gap-2" v-for="i in members">
-      <div class="col-span-1 flex items-center gap-2">
-        <UAvatar :alt="i?.name.toUpperCase()" />
-        <div class="text-[#64748B] text-sm capitalize">{{ i?.name }}</div>
-      </div>
-      <div class="col-span-1 flex items-center gap-2">
+    <div v-if="loading || !members">
 
-        <UDropdown v-if="isSubproject" :items="getDropdownItem(i)" :popper="{ placement: 'right' }"
-          :disabled="[Role.DEVELOPER, Role.PM, Role.TECHNICAL_WRITER].includes(i.role) || !isSubproject || !canInvite">
-          <UButton class="w-full" color="gray" :label="roleLabel(i.role)" variant="ghost" :icon="roleIcon(i.role)"
-            size="md" />
-        </UDropdown>
-        <UDropdown v-else :items="removeMember(i)" :popper="{ placement: 'right' }"
-          :disabled="!canInvite || i.role === Role.PM">
-          <UButton class="w-full" color="gray" :label="roleLabel(i.role)" variant="ghost" :icon="roleIcon(i.role)"
-            size="md" />
-        </UDropdown>
+    </div>
+    <div v-else class="flex flex-col gap-2">
+      <div class="grid grid-cols-2 bg-white rounded-md border py-4 px-2 font-['DM Sans'] gap-2" v-for="i in members">
+        <div class="col-span-1 flex items-center gap-2">
+          <UAvatar :alt="i?.name.toUpperCase()" />
+          <div class="text-[#64748B] text-sm capitalize">{{ i?.name }}</div>
+        </div>
+        <div class="col-span-1 flex items-center gap-2">
 
+          <UDropdown v-if="isSubproject" :items="getDropdownItem(i)" :popper="{ placement: 'right' }"
+            :disabled="[Role.DEVELOPER, Role.PM, Role.TECHNICAL_WRITER].includes(i.role) || !isSubproject || !canInvite">
+            <UButton class="w-full" color="gray" :label="roleLabel(i.role)" variant="ghost" :icon="roleIcon(i.role)"
+              size="md" />
+          </UDropdown>
+          <UDropdown v-else :items="removeMember(i)" :popper="{ placement: 'right' }"
+            :disabled="!canInvite || i.role === Role.PM">
+            <UButton class="w-full" color="gray" :label="roleLabel(i.role)" variant="ghost" :icon="roleIcon(i.role)"
+              size="md" />
+          </UDropdown>
+
+        </div>
       </div>
     </div>
 
