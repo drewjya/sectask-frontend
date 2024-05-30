@@ -29,14 +29,48 @@ export const subprojectStore = (subprojectId: number) => {
     const app = useApp();
     const router = useRouter();
 
+    const watcher = watchIgnorable(
+      [name, range],
+      useDebounceFn(() => {
+        if (!id.value) {
+          return;
+        }
+        const data = {
+          name: name.value,
+          startDate: range.value?.start,
+          endDate: range.value?.end,
+        };
+        api
+          .post(`/subproject/${id.value}/edit`, {
+            body: data,
+          })
+          .then(() => {})
+          .catch((error) => {
+            if (isApiError(error)) {
+              notif.error({
+                title: "Error",
+                message: error.message,
+              });
+            } else {
+              notif.error({
+                title: "Error",
+                message: "Try again later",
+              });
+            }
+          });
+      })
+    );
+
     watch(id, (newId) => {
       getSubproject();
     });
 
     function $reset() {
+      watcher.ignoreUpdates(() => {
+        name.value = undefined;
+        range.value = undefined;
+      });
       id.value = undefined;
-      name.value = undefined;
-      range.value = undefined;
       findings.value = undefined;
       project.value = undefined;
       members.value = undefined;
@@ -52,8 +86,10 @@ export const subprojectStore = (subprojectId: number) => {
       if (!id.value) {
         return;
       }
-      name.value = undefined;
-      range.value = undefined;
+      watcher.ignoreUpdates(() => {
+        name.value = undefined;
+        range.value = undefined;
+      });
       findings.value = undefined;
       project.value = undefined;
       members.value = undefined;
@@ -68,11 +104,14 @@ export const subprojectStore = (subprojectId: number) => {
         );
         const subproject = response.data;
         if (subproject) {
-          range.value = {
-            start: new Date(subproject.startDate),
-            end: new Date(subproject.endDate),
-          };
-          name.value = subproject.name;
+          watcher.ignoreUpdates(() => {
+            range.value = {
+              start: new Date(subproject.startDate),
+              end: new Date(subproject.endDate),
+            };
+            name.value = subproject.name;
+          });
+
           id.value = subproject.id;
           logs.value = subproject.recentActivities ?? [];
           reports.value = subproject.reports ?? [];
@@ -137,11 +176,12 @@ export const subprojectStore = (subprojectId: number) => {
       name,
       range,
       findings,
-
+      watcher,
       members,
       reports,
       attachments,
       logs,
+      getSubproject
     };
   });
 };

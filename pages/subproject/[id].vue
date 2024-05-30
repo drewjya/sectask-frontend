@@ -5,7 +5,17 @@ const app = useApp()
 const store = subprojectStore(app.user?.id ?? -1)()
 onMounted(() => {
 
-  store.id = Number(route.params.id)
+  if (store.id !== Number(route.params.id)) {
+    store.watcher.ignoreUpdates(() => {
+      store.id = Number(route.params.id)
+    })
+
+  } else {
+    if (store.loading) {
+      store.getSubproject()
+    }
+  }
+
   const id = store.id
   const name = store.name
   const project = store.project
@@ -29,6 +39,23 @@ onBeforeRouteLeave(() => {
 })
 
 
+watch(() => store.name, () => {
+  const id = store.id
+  const name = store.name
+  const project = store.project
+  if (id && name && project) {
+    app.navbarLink = [{
+      label: project.name,
+      to: `/project/${project.id}`
+    },
+    {
+      label: name,
+      to: `/subproject/${id}`
+    }]
+  } else {
+    app.navbarLink = []
+  }
+})
 watch(() => store.project, () => {
   const id = store.id
   const name = store.name
