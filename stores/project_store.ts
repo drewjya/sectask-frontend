@@ -7,7 +7,6 @@ import {
 export const projectStore = (userId: number) => {
   return defineStore("project-store", () => {
     const id = ref();
-
     const project = ref<ProjectData>();
     const pm = ref<ProjectMember>();
     const myrole = ref<Role>();
@@ -21,7 +20,18 @@ export const projectStore = (userId: number) => {
       getProject();
     });
 
+    function $reset() {
+      id.value = undefined;
+      project.value = undefined;
+      pm.value = undefined;
+      myrole.value = undefined;
+      loading.value = true;
+    }
+
     const getProject = async () => {
+      if (!id.value) {
+        return
+      }
       loading.value = true;
       project.value = undefined;
       try {
@@ -81,6 +91,7 @@ export const projectStore = (userId: number) => {
       project,
       pm,
       myrole,
+      $reset,
     };
   });
 };

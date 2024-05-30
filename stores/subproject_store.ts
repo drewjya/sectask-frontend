@@ -5,10 +5,6 @@ import type { SubProjectData } from "~/types/data/subproject/subproject";
 export const subprojectStore = (subprojectId: number) => {
   return defineStore("subproject-store_" + subprojectId.toString(), () => {
     const id = ref();
-    watch(id, (newId) => {
-      getSubproject();
-    });
-
     const subproject = ref<SubProjectData>();
     const pm = ref<ProjectMember>();
     const myrole = ref<Role>();
@@ -18,9 +14,23 @@ export const subprojectStore = (subprojectId: number) => {
     const api = usePrivateApi();
     const app = useApp();
     const router = useRouter();
-    const route = useRoute();
+
+    watch(id, (newId) => {
+      getSubproject();
+    });
+
+    function $reset() {
+      id.value = undefined;
+      subproject.value = undefined;
+      pm.value = undefined;
+      myrole.value = undefined;
+      loading.value = true;
+    }
 
     const getSubproject = async () => {
+      if (!id.value) {
+        return;
+      }
       loading.value = true;
       subproject.value = undefined;
       try {
@@ -84,6 +94,7 @@ export const subprojectStore = (subprojectId: number) => {
       subproject,
       pm,
       myrole,
+      $reset,
     };
   });
 };

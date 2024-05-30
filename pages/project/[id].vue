@@ -26,6 +26,8 @@ const tabs = [
 ];
 
 onBeforeRouteLeave(() => {
+  console.log("INIT");
+
   store.$reset()
 
 })

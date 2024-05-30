@@ -2,18 +2,21 @@ import { isApiError } from "~/types/api/error";
 import type { FindingData } from "~/types/data/finding/finding";
 
 export const findingStore = defineStore("finding-store", () => {
+  const finding = ref<FindingData>();
+  const loading = ref(true);
   const id = ref();
+  const notif = useNotification();
+
+  function $reset() {
+    finding.value = undefined;
+    loading.value = true;
+    id.value = undefined;
+  }
+  const api = usePrivateApi();
+  const app = useApp();
   watch(id, (newId) => {
     getFinding();
   });
-
-  const finding = ref<FindingData>();
-
-  const loading = ref(true);
-  const notif = useNotification();
-
-  const api = usePrivateApi();
-  const app = useApp();
   const router = useRouter();
   const route = useRoute();
   const currentTab = computed({
@@ -44,6 +47,9 @@ export const findingStore = defineStore("finding-store", () => {
     },
   ];
   const getFinding = async () => {
+    if (!id.value) {
+      return;
+    }
     loading.value = true;
     finding.value = undefined;
     try {
@@ -86,7 +92,7 @@ export const findingStore = defineStore("finding-store", () => {
     id,
     loading,
     finding,
-
+    $reset,
     tabs,
     currentTab,
   };
