@@ -20,18 +20,6 @@ export const projectStore = defineStore("project-store", () => {
   const app = useApp();
   const router = useRouter();
   const route = useRoute();
-  const currentTab = computed({
-    get() {
-      const index = tabs.findIndex((t) => t.key === route.query.tab);
-      return index === -1 ? 0 : index;
-    },
-    set(value) {
-      router.replace({
-        query: { tab: tabs[value].key },
-        hash: "#controll-specifix-item",
-      });
-    },
-  });
   const tabs = [
     {
       label: "Projects",
@@ -50,6 +38,19 @@ export const projectStore = defineStore("project-store", () => {
       key: "updates",
     },
   ];
+
+  const currentTab = computed({
+    get() {
+      const index = tabs.findIndex((t) => t.key === route.query.tab);
+      return index === -1 ? 0 : index;
+    },
+    set(value) {
+      router.replace({
+        query: { tab: tabs[value].key },
+      });
+    },
+  });
+
   const getProject = async () => {
     loading.value = true;
     project.value = undefined;

@@ -18,6 +18,11 @@ export const useApp = defineStore("sectask-store", () => {
     return `Bearer ${refreshToken.value ?? "invalid_token"}`;
   });
 
+  const isDark = computed({
+    get: () => useColorMode().value === "dark",
+    set: (value: boolean) =>
+      (useColorMode().preference = value ? "dark" : "light"),
+  });
   const resetToken = () => {
     accessToken.value = "invalid_token";
     refreshToken.value = "invalid_token";
@@ -31,15 +36,24 @@ export const useApp = defineStore("sectask-store", () => {
     label: string;
     to: string;
   }[] = [];
-
+  const fileUrl = useRuntimeConfig().public.FILE_URL;
+  const userName = computed(() => user.value?.name.toUpperCase());
+  const userImageUrl = computed(() =>
+    user.value?.profilePicture
+      ? fileUrl + user.value?.profilePicture?.name
+      : undefined
+  );
   const sidebar = ref(true);
   return {
     getAuthorization,
     getRefreshToken,
     setToken,
     user,
+    isDark,
     resetToken,
     sidebar,
     navbarLink,
+    userName,
+    userImageUrl,
   };
 });

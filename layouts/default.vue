@@ -7,9 +7,11 @@ import Navbar from '~/components/navbar.vue';
 <template>
   <div class="flex h-screen ">
     <Sidebar />
-    <div class="flex flex-col w-full  bg-[#f8fafc] h-screen  overflow-auto">
+    <div class="flex flex-col w-full  bg-[#f8fafc] h-full  ">
       <Navbar />
-      <slot />
+      <div class="grow overflow-auto">
+        <slot />
+      </div>
     </div>
   </div>
 </template>

@@ -2,7 +2,7 @@
 
 <template>
   <div>
-    Component: discuession
+    Component: discussion
   </div>
 </template>
 

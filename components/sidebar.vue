@@ -84,7 +84,8 @@ const clickSubProject = async (param: {
       <UButton label="Search" icon="i-heroicons-magnifying-glass" variant="ghost" size="xs" color="gray" />
       <UButton label="Home" icon="i-heroicons-home" variant="ghost" size="xs" color="gray" @click="$router.push('/')"
         :class="$route.path === '/' ? 'cursor-not-allowed ' : ''" :disable="$route.path === '/'" />
-      <UButton label="Setting" icon="i-heroicons-pencil-square" variant="ghost" size="xs" color="gray" />
+      <UButton label="Setting" icon="i-heroicons-pencil-square" variant="ghost" size="xs" color="gray"
+        @click="$router.push('/setting')" />
       <UButton label="Add Project" icon="i-heroicons-plus-circle" variant="ghost" size="xs" color="gray" />
     </div>
     <hr>

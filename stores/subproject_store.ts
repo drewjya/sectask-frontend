@@ -26,7 +26,6 @@ export const subprojectStore = defineStore("subproject-store", () => {
     set(value) {
       router.replace({
         query: { tab: tabs[value].key },
-        hash: "#controll-specifix-item",
       });
     },
   });

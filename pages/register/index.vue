@@ -4,7 +4,7 @@ const isSecure = ref(true)
 definePageMeta({
   layout: "auth"
 })
-const form = useFormd({
+const form = useForm({
   schema: z.object({
     name: z.string().min(6),
     email: z.string().email(),

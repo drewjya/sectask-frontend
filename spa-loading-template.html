@@ -1,0 +1,58 @@
+<style>
+    body {
+        margin: 0px;
+        padding: 0px;
+    }
+
+    .loading-container {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .loader {
+        width: 80px;
+        height: 80px;
+        border-radius: 8px;
+        display: inline-block;
+        position: relative;
+        background: rgb(87, 61, 255);
+        background: linear-gradient(180deg, rgba(87, 61, 255, 1) 0%, rgba(0, 99, 255, 1) 50%, rgba(0, 255, 166, 1) 100%);
+        box-sizing: border-box;
+        animation: flipX 3.5s ease-in-out infinite forwards;
+    }
+
+    @keyframes flipX {
+        0% {
+            transform: perspective(200px) rotateX(0deg) rotateY(0deg);
+            scale: 1;
+        }
+
+        25% {
+            transform: perspective(200px) rotateX(-180deg) rotateY(0deg);
+            scale: 1.5;
+        }
+
+        50% {
+            transform: perspective(200px) rotateX(-180deg) rotateY(-180deg);
+            scale: 2;
+        }
+
+        75% {
+            transform: perspective(200px) rotateX(0deg) rotateY(-180deg);
+            scale: 1.5;
+        }
+
+        100% {
+            transform: perspective(200px) rotateX(0deg) rotateY(0deg);
+            scale: 1;
+        }
+    }
+</style>
+<div class="loading-container">
+    <span class="loader"></span>
+</div>

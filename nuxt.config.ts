@@ -10,6 +10,7 @@ export default defineNuxtConfig({
     "@samk-dev/nuxt-vcalendar",
     "@nuxtjs/google-fonts",
   ],
+  spaLoadingTemplate: "spa-loading-template.html",
   css: [
     "@/assets/app.css",
     "vue-advanced-cropper/dist/style.css",

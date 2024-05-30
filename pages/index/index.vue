@@ -1,6 +1,11 @@
 <script lang="ts" setup>
 const auth = useAuth()
 const app = useApp()
+
+onMounted(() => {
+  app.navbarLink = []
+
+})
 </script>
 
 <template>

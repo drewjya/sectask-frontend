@@ -24,8 +24,6 @@ const project = computed(() => store.project);
     <SubprojectTabItem v-for="i in project.subProjects" :name="i.name" :startDate="i.startDate" :endDate="i.endDate"
       :id="i.id" :deletable="true" />
 
-
-
   </div>
 </template>
 

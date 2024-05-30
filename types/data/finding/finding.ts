@@ -15,8 +15,8 @@ export type FindingData = {
   createdAt: Date;
   status?: string;
   releases?: string;
-  descriptionId?: string;
-  threatAndRiskId?: string;
+  descriptionId: string;
+  threatAndRiskId: string;
   cvssDetail: {
     data: CVSSData;
   };

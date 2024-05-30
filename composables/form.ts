@@ -7,7 +7,7 @@ type FormInitialValue<T extends ZodType<any, any, any>> = Partial<{
   [k in keyof z.output<T>]: any;
 }>;
 
-export function useFormd<T extends z.ZodRawShape>(arg: {
+export function useForm<T extends z.ZodRawShape>(arg: {
   schema: z.ZodObject<T>;
 
   onSubmit: (

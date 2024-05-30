@@ -24,10 +24,11 @@ export const findingStore = defineStore("finding-store", () => {
     set(value) {
       router.replace({
         query: { tab: tabs[value].key },
-        hash: "#controll-specifix-item",
       });
+      return value;
     },
   });
+
   const tabs = [
     {
       label: "Document",

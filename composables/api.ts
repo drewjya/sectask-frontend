@@ -12,8 +12,6 @@ const request = async <T>(params: {
   };
 }): Promise<SResponse<T>> => {
   try {
-    console.log(params.param.headers);
-
     const data: SResponse<T> = await $fetch(params.url, {
       baseURL: params.baseUrl,
       method: params.param.method,

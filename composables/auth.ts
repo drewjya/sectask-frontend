@@ -6,7 +6,7 @@ export const useAuth = () => {
   const api = usePublicApi();
   const notif = useNotification();
   const router = useRouter();
-  const route = useRoute();
+
   const login = async (param: { email: string; password: string }) => {
     try {
       const resp = await api.post<UserDto>("/auth/login", {
@@ -65,7 +65,6 @@ export const useAuth = () => {
       };
     } catch (error) {
       const err = error as ApiError;
-      console.log(route.path);
 
       return {
         status: false,
