@@ -6,9 +6,6 @@ import {
 
 export const projectStore = defineStore("project-store", () => {
   const id = ref();
-  watch(id, (newId) => {
-    getProject();
-  });
 
   const project = ref<ProjectData>();
   const pm = ref<ProjectMember>();
@@ -19,6 +16,16 @@ export const projectStore = defineStore("project-store", () => {
   const api = usePrivateApi();
   const app = useApp();
   const router = useRouter();
+  watch(id, (newId) => {
+    getProject();
+  });
+
+  watch(
+    () => app.user,
+    (newUser) => {
+      getProject();
+    }
+  );
 
   const getProject = async () => {
     loading.value = true;

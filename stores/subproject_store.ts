@@ -19,6 +19,12 @@ export const subprojectStore = defineStore("subproject-store", () => {
   const router = useRouter();
   const route = useRoute();
 
+  watch(
+    () => app.user,
+    (newUser) => {
+      getSubproject();
+    }
+  );
   const getSubproject = async () => {
     loading.value = true;
     subproject.value = undefined;

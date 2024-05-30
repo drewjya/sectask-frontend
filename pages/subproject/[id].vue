@@ -106,10 +106,12 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
               <FindingTab />
             </template>
             <template v-else-if="`${$route.query.tab}`.startsWith('members')">
-              <MembersTab :members="store.subproject.subprojectMember" />
+              <MembersTab :members="store.subproject.subprojectMember" :canInvite="store.myrole === Role.PM"
+                :isSubproject="true" :doc-id="store.subproject.id" />
             </template>
             <template v-else-if="`${$route.query.tab}`.startsWith('reports')">
-              <AttachmentsTab :attachments="store.subproject.attachments" :reports="store.subproject.reports" />
+              <AttachmentsTab :attachments="store.subproject.attachments" :reports="store.subproject.reports"
+                :myRole="store.myrole ?? Role.VIEWER" />
             </template>
             <template v-else-if="`${$route.query.tab}`.startsWith('updates')">
               <LogsTab :logs="store.subproject.recentActivities" />

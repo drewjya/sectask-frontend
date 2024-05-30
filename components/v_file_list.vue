@@ -7,6 +7,7 @@ import type { VFile } from '~/types/data/file';
 const props = defineProps<{
   files: VFile[]
   title: string
+  canUpload: boolean
 }>()
 
 
@@ -29,7 +30,7 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
   <div class="flex flex-col gap-2 pb-4">
     <div class="flex justify-between px-2">
       <div class="font-bold text-lg font-['DM Sans']">{{ title }}</div>
-      <UButton icon="i-heroicons-arrow-up-on-square" size="sm" color="white" variant="solid" />
+      <UButton icon="i-heroicons-arrow-up-on-square" size="sm" color="white" variant="solid" v-if="canUpload" />
 
     </div>
 

@@ -1,6 +1,9 @@
 <script lang="ts" setup>
-import { ChangePasswordModal, LogoutModal, PictureModal } from '#components';
+
 import { z } from 'zod';
+import ChangePasswordModal from '~/components/change-password-modal.vue';
+import LogoutModal from '~/components/logout-modal.vue';
+import PictureModal from '~/components/picture-modal.vue';
 import { isApiError } from '~/types/api/error';
 
 

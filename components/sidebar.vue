@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { NewProjectModal } from '#components';
 import type { FindingSidebar, ProjectSidebar, SubprojectSidebar } from '~/types/data/sidebar/project';
+import NewProjectModal from './new-project-modal.vue';
 
 const app = useApp()
 
