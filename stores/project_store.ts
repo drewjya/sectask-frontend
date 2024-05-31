@@ -47,6 +47,11 @@ export const projectStore = (userId: number) => {
         if (!id.value) {
           return;
         }
+        if (!name.value || name.value.length === 0) {
+          watcher.ignoreUpdates(() => {
+            name.value = "Untitled Project";
+          });
+        }
         const data = {
           name: name.value,
           startDate: range.value?.start,
@@ -192,6 +197,19 @@ export const projectStore = (userId: number) => {
             endDate: new Date(data.subproject.endDate),
             name: data.subproject.name,
           });
+        } else if (data.type === "remove") {
+          subprojects.value = subprojects.value?.filter(
+            (sp) => sp.id !== data.subproject.subprojectId
+          );
+        } else if (data.type === "edit") {
+          const find = subprojects.value?.find(
+            (sp) => sp.id === data.subproject.subprojectId
+          );
+          if (find) {
+            find.name = data.subproject.name;
+            find.startDate = new Date(data.subproject.startDate);
+            find.endDate = new Date(data.subproject.endDate);
+          }
         }
       });
       conn.on(PROJECT_EVENT.REPORT, (data: EventFile) => {

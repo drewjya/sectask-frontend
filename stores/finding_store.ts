@@ -4,9 +4,11 @@ import type {
   FindingData,
   TesterFinding,
 } from "~/types/data/finding/finding";
+import type { EventMember } from "~/types/data/project/event";
 import type { OwnerFinding } from "~/types/data/subproject/subproject";
 import {
   FINDING_ACTION,
+  FINDING_EVENT,
   PROJECT_ACTION,
   PROJECT_EVENT,
   SUBPROJECT_ACTION,
@@ -47,6 +49,40 @@ export const findingStore = defineStore("finding-store", () => {
   const subproject = ref<SubprojectFinding>();
   const testerFinding = ref<TesterFinding[]>();
 
+  const watcher = watchIgnorable(
+    [name],
+    useDebounceFn(() => {
+      if (!id.value) {
+        return;
+      }
+      if (!name.value || name.value.length === 0) {
+        watcher.ignoreUpdates(() => {
+          name.value = "Untitled Finding";
+        });
+      }
+      const data = {
+        name: name.value,
+      };
+      api
+        .post(`/finding/edit/${id.value}`, {
+          body: data,
+        })
+        .then(() => {})
+        .catch((error) => {
+          if (isApiError(error)) {
+            notif.error({
+              title: "Error",
+              message: error.message,
+            });
+          } else {
+            notif.error({
+              title: "Error",
+              message: "Try again later",
+            });
+          }
+        });
+    })
+  );
   async function $reset() {
     await reset();
     id.value = undefined;
@@ -65,10 +101,14 @@ export const findingStore = defineStore("finding-store", () => {
     conn.emit(FINDING_ACTION.LEAVE, JSON.stringify({ findingId: id.value }));
     conn.off(PROJECT_EVENT.MEMBER);
     conn.off(SUBPROJECT_EVENT.MEMBER);
+    conn.off(FINDING_EVENT.HEADER);
 
     loading.value = true;
 
-    name.value = undefined as any;
+    watcher.ignoreUpdates(() => {
+      name.value = undefined as any;
+    });
+
     category.value = undefined;
     location.value = undefined;
     method.value = undefined;
@@ -90,6 +130,10 @@ export const findingStore = defineStore("finding-store", () => {
   };
   const api = usePrivateApi();
   const app = useApp();
+  type FindingEventHeader = {
+    name: string;
+    findingId: number;
+  };
   watch(id, (newId) => {
     getFinding();
   });
@@ -131,7 +175,9 @@ export const findingStore = defineStore("finding-store", () => {
       const response = await api.get<FindingData>(`/finding/${id.value}`);
       const finding = response.data;
       if (finding) {
-        name.value = finding.name;
+        watcher.ignoreUpdates(() => {
+          name.value = finding.name;
+        });
         category.value = finding.category;
         location.value = finding.location;
         method.value = finding.method;
@@ -178,6 +224,54 @@ export const findingStore = defineStore("finding-store", () => {
     } finally {
       loading.value = false;
     }
+
+    const conn = await socket.getConnection();
+    conn.emit(FINDING_ACTION.JOIN, JSON.stringify({ findingId: id.value }));
+    conn.emit(
+      PROJECT_ACTION.JOIN,
+      JSON.stringify({ projectId: subproject.value?.project.id })
+    );
+    conn.emit(
+      SUBPROJECT_ACTION.JOIN,
+      JSON.stringify({ subprojectId: subproject.value?.id })
+    );
+    conn.on(FINDING_EVENT.HEADER, (data: FindingEventHeader) => {
+      watcher.ignoreUpdates(() => {
+        name.value = data.name;
+      });
+    });
+    conn.on(PROJECT_EVENT.MEMBER, (data: EventMember) => {
+      if (data.type === "remove") {
+        if (app.user?.id === data.member.id) {
+          router.push("/");
+          notif.info({
+            title: "Removed",
+            message: "You have been removed from the project",
+          });
+        }
+      }
+    });
+    conn.on(SUBPROJECT_EVENT.MEMBER, (data: EventMember) => {
+      console.log(data, app.user?.id, data.member.id);
+
+      if (data.type === "remove") {
+        if (app.user?.id === data.member.id) {
+          router.push("/");
+          notif.info({
+            title: "Removed",
+            message: "You have been removed from the project",
+          });
+        }
+      } else if (data.type === "promote") {
+        if (app.user?.id === data.member.id) {
+          isEditor.value = true;
+        }
+      } else if (data.type === "demote") {
+        if (app.user?.id === data.member.id) {
+          isEditor.value = false;
+        }
+      }
+    });
   };
 
   return {

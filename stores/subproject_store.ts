@@ -49,6 +49,11 @@ export const subprojectStore = (subprojectId: number) => {
         if (!id.value) {
           return;
         }
+        if (!name.value || name.value.length === 0) {
+          watcher.ignoreUpdates(() => {
+            name.value = "Untitled Subproject";
+          });
+        }
         const data = {
           name: name.value,
           startDate: range.value?.start,
@@ -230,6 +235,17 @@ export const subprojectStore = (subprojectId: number) => {
             id: data.finding.findingId,
             createdBy: data.finding.owner,
             name: data.finding.name,
+          });
+        } else if (data.type === "remove") {
+          findings.value = findings.value?.filter(
+            (e) => e.id !== data.finding.findingId
+          );
+        } else if (data.type === "edit") {
+          findings.value = findings.value?.map((e) => {
+            if (e.id === data.finding.findingId) {
+              e.name = data.finding.name;
+            }
+            return e;
           });
         }
       });

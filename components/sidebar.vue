@@ -245,9 +245,9 @@ const addProject = () => {
                 <div class="flex items-center">
 
                   <UButton variant="ghost" size="xs" color="gray" icon="i-heroicons-document-solid"
-                    @click="$router.push(`/finding/${find.id}`)">
-                    <div class="text-ellipsis line-clamp-1 w-24">
-                      {{ find.name }} + 'asjhasj sahshah ashash' shdshdsh
+                    class="justify-start" @click="$router.push(`/finding/${find.id}`)">
+                    <div class="text-ellipsis line-clamp-1 w-24 text-start">
+                      {{ find.name }}
                     </div>
                   </UButton>
                 </div>

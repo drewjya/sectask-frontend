@@ -33,13 +33,13 @@ export const SUBPROJECT_ACTION = {
 };
 
 export const FINDING_EVENT = {
-  SIDEBAR: "findingSidebar",
-  ONLINE: "onlineFindingMember",
-  FINDINGPROP: "findingProperty",
-  REPORT: "findingRetest",
-  CVSS: "findingCVSS",
+  SIDEBAR: 'findingSidebar',
+  HEADER: 'findingHeader',
+  ONLINE: 'onlineFindingMember',
+  FINDINGPROP: 'findingProperty',
+  RETEST: 'findingRetest',
+  CVSS: 'findingCVSS',
 };
-
 export const FINDING_ACTION = {
   JOIN: "onFindingJoin",
   LEAVE: "onFindingLeave",

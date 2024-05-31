@@ -20,7 +20,8 @@ const loading = computed(() => store.loading);
           <div class="text-xs">Created By <span class="font-bold">Loading</span></div>
         </div>
         <div class="flex justify-center flex-col" v-else-if="store.name && store.createdBy">
-          <div class="text-sm font-semibold">{{ store.name }}</div>
+          <div class="text-sm font-semibold" v-if="store.isEditor === false">{{ store.name }}</div>
+          <UInput class="text-sm font-semibold" v-else-if="store.isEditor === true" v-model="store.name" />
           <div class="text-xs">Created By <span class="font-bold">{{ store.createdBy.name }}</span></div>
         </div>
       </div>
