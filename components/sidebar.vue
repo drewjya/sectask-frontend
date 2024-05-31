@@ -1,8 +1,36 @@
 <script lang="ts" setup>
 import type { FindingSidebar, ProjectSidebar, SubprojectSidebar } from '~/types/data/sidebar/project';
+import { FINDING_EVENT, PROJECT_EVENT, SUBPROJECT_EVENT } from '~/types/enum/event.enum';
 import NewProjectModal from './new-project-modal.vue';
 
 const app = useApp()
+
+type EventSidebarProjectItem = {
+  project: {
+    projectId: number;
+    name: string;
+  };
+  type: string;
+}
+
+export type EventSidebarSubprojectItem = {
+  projectId: number;
+  subproject: {
+    subprojectId: number;
+    name: string;
+  };
+  type: string;
+};
+
+export type EventSidebarFindingItem = {
+  projectId: number;
+  subprojectId: number;
+  finding: {
+    findingId: number;
+    name: string;
+  };
+  type: string;
+};
 
 
 
@@ -12,15 +40,93 @@ const projectList = ref<{
 }[]>([])
 const loading = ref(true)
 const api = usePrivateApi()
+const socket = useSocket()
 const initState = async () => {
   try {
     const projects = await api.get<ProjectSidebar[]>("/project/sidebar")
     projectList.value = (projects.data ?? []).map(i => ({ project: i, expanded: false, subproject: [] }))
+    const conn = await socket.getConnection()
+    conn.off(PROJECT_EVENT.SIDEBAR)
+    conn.off(SUBPROJECT_EVENT.SIDEBAR)
+    conn.off(FINDING_EVENT.SIDEBAR)
+
+    conn.on(PROJECT_EVENT.SIDEBAR, (val: EventSidebarProjectItem) => {
+      if (val.type === 'add') {
+        projectList.value.push({
+          expanded: false,
+          project: {
+            id: val.project.projectId,
+            name: val.project.name,
+            subproject: []
+          }
+        })
+      } else if (val.type === 'remove') {
+        projectList.value = projectList.value.filter(i => i.project.id !== val.project.projectId)
+      } else if (val.type === 'edit') {
+        for (const iterator of projectList.value) {
+          if (iterator.project.id === val.project.projectId) {
+            iterator.project.name = val.project.name
+            break;
+          }
+        }
+
+      }
+    })
+    conn.on(SUBPROJECT_EVENT.SIDEBAR, (val: EventSidebarSubprojectItem) => {
+      const projectIndex = projectList.value.findIndex(i => i.project.id === val.projectId)
+      if (projectIndex === -1) {
+        return
+      }
+      if (val.type === 'add') {
+        projectList.value[projectIndex].project.subproject.push({
+          id: val.subproject.subprojectId,
+          name: val.subproject.name,
+          expanded: false,
+          findings: []
+        })
+      } else if (val.type === 'remove') {
+        projectList.value[projectIndex].project.subproject = projectList.value[projectIndex].project.subproject.filter(i => i.id !== val.subproject.subprojectId)
+        // projectList.value = projectList.value.filter(i => i.project.id !== val.project.projectId)
+      } else if (val.type === 'edit') {
+        for (const iterator of projectList.value[projectIndex].project.subproject) {
+          if (iterator.id === val.subproject.subprojectId) {
+            iterator.name = val.subproject.name
+            break;
+          }
+        }
+      }
+    })
+    conn.on(FINDING_EVENT.SIDEBAR, (val: EventSidebarFindingItem) => {
+      console.log(val);
+
+      const projectIndex = projectList.value.findIndex(i => i.project.id === val.projectId)
+      if (projectIndex === -1) {
+        return
+      }
+      const subprojectIndex = projectList.value[projectIndex].project.subproject.findIndex(i => i.id === val.subprojectId)
+      if (subprojectIndex === -1) {
+        return
+      }
+      if (val.type === 'add') {
+        projectList.value[projectIndex].project.subproject[subprojectIndex].findings.push({
+          id: val.finding.findingId,
+          name: val.finding.name
+        })
+      } else if (val.type === 'remove') {
+        projectList.value[projectIndex].project.subproject[subprojectIndex].findings = projectList.value[projectIndex].project.subproject[subprojectIndex].findings.filter(i => i.id !== val.finding.findingId)
+      } else if (val.type === 'edit') {
+        for (const iterator of projectList.value[projectIndex].project.subproject[subprojectIndex].findings) {
+          if (iterator.id === val.finding.findingId) {
+            iterator.name = val.finding.name
+            break;
+          }
+        }
+      }
+    })
   } catch (error) {
     projectList.value = []
   }
   loading.value = false;
-
 }
 
 onMounted(() => {
@@ -110,7 +216,7 @@ const addProject = () => {
     <hr>
 
     <div v-if="loading"></div>
-    <div v-else class=" px-2">
+    <div v-else class=" px-2 max-h-50 overflow-y-auto">
 
       <div v-for="(i, index) in projectList" class="flex flex-col ">
         <div class="flex items-center">

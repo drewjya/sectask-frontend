@@ -2,10 +2,6 @@ import dayjs from "dayjs";
 
 export const getStatus = (props: { startDate: Date; endDate: Date }) => {
   const now = new Date();
-  console.log("now", now);
-  console.log("start", props.startDate);
-  console.log("end", props.endDate);
-
   if (now < props.startDate) {
     return {
       value: "Not yet started",

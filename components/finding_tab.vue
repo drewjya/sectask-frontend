@@ -47,7 +47,7 @@ const canEdit = computed(() => store.myrole === Role.PM)
       </div>
     </div>
     <div v-if="store.loading && !store.findings"></div>
-    <div v-else>
+    <div v-else class="flex flex-col gap-3">
 
       <FindingsTabItem v-for="i in store.findings" :name="i.name" :createdBy="i.createdBy" :risk="'asjsaj'" :id="i.id"
         :deletable="canEdit" :status="'ashsah'" />

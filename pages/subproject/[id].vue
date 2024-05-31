@@ -107,6 +107,14 @@ const tabs = [
   },
 ];
 
+watch(() => store.error, () => {
+  const err = store.error
+  if (err && err !== "unauthorized") {
+    router.push("/")
+  }
+})
+
+
 
 const fileUrl = useRuntimeConfig().public.FILE_URL
 </script>
@@ -115,7 +123,7 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
   <div class="flex flex-col grow h-full">
     <Header v-model:range="store.range" v-model:name="store.name" :project-manager="store.pm?.name ?? '-'"
       :id="store.id ?? -1" :my-role="store.myrole ? roleLabel(store.myrole) : '-'"
-      :userCanUpdateHeader="store.myrole === Role.PM" type="subproject" :loading="store.loading" />
+      :userCanUpdateHeader="store.myrole === Role.PM" type="subproject" :loading="store.loading" :error="store.error" />
     <div class="px-8 flex flex-col h-full grow overflow-auto">
       <UTabs v-model="currentTab" :items="tabs" :ui="{
         wrapper: 'space-y-4',

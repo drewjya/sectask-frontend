@@ -9,6 +9,10 @@ const props = defineProps({
     required: true,
 
   },
+  error: {
+    type: String,
+    required: false
+  },
   image: {
     type: String,
     required: false,
@@ -77,12 +81,12 @@ const editImage = () => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-2 px-8 py-2" v-if="!loading">
+  <div class="flex flex-col gap-2 px-8 py-2" v-if="!loading && !error">
     <div class="flex gap-3 items-center">
-      <div v-if="type === 'project' && userCanUpdateHeader">
+      <button v-if="(type === 'project') && (userCanUpdateHeader)" @click="editImage()">
+        <UAvatar :alt="name?.toUpperCase()" :src="image" size="lg" />
+      </button>
 
-        <UAvatar :alt="name?.toUpperCase()" :src="image" size="lg" @click="editImage()" />
-      </div>
 
       <UAvatar :alt="name?.toUpperCase()" :src="image" size="lg" v-else />
 

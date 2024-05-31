@@ -1,17 +1,22 @@
 import { isApiError } from "~/types/api/error";
-import type { VFile } from "~/types/data/file";
+import type { EventFile, VFile } from "~/types/data/file";
+import type { EventHeader, EventMember } from "~/types/data/project/event";
 import {
   type LogData,
   type ProjectData,
   type ProjectMember,
   type SubprojectProject,
 } from "~/types/data/project/project";
+import type { SocketSubprojectAction } from "~/types/data/subproject/socket";
+import { PROJECT_ACTION, PROJECT_EVENT } from "~/types/enum/event.enum";
 
 export const projectStore = (userId: number) => {
   return defineStore("project-store_" + userId.toString(), () => {
     const id = ref<number>();
+    const error = ref<string>();
+    const socket = useSocket();
     const loading = ref(true);
-    
+
     const name = ref<string>();
     const range = ref<RangeDatePickerModel>();
     const picture = ref<VFile>();
@@ -66,8 +71,14 @@ export const projectStore = (userId: number) => {
       })
     );
 
-    function $reset() {
+    async function $reset() {
+      const conn = await socket.getConnection();
+      conn.emit(PROJECT_ACTION.LEAVE, JSON.stringify({ projectId: id.value }));
+      conn.off(PROJECT_EVENT.REPORT);
+      conn.off(PROJECT_EVENT.ATTACHMENT);
+      conn.off(PROJECT_EVENT.SUBPROJECT);
       loading.value = true;
+      error.value = undefined;
       watcher.ignoreUpdates(() => {
         name.value = undefined;
         range.value = undefined;
@@ -89,6 +100,7 @@ export const projectStore = (userId: number) => {
         range.value = undefined;
       });
       picture.value = undefined;
+      error.value = undefined;
       subprojects.value = undefined;
       members.value = undefined;
       reports.value = undefined;
@@ -136,31 +148,91 @@ export const projectStore = (userId: number) => {
             (m) => m.id === app.user?.id
           )?.role;
         }
-      } catch (error) {
-        if (isApiError(error)) {
-          if (error.message === "unauthorized") {
+      } catch (err) {
+        if (isApiError(err)) {
+          error.value = err.message;
+          if (err.message === "unauthorized") {
             notif.error({
               title: "Unauthorized",
               message: "You are authorized",
             });
             router.push("/login");
-          } else if (error.message === "not_found") {
+          } else if (err.message === "not_found") {
             notif.error({
               title: "Not Found",
               message: "Project not found",
             });
-            router.go(-1);
-          } else if (error.message === "noaccess") {
+          } else if (err.message === "noaccess") {
             notif.error({
               title: "No Access",
               message: "You have no access to this project",
             });
-            router.go(-1);
           }
         }
       } finally {
         loading.value = false;
       }
+      if (error.value) {
+        return;
+      }
+      const conn = await socket.getConnection();
+
+      conn.emit(PROJECT_ACTION.JOIN, JSON.stringify({ projectId: id.value }));
+      conn.on(PROJECT_EVENT.SUBPROJECT, (data: SocketSubprojectAction) => {
+        if (data.type === "add") {
+          subprojects.value?.push({
+            id: data.subproject.subprojectId,
+            startDate: new Date(data.subproject.startDate),
+            endDate: new Date(data.subproject.endDate),
+            name: data.subproject.name,
+          });
+        }
+      });
+      conn.on(PROJECT_EVENT.REPORT, (data: EventFile) => {
+        if (data.type === "add") {
+          reports.value?.push(data.file);
+        } else if (data.type === "remove") {
+          reports.value = reports.value?.filter((r) => r.id !== data.file.id);
+        }
+      });
+      conn.on(PROJECT_EVENT.ATTACHMENT, (data: EventFile) => {
+        if (data.type === "add") {
+          attachments.value?.push(data.file);
+        } else if (data.type === "remove") {
+          attachments.value = attachments.value?.filter(
+            (r) => r.id !== data.file.id
+          );
+        }
+      });
+      conn.on(PROJECT_EVENT.MEMBER, (data: EventMember) => {
+        if (data.type === "add") {
+          members.value?.push({
+            id: data.member.id,
+            name: data.member.name,
+            role: data.member.role,
+          });
+        } else if (data.type === "remove") {
+          if (app.user?.id === data.member.id) {
+            router.push("/");
+            notif.info({
+              title: "Removed",
+              message: "You have been removed from the project",
+            });
+          }
+          members.value = members.value?.filter((m) => m.id !== data.member.id);
+        }
+      });
+
+      conn.on(PROJECT_EVENT.HEADER, (data: EventHeader) => {
+        watcher.ignoreUpdates(() => {
+          name.value = data.name;
+          range.value = {
+            start: new Date(data.startDate),
+            end: new Date(data.endDate),
+          };
+        });
+        picture.value = data.picture;
+      });
     };
 
     return {
@@ -179,6 +251,7 @@ export const projectStore = (userId: number) => {
       watcher,
       myrole,
       $reset,
+      error,
     };
   });
 };

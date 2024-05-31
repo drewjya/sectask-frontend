@@ -51,7 +51,7 @@ const inviteMembers = async () => {
 }
 
 const search = async (query: string) => {
-  if (!store.project) {
+  if (!store.members) {
     return []
   }
 
@@ -61,7 +61,7 @@ const search = async (query: string) => {
   loading.value = false
 
   const datas = users.data ?? []
-  return datas.filter(i => !store.project?.members.find(j => j.id === i.id)).filter(i => !members.value.find(j => j.userId === i.id))
+  return datas.filter(i => !store.members?.find(j => j.id === i.id)).filter(i => !members.value.find(j => j.userId === i.id))
 
 }
 

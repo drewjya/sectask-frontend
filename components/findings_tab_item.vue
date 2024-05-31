@@ -15,7 +15,7 @@ const runtime = useRuntimeConfig()
 </script>
 
 <template>
-  <NuxtLink class=" bg-white rounded-md border py-4 px-2 font-['DM Sans'] gap-2" :to="`/finding/${id}`"
+  <NuxtLink class=" grid bg-white rounded-md border py-4 px-2 font-['DM Sans'] gap-2" :to="`/finding/${id}`"
     :class="deletable ? 'grid-cols-9' : 'grid-cols-8'">
     <div class="col-span-2 flex items-center gap-2">
       <UAvatar :alt="props?.name.toUpperCase()" />

@@ -11,15 +11,15 @@ export const subprojectStore = (subprojectId: number) => {
   return defineStore("subproject-store_" + subprojectId.toString(), () => {
     const id = ref<number>();
     const loading = ref(true);
-    const name = ref<string>();
-    const range = ref<RangeDatePickerModel>();
+    const name = ref<string>() as Ref<string>;
+    const range = ref<RangeDatePickerModel>() as Ref<RangeDatePickerModel>;
     const findings = ref<FindingSubproject[]>();
     const project = ref<FindingSidebar>();
     const members = ref<ProjectMember[]>();
     const reports = ref<VFile[]>();
     const attachments = ref<VFile[]>();
     const logs = ref<LogData[]>();
-    const createdAt = ref<Date>();
+    const error = ref<string>();
 
     const pm = ref<ProjectMember>();
     const myrole = ref<Role>();
@@ -67,9 +67,10 @@ export const subprojectStore = (subprojectId: number) => {
 
     function $reset() {
       watcher.ignoreUpdates(() => {
-        name.value = undefined;
-        range.value = undefined;
+        name.value = undefined as any;
+        range.value = undefined as any;
       });
+      error.value = undefined;
       id.value = undefined;
       findings.value = undefined;
       project.value = undefined;
@@ -87,8 +88,8 @@ export const subprojectStore = (subprojectId: number) => {
         return;
       }
       watcher.ignoreUpdates(() => {
-        name.value = undefined;
-        range.value = undefined;
+        name.value = undefined as any;
+        range.value = undefined as any;
       });
       findings.value = undefined;
       project.value = undefined;
@@ -97,6 +98,7 @@ export const subprojectStore = (subprojectId: number) => {
       attachments.value = undefined;
       logs.value = undefined;
       loading.value = true;
+      error.value = undefined;
 
       try {
         const response = await api.get<SubProjectData>(
@@ -138,26 +140,30 @@ export const subprojectStore = (subprojectId: number) => {
             a.createdAt = new Date(a.createdAt);
           });
         }
-      } catch (error) {
-        if (isApiError(error)) {
-          if (error.message === "unauthorized") {
+      } catch (err) {
+        if (isApiError(err)) {
+          error.value = err.message;
+          if (err.message === "unauthorized") {
             notif.error({
               title: "Unauthorized",
               message: "You are authorized",
             });
             router.push("/login");
-          } else if (error.message === "not_found") {
+          } else if (err.message === "not_found") {
             notif.error({
               title: "Not Found",
               message: "Project not found",
             });
-            router.go(-1);
-          } else if (error.message === "noaccess") {
+          } else if (err.message === "noaccess") {
             notif.error({
               title: "No Access",
               message: "You have no access to this project",
             });
-            router.go(-1);
+          } else if (err.message === "forbidden") {
+            notif.error({
+              title: "Forbidden",
+              message: "You have no access to this project",
+            });
           }
         }
       } finally {
@@ -172,7 +178,7 @@ export const subprojectStore = (subprojectId: number) => {
       pm,
       myrole,
       $reset,
-
+      error,
       name,
       range,
       findings,
@@ -181,7 +187,7 @@ export const subprojectStore = (subprojectId: number) => {
       reports,
       attachments,
       logs,
-      getSubproject
+      getSubproject,
     };
   });
 };

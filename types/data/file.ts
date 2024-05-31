@@ -5,3 +5,9 @@ export type VFile = {
   id: number;
   createdAt: Date;
 };
+
+export type EventFile = {
+  file: VFile;
+  type: string;
+  projectId: number;
+};

@@ -74,6 +74,13 @@ watch(() => store.name, () => {
   }
 })
 
+watch(() => store.error, () => {
+  const err = store.error
+  if (err && err !== "unauthorized") {
+    router.push("/")
+  }
+})
+
 watch(() => store.id, () => {
 
 
@@ -98,7 +105,7 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
     <Header :image="store.picture ? `${fileUrl}${store.picture.name}` : undefined" :loading="store.loading"
       :project-manager="store.pm?.name ?? '-'" :id="store.id ?? -1" v-model:name="store.name"
       v-model:range="store.range" :my-role="store.myrole ? roleLabel(store.myrole) : '-'"
-      :userCanUpdateHeader="store.myrole === Role.PM" type="project" />
+      :userCanUpdateHeader="store.myrole === Role.PM" type="project" :error="store.error" />
 
     <div class="px-8  grow   overflow-auto">
       <div class="flex flex-col h-full">
