@@ -114,6 +114,9 @@ const openInviteMember = () => {
     <div v-if="loading || !members">
 
     </div>
+    <div v-else-if="members.length ===0" class="min-w-30">
+      <div class="bg-white rounded-md border py-4 px-2 font-['DM Sans'] text-[#64748B] text-sm">No members</div>
+    </div>
     <div v-else class="flex flex-col gap-2">
       <div class="grid grid-cols-2 bg-white rounded-md border py-4 px-2 font-['DM Sans'] gap-2" v-for="i in members">
         <div class="col-span-1 flex items-center gap-2">

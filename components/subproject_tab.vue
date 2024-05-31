@@ -41,6 +41,11 @@ const canEdit = computed(() => store.myrole === Role.PM)
       </div>
     </div>
     <div v-if="store.loading || !store.subprojects"></div>
+    <div v-else-if="store.subprojects?.length === 0">
+      <div
+        class="bg-white rounded-md min-h-40 flex justify-center items-center  py-4 px-2 font-['DM Sans'] text-[#64748B] text-sm">
+        No Subprojects</div>
+    </div>
     <div v-else class="flex flex-col gap-2">
 
       <SubprojectTabItem v-for="i in store.subprojects" :name="i.name" :startDate="i.startDate" :endDate="i.endDate"

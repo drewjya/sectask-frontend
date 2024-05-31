@@ -1,17 +1,31 @@
 import { isApiError } from "~/types/api/error";
-import type { VFile } from "~/types/data/file";
+import type { EventFile, VFile } from "~/types/data/file";
+import type {
+  EventMember,
+  SubprojectEventHeader,
+} from "~/types/data/project/event";
 import { type LogData, type ProjectMember } from "~/types/data/project/project";
 import type { FindingSidebar } from "~/types/data/sidebar/project";
+import type { SocketFindingAction } from "~/types/data/subproject/socket";
 import type {
   FindingSubproject,
   SubProjectData,
 } from "~/types/data/subproject/subproject";
+import {
+  PROJECT_ACTION,
+  PROJECT_EVENT,
+  SUBPROJECT_ACTION,
+  SUBPROJECT_EVENT,
+} from "~/types/enum/event.enum";
+
+// import {SUBPROJECT_ACTION SUBSUBPROJECT_ACTION,, SUBPROJECT_ACTION SUBPROJECT_EVENT m";
 
 export const subprojectStore = (subprojectId: number) => {
   return defineStore("subproject-store_" + subprojectId.toString(), () => {
     const id = ref<number>();
     const loading = ref(true);
     const name = ref<string>() as Ref<string>;
+    const socket = useSocket();
     const range = ref<RangeDatePickerModel>() as Ref<RangeDatePickerModel>;
     const findings = ref<FindingSubproject[]>();
     const project = ref<FindingSidebar>();
@@ -65,7 +79,23 @@ export const subprojectStore = (subprojectId: number) => {
       getSubproject();
     });
 
-    function $reset() {
+    async function $reset() {
+      const conn = await socket.getConnection();
+      conn.emit(
+        PROJECT_ACTION.LEAVE,
+        JSON.stringify({ projectId: project.value?.id })
+      );
+      conn.emit(
+        SUBPROJECT_ACTION.LEAVE,
+        JSON.stringify({ subprojectId: id.value })
+      );
+      conn.off(PROJECT_EVENT.MEMBER);
+      conn.off(SUBPROJECT_EVENT.REPORT);
+      conn.off(SUBPROJECT_EVENT.ATTACHMENT);
+      conn.off(SUBPROJECT_EVENT.FINDING);
+      conn.off(SUBPROJECT_EVENT.HEADER);
+      conn.off(SUBPROJECT_EVENT.LOG);
+      conn.off(SUBPROJECT_EVENT.MEMBER);
       watcher.ignoreUpdates(() => {
         name.value = undefined as any;
         range.value = undefined as any;
@@ -169,6 +199,109 @@ export const subprojectStore = (subprojectId: number) => {
       } finally {
         loading.value = false;
       }
+      const conn = await socket.getConnection();
+
+      const val = { subprojectId: id.value };
+      conn.emit(SUBPROJECT_ACTION.JOIN, JSON.stringify(val));
+      conn.emit(
+        PROJECT_ACTION.JOIN,
+        JSON.stringify({ projectId: project.value?.id })
+      );
+      conn.on(PROJECT_EVENT.MEMBER, (data: EventMember) => {
+        if (data.type === "remove") {
+          if (app.user?.id === data.member.id) {
+            router.push("/");
+            notif.info({
+              title: "Removed",
+              message: "You have been removed from the project",
+            });
+          }
+        }
+      });
+      conn.on(SUBPROJECT_EVENT.FINDING, (data: SocketFindingAction) => {
+        if (data.type === "add") {
+          const findingId = findings.value?.find(
+            (e) => e.id === data.finding.findingId
+          );
+          if (findingId) {
+            return;
+          }
+          findings.value?.push({
+            id: data.finding.findingId,
+            createdBy: data.finding.owner,
+            name: data.finding.name,
+          });
+        }
+      });
+      conn.on(SUBPROJECT_EVENT.MEMBER, (data: EventMember) => {
+        if (data.type === "add") {
+          members.value?.push({
+            id: data.member.id,
+            name: data.member.name,
+            role: data.member.role,
+          });
+        } else if (data.type === "remove") {
+          if (app.user?.id === data.member.id) {
+            router.push("/");
+            notif.info({
+              title: "Removed",
+              message: "You have been removed from the project",
+            });
+          }
+          members.value = members.value?.filter((m) => m.id !== data.member.id);
+        } else if (data.type === "promote") {
+          members.value = members.value?.map((m) => {
+            if (m.id === data.member.id) {
+              m.role = Role.CONSULTANT;
+              m.name = data.member.name;
+            }
+            return m;
+          });
+        } else if (data.type === "demote") {
+          members.value = members.value?.map((m) => {
+            if (m.id === data.member.id) {
+              m.role = Role.VIEWER;
+              m.name = data.member.name;
+            }
+            return m;
+          });
+        }
+      });
+      conn.on(SUBPROJECT_EVENT.REPORT, (data: EventFile) => {
+        if (data.type === "add") {
+          const find = reports.value?.find((r) => r.id === data.file.id);
+          if (find) {
+            return;
+          }
+          reports.value?.push(data.file);
+        } else if (data.type === "remove") {
+          reports.value = reports.value?.filter((r) => r.id !== data.file.id);
+        }
+      });
+      conn.on(SUBPROJECT_EVENT.ATTACHMENT, (data: EventFile) => {
+        if (data.type === "add") {
+          const find = attachments.value?.find((r) => r.id === data.file.id);
+          if (find) {
+            return;
+          }
+
+          attachments.value?.push(data.file);
+        } else if (data.type === "remove") {
+          attachments.value = attachments.value?.filter(
+            (r) => r.id !== data.file.id
+          );
+        }
+      });
+
+      conn.on(SUBPROJECT_EVENT.HEADER, (data: SubprojectEventHeader) => {
+        watcher.ignoreUpdates(() => {
+          name.value = data.name;
+          range.value = {
+            start: new Date(data.startDate),
+            end: new Date(data.endDate),
+          };
+        });
+      });
     };
 
     return {

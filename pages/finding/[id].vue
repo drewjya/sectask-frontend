@@ -3,29 +3,34 @@
 const store = findingStore()
 const route = useRoute()
 const app = useApp()
+
+const updateNav = () => {
+  const id = store.id
+  const name = store.name
+  const subproject = store.subproject
+  if (id && name && subproject) {
+    app.navbarLink = [{
+      label: subproject.project.name,
+      to: `/project/${subproject.project.id}`
+    },
+    {
+      label: subproject.name,
+      to: `/subproject/${subproject.id}`
+    },
+    {
+      label: name,
+      to: `/finding/${id}`
+    },]
+  } else {
+    app.navbarLink = []
+  }
+}
 onMounted(() => {
   store.currentTab = 0;
   store.id = Number(route.params.id)
   console.log(store.currentTab);
 
-
-  const finding = store.finding
-  if (finding != undefined) {
-    app.navbarLink = [{
-      label: finding?.subProject.project.name,
-      to: `/project/${finding.subProject.project.id}`
-    },
-    {
-      label: finding.subProject.name,
-      to: `/subproject/${finding.subProject.id}`
-    },
-    {
-      label: finding.name,
-      to: `/finding/${finding.id}`
-    },]
-  } else {
-    app.navbarLink = []
-  }
+  updateNav()
 })
 
 onBeforeRouteLeave(() => {
@@ -33,30 +38,16 @@ onBeforeRouteLeave(() => {
 
 })
 
-watch(() => store.finding, () => {
-  const finding = store.finding
-  if (finding != undefined) {
-    app.navbarLink = [{
-      label: finding?.subProject.project.name,
-      to: `/project/${finding.subProject.project.id}`
-    },
-    {
-      label: finding.subProject.name,
-      to: `/subproject/${finding.subProject.id}`
-    },
-    {
-      label: finding.name,
-      to: `/finding/${finding.id}`
-    },]
-  } else {
-    app.navbarLink = []
-  }
+watch(() => store.name, () => {
+  updateNav()
+})
+watch(() => store.subproject, () => {
+  updateNav()
 })
 
 
 
 const loading = computed(() => store.loading);
-const finding = computed(() => store.finding);
 
 
 </script>
@@ -65,7 +56,7 @@ const finding = computed(() => store.finding);
   <div class="flex  h-full ">
     <FindingLeft />
     <UDivider orientation="vertical" />
-    <div class="grow p-3 pb-6 h-full flex flex-col" v-if="!loading && finding">
+    <div class="grow p-3 pb-6 h-full flex flex-col">
       <UTabs v-model="store.currentTab" :items="store.tabs" :ui="{ wrapper: 'space-y-4', }">
       </UTabs>
 

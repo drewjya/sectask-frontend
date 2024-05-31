@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 const store = findingStore()
-const finding = computed(() => store.finding);
+
 const loading = computed(() => store.loading);
 </script>
 
 <template>
-  <div class="grow p-3 pb-6 h-full flex flex-col" v-if="!loading && finding">
+  <div class="grow p-3 pb-6 h-full flex flex-col" ">
     <UTabs v-model="store.currentTab" :items="store.tabs" class="" :ui="{ wrapper: 'space-y-4', }">
     </UTabs>
     <p>{{ $route.query.tab }}</p>

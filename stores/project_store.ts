@@ -1,6 +1,9 @@
 import { isApiError } from "~/types/api/error";
 import type { EventFile, VFile } from "~/types/data/file";
-import type { EventHeader, EventMember } from "~/types/data/project/event";
+import type {
+  EventMember,
+  ProjectEventHeader,
+} from "~/types/data/project/event";
 import {
   type LogData,
   type ProjectData,
@@ -77,6 +80,9 @@ export const projectStore = (userId: number) => {
       conn.off(PROJECT_EVENT.REPORT);
       conn.off(PROJECT_EVENT.ATTACHMENT);
       conn.off(PROJECT_EVENT.SUBPROJECT);
+      conn.off(PROJECT_EVENT.MEMBER);
+      conn.off(PROJECT_EVENT.LOG);
+      conn.off(PROJECT_EVENT.HEADER);
       loading.value = true;
       error.value = undefined;
       watcher.ignoreUpdates(() => {
@@ -190,6 +196,10 @@ export const projectStore = (userId: number) => {
       });
       conn.on(PROJECT_EVENT.REPORT, (data: EventFile) => {
         if (data.type === "add") {
+          const find = reports.value?.find((r) => r.id === data.file.id);
+          if (find) {
+            return;
+          }
           reports.value?.push(data.file);
         } else if (data.type === "remove") {
           reports.value = reports.value?.filter((r) => r.id !== data.file.id);
@@ -197,6 +207,10 @@ export const projectStore = (userId: number) => {
       });
       conn.on(PROJECT_EVENT.ATTACHMENT, (data: EventFile) => {
         if (data.type === "add") {
+          const find = attachments.value?.find((r) => r.id === data.file.id);
+          if (find) {
+            return;
+          }
           attachments.value?.push(data.file);
         } else if (data.type === "remove") {
           attachments.value = attachments.value?.filter(
@@ -223,7 +237,7 @@ export const projectStore = (userId: number) => {
         }
       });
 
-      conn.on(PROJECT_EVENT.HEADER, (data: EventHeader) => {
+      conn.on(PROJECT_EVENT.HEADER, (data: ProjectEventHeader) => {
         watcher.ignoreUpdates(() => {
           name.value = data.name;
           range.value = {

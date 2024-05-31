@@ -28,9 +28,6 @@ export type ProjectMember = {
   name: string;
 };
 
-
-
-
 export type LogData = {
   title: string;
   description: string;

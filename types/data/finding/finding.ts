@@ -31,6 +31,7 @@ export type FindingData = {
   };
   testerFinding: TesterFinding[];
   chatRoom: any[];
+  isEditor: boolean;
 };
 
 export type TesterFinding = {

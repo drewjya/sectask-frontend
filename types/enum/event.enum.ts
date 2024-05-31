@@ -21,6 +21,8 @@ export const SUBPROJECT_EVENT = {
   ATTACHMENT: "subprojectAttachment",
   REPORT: "subprojectReport",
   MEMBER: "subprojectMember",
+  HEADER: "subprojectHeader",
+  LOG: "subprojectLog",
   FINDING: "subprojectFinding",
 };
 

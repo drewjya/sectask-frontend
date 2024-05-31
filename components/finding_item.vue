@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 
 const props = defineProps<{
-  label: string
+  label: string;
+  loading: boolean;
 }>()
 </script>
 
@@ -9,7 +10,11 @@ const props = defineProps<{
   <div class="grid grid-cols-2">
     <div class="col-span-1 font-['Roboto'] text-sm text-gray-800">{{ label }}</div>
     <div class="col-span-1">
-      <slot></slot>
+      <template v-if="loading">
+        Loading</template>
+      <template v-else>
+        <slot></slot>
+      </template>
     </div>
   </div>
 </template>

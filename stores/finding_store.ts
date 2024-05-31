@@ -1,17 +1,93 @@
 import { isApiError } from "~/types/api/error";
-import type { FindingData } from "~/types/data/finding/finding";
+import type {
+  CVSSData,
+  FindingData,
+  TesterFinding,
+} from "~/types/data/finding/finding";
+import type { OwnerFinding } from "~/types/data/subproject/subproject";
+import {
+  FINDING_ACTION,
+  PROJECT_ACTION,
+  PROJECT_EVENT,
+  SUBPROJECT_ACTION,
+  SUBPROJECT_EVENT,
+} from "~/types/enum/event.enum";
 
 export const findingStore = defineStore("finding-store", () => {
-  const finding = ref<FindingData>();
+  type SubprojectFinding = {
+    id: number;
+    name: string;
+    project: {
+      id: number;
+      name: string;
+    };
+  };
+
+  const socket = useSocket();
   const loading = ref(true);
   const id = ref();
   const notif = useNotification();
+  const name = ref<string>() as Ref<string>;
+  const category = ref<string>();
+  const location = ref<string>();
+  const method = ref<string>();
+  const isEditor = ref<boolean>(false);
+  const environment = ref<string>();
+  const application = ref<string>();
+  const impact = ref<string>();
+  const likelihood = ref<string>();
+  const latestUpdate = ref<Date>();
+  const createdAt = ref<Date>();
+  const status = ref<string>();
+  const releases = ref<string>();
+  const descriptionId = ref<string>();
+  const threatAndRiskId = ref<string>();
+  const cvss = ref<CVSSData>();
+  const createdBy = ref<OwnerFinding>();
+  const subproject = ref<SubprojectFinding>();
+  const testerFinding = ref<TesterFinding[]>();
 
-  function $reset() {
-    finding.value = undefined;
-    loading.value = true;
+  async function $reset() {
+    await reset();
     id.value = undefined;
   }
+
+  const reset = async () => {
+    const conn = await socket.getConnection();
+    conn.emit(
+      PROJECT_ACTION.LEAVE,
+      JSON.stringify({ projectId: subproject.value?.project.id })
+    );
+    conn.emit(
+      SUBPROJECT_ACTION.LEAVE,
+      JSON.stringify({ subprojectId: subproject.value?.id })
+    );
+    conn.emit(FINDING_ACTION.LEAVE, JSON.stringify({ findingId: id.value }));
+    conn.off(PROJECT_EVENT.MEMBER);
+    conn.off(SUBPROJECT_EVENT.MEMBER);
+
+    loading.value = true;
+
+    name.value = undefined as any;
+    category.value = undefined;
+    location.value = undefined;
+    method.value = undefined;
+    isEditor.value = false;
+    environment.value = undefined;
+    application.value = undefined;
+    impact.value = undefined;
+    likelihood.value = undefined;
+    latestUpdate.value = undefined;
+    createdAt.value = undefined;
+    status.value = undefined;
+    releases.value = undefined;
+    descriptionId.value = undefined;
+    threatAndRiskId.value = undefined;
+    cvss.value = undefined;
+    createdBy.value = undefined;
+    subproject.value = undefined;
+    testerFinding.value = undefined;
+  };
   const api = usePrivateApi();
   const app = useApp();
   watch(id, (newId) => {
@@ -50,16 +126,32 @@ export const findingStore = defineStore("finding-store", () => {
     if (!id.value) {
       return;
     }
-    loading.value = true;
-    finding.value = undefined;
+    await reset();
     try {
       const response = await api.get<FindingData>(`/finding/${id.value}`);
-      finding.value = response.data;
-      if (finding.value) {
-        finding.value.createdAt = new Date(finding.value.createdAt);
-        if (finding.value.latestUpdate) {
-          finding.value.latestUpdate = new Date(finding.value.latestUpdate);
-        }
+      const finding = response.data;
+      if (finding) {
+        name.value = finding.name;
+        category.value = finding.category;
+        location.value = finding.location;
+        method.value = finding.method;
+        isEditor.value = finding.isEditor;
+        environment.value = finding.environment;
+        application.value = finding.application;
+        impact.value = finding.impact;
+        likelihood.value = finding.likelihood;
+        latestUpdate.value = finding.latestUpdate
+          ? new Date(finding.latestUpdate)
+          : undefined;
+        createdAt.value = new Date(finding.createdAt);
+        status.value = finding.status;
+        releases.value = finding.releases;
+        descriptionId.value = finding.descriptionId;
+        threatAndRiskId.value = finding.threatAndRiskId;
+        cvss.value = finding.cvssDetail.data;
+        createdBy.value = finding.createdBy;
+        subproject.value = finding.subProject;
+        testerFinding.value = finding.testerFinding;
       }
     } catch (error) {
       if (isApiError(error)) {
@@ -91,9 +183,28 @@ export const findingStore = defineStore("finding-store", () => {
   return {
     id,
     loading,
-    finding,
+
     $reset,
     tabs,
     currentTab,
+    name,
+    category,
+    location,
+    method,
+    isEditor,
+    environment,
+    application,
+    impact,
+    likelihood,
+    latestUpdate,
+    createdAt,
+    status,
+    releases,
+    descriptionId,
+    threatAndRiskId,
+    cvss,
+    createdBy,
+    subproject,
+    testerFinding,
   };
 });
