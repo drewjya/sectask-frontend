@@ -83,6 +83,75 @@ export const findingStore = defineStore("finding-store", () => {
         });
     })
   );
+
+  const findingWatcher = watchIgnorable(
+    [category, location, method, environment, application, impact, likelihood],
+    useDebounceFn(() => {
+      if (!id.value) {
+        return;
+      }
+
+      const data = {
+        category: category.value,
+        location: location.value,
+        method: method.value,
+        environment: environment.value,
+        application: application.value,
+        impact: impact.value,
+        likelihood: likelihood.value,
+      };
+      api
+        .post(`/finding/fprop/${id.value}`, {
+          body: data,
+        })
+        .then(() => {})
+        .catch((error) => {
+          if (isApiError(error)) {
+            notif.error({
+              title: "Error",
+              message: error.message,
+            });
+          } else {
+            notif.error({
+              title: "Error",
+              message: "Try again later",
+            });
+          }
+        });
+    })
+  );
+  const findingRetest = watchIgnorable(
+    [latestUpdate, status, releases],
+    useDebounceFn(() => {
+      if (!id.value) {
+        return;
+      }
+
+      const data = {
+        latestUpdate: latestUpdate.value,
+        status: status.value,
+        releases: releases.value,
+      };
+      api
+        .post(`/finding/retest/${id.value}`, {
+          body: data,
+        })
+        .then(() => {})
+        .catch((error) => {
+          if (isApiError(error)) {
+            notif.error({
+              title: "Error",
+              message: error.message,
+            });
+          } else {
+            notif.error({
+              title: "Error",
+              message: "Try again later",
+            });
+          }
+        });
+    })
+  );
   async function $reset() {
     await reset();
     id.value = undefined;
@@ -109,18 +178,22 @@ export const findingStore = defineStore("finding-store", () => {
       name.value = undefined as any;
     });
 
-    category.value = undefined;
-    location.value = undefined;
-    method.value = undefined;
+    findingWatcher.ignoreUpdates(() => {
+      category.value = undefined;
+      location.value = undefined;
+      method.value = undefined;
+      environment.value = undefined;
+      application.value = undefined;
+      impact.value = undefined;
+      likelihood.value = undefined;
+    });
+    findingRetest.ignoreUpdates(() => {
+      latestUpdate.value = undefined;
+      status.value = undefined;
+      releases.value = undefined;
+    });
     isEditor.value = false;
-    environment.value = undefined;
-    application.value = undefined;
-    impact.value = undefined;
-    likelihood.value = undefined;
-    latestUpdate.value = undefined;
     createdAt.value = undefined;
-    status.value = undefined;
-    releases.value = undefined;
     descriptionId.value = undefined;
     threatAndRiskId.value = undefined;
     cvss.value = undefined;
@@ -178,20 +251,30 @@ export const findingStore = defineStore("finding-store", () => {
         watcher.ignoreUpdates(() => {
           name.value = finding.name;
         });
-        category.value = finding.category;
-        location.value = finding.location;
-        method.value = finding.method;
+        findingWatcher.ignoreUpdates(() => {
+          category.value = finding.category;
+          location.value = finding.location;
+          method.value = finding.method;
+
+          environment.value = undefined;
+          application.value = undefined;
+          impact.value = undefined;
+          likelihood.value = undefined;
+          environment.value = finding.environment;
+          application.value = finding.application;
+          impact.value = finding.impact;
+          likelihood.value = finding.likelihood;
+        });
         isEditor.value = finding.isEditor;
-        environment.value = finding.environment;
-        application.value = finding.application;
-        impact.value = finding.impact;
-        likelihood.value = finding.likelihood;
-        latestUpdate.value = finding.latestUpdate
-          ? new Date(finding.latestUpdate)
-          : undefined;
+        findingRetest.ignoreUpdates(() => {
+          latestUpdate.value = finding.latestUpdate
+            ? new Date(finding.latestUpdate)
+            : undefined;
+
+          status.value = finding.status;
+          releases.value = finding.releases;
+        });
         createdAt.value = new Date(finding.createdAt);
-        status.value = finding.status;
-        releases.value = finding.releases;
         descriptionId.value = finding.descriptionId;
         threatAndRiskId.value = finding.threatAndRiskId;
         cvss.value = finding.cvssDetail.data;

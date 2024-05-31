@@ -31,33 +31,54 @@ const loading = computed(() => store.loading);
 
           <div class="flex flex-col gap-1 py-2">
             <div class="font-['Roboto'] font-bold text-base">Finding Properties</div>
-            <div>
+            <div class="flex flex-col gap-2">
               <FindingItem :loading="loading" label="Category">
-                {{ store.category ?? '-' }}
+                <div v-if="!store.isEditor || (!store.isEditor)">
+                  {{ store.category ?? '-' }}
+                </div>
+                <UInput v-else v-model="store.category" size="2xs" />
 
               </FindingItem>
               <FindingItem :loading="loading" label="Location">
-                {{ store.location ?? '-' }}
+                <div v-if="!store.isEditor || (!store.isEditor)">
+                  {{ store.location ?? '-' }}
+                </div>
+                <UInput v-else v-model="store.location" size="2xs" />
 
               </FindingItem>
               <FindingItem :loading="loading" label="Method">
-                {{ store.method ?? '-' }}
+                <div v-if="!store.isEditor || (!store.isEditor)">
+                  {{ store.method ?? '-' }}
+                </div>
+                <UInput v-else v-model="store.method" size="2xs" />
 
               </FindingItem>
               <FindingItem :loading="loading" label="Environment">
-                {{ store.environment ?? '-' }}
+                <div v-if="!store.isEditor || (!store.isEditor)">
+                  {{ store.environment ?? '-' }}
+                </div>
+                <UInput v-else v-model="store.environment" size="2xs" />
 
               </FindingItem>
               <FindingItem :loading="loading" label="Application">
-                {{ store.application ?? '-' }}
+                <div v-if="!store.isEditor || (!store.isEditor)">
+                  {{ store.application ?? '-' }}
+                </div>
+                <UInput v-else v-model="store.application" size="2xs" />
 
               </FindingItem>
               <FindingItem :loading="loading" label="Risk (Impact)">
-                {{ store.impact ?? '-' }}
+                <div v-if="!store.isEditor || (!store.isEditor)">
+                  {{ store.impact ?? '-' }}
+                </div>
+                <UInput v-else v-model="store.impact" size="2xs" />
 
               </FindingItem>
               <FindingItem :loading="loading" label="Risk (Likelihood)">
-                {{ store.likelihood ?? '-' }}
+                <div v-if="!store.isEditor || (!store.isEditor)">
+                  {{ store.likelihood ?? '-' }}
+                </div>
+                <UInput v-else v-model="store.likelihood" size="2xs" />
 
               </FindingItem>
 
@@ -66,9 +87,12 @@ const loading = computed(() => store.loading);
           <hr>
           <div class="flex flex-col gap-1 py-2">
             <div class="font-['Roboto'] font-bold text-base">Retest Properties</div>
-            <div>
+            <div class="flex flex-col gap-2">
               <FindingItem :loading="loading" label="Last Updated">
-                {{ store.latestUpdate ?? '-' }}
+                <div>
+                  {{ store.latestUpdate ?? '-' }}
+                </div>
+
 
               </FindingItem>
               <FindingItem :loading="loading" label="Tester">
@@ -76,11 +100,17 @@ const loading = computed(() => store.loading);
 
               </FindingItem>
               <FindingItem :loading="loading" label="Status">
-                {{ store.status ?? '-' }}
+                <div>
+                  {{ store.status ?? '-' }}
+                </div>
+
 
               </FindingItem>
               <FindingItem :loading="loading" label="Releases">
-                {{ store.releases ?? '-' }}
+                <div>
+                  {{ store.releases ?? '-' }}
+                </div>
+
 
               </FindingItem>
             </div>
