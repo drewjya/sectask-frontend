@@ -58,8 +58,13 @@ const fileUrl = useRuntimeConfig().public.FILE_URL
     </div>
     <div v-if="loading || !files">
     </div>
-    <div v-else class="bg-gray-200 p-3 rounded h-96 overflow-y-auto flex flex-col gap-2">
-
+    <div v-else-if="files.length == 0">
+      <div
+        class="bg-gray-200 p-3 rounded max-h-96 min-h-20 overflow-y-auto flex flex-col gap-2 items-center justify-center">
+        <div class="text-center  text-sm font-['Roboto']">No <span class="lowercase">{{ title }}</span> uploaded</div>
+      </div>
+    </div>
+    <div v-else class="bg-gray-200 p-3 rounded max-h-96 min-h-20 overflow-y-auto flex flex-col gap-2">
       <div v-for="i in files" class="bg-white p-2 flex items-center gap-2">
         <div class="p-4 ">
           <UIcon :name="getIcon(i)" class="text-4xl text-blue-400" />
