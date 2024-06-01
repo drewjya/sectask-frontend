@@ -507,7 +507,7 @@ const newC = computed(() => app.sidebar ? 'w-[calc(100vw-40rem)]' : 'w-[calc(100
 }
 
 .cvssscroll {
-  @apply flex flex-col gap-2 w-full overflow-x-auto
+  @apply flex flex-col gap-2 w-full overflow-x-auto pb-4
 }
 
 .subtitle {

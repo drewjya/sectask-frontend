@@ -152,6 +152,35 @@ export const findingStore = defineStore("finding-store", () => {
         });
     })
   );
+
+  const cvssWatcher = watchIgnorable(
+    [cvss],
+    useDebounceFn(() => {
+      if (!id.value) {
+        return;
+      }
+
+      const data = cvss.value;
+      api
+        .post(`/finding/cvss/${id.value}`, {
+          body: data,
+        })
+        .then(() => {})
+        .catch((error) => {
+          if (isApiError(error)) {
+            notif.error({
+              title: "Error",
+              message: error.message,
+            });
+          } else {
+            notif.error({
+              title: "Error",
+              message: "Try again later",
+            });
+          }
+        });
+    })
+  );
   async function $reset() {
     await reset();
     id.value = undefined;
@@ -171,6 +200,7 @@ export const findingStore = defineStore("finding-store", () => {
     conn.off(PROJECT_EVENT.MEMBER);
     conn.off(SUBPROJECT_EVENT.MEMBER);
     conn.off(FINDING_EVENT.HEADER);
+    conn.off(FINDING_EVENT.CVSS);
 
     loading.value = true;
 
@@ -192,11 +222,13 @@ export const findingStore = defineStore("finding-store", () => {
       status.value = undefined;
       releases.value = undefined;
     });
+    cvssWatcher.ignoreUpdates(() => {
+      cvss.value = undefined;
+    });
     isEditor.value = false;
     createdAt.value = undefined;
     descriptionId.value = undefined;
     threatAndRiskId.value = undefined;
-    cvss.value = undefined;
     createdBy.value = undefined;
     subproject.value = undefined;
     testerFinding.value = undefined;
@@ -251,7 +283,9 @@ export const findingStore = defineStore("finding-store", () => {
         createdAt.value = new Date(finding.createdAt);
         descriptionId.value = finding.descriptionId;
         threatAndRiskId.value = finding.threatAndRiskId;
-        cvss.value = finding.cvssDetail.data;
+        cvssWatcher.ignoreUpdates(() => {
+          cvss.value = finding.cvssDetail.data;
+        });
         createdBy.value = finding.createdBy;
         subproject.value = finding.subProject;
         testerFinding.value = finding.testerFinding;
@@ -297,6 +331,14 @@ export const findingStore = defineStore("finding-store", () => {
         name.value = data.name;
       });
     });
+    conn.on(
+      FINDING_EVENT.CVSS,
+      (data: { findingId: number; cvss: CVSSData }) => {
+        cvssWatcher.ignoreUpdates(() => {
+          cvss.value = data.cvss;
+        });
+      }
+    );
     conn.on(PROJECT_EVENT.MEMBER, (data: EventMember) => {
       if (data.type === "remove") {
         if (app.user?.id === data.member.id) {
