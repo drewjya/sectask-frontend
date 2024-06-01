@@ -43,7 +43,18 @@ export const useApp = defineStore("sectask-store", () => {
       ? fileUrl + user.value?.profilePicture?.name
       : undefined
   );
-  const sidebar = ref(true);
+
+  const sidebarVal = useCookie("sidebar", {
+    maxAge: 60 * 60 * 24 * 30,
+  });
+
+  const setSidebarVal = (value?: string) => {
+    sidebarVal.value = value;
+    console.log(sidebarVal.value);
+  };
+  const sidebar = computed(
+    () => sidebarVal.value === undefined || sidebarVal.value === "false"
+  );
   return {
     getAuthorization,
     getRefreshToken,
@@ -52,6 +63,7 @@ export const useApp = defineStore("sectask-store", () => {
     isDark,
     resetToken,
     sidebar,
+    setSidebarVal,
     navbarLink,
     userName,
     userImageUrl,

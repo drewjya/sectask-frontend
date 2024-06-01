@@ -5,8 +5,14 @@ const app = useApp()
 <template>
   <div class="border-b py-1  flex gap-2 items-center">
 
-    <UButton @click="app.sidebar = !app.sidebar" icon="i-heroicons-chevron-double-left-16-solid" variant="ghost"
-      color="gray" class="hover:bg-transparent transition-all" :class="app.sidebar ? 'rotate-0' : 'rotate-180'" />
+    <UButton @click="() => {
+      if (app.sidebar) {
+        app.setSidebarVal('true')
+      } else {
+        app.setSidebarVal('false');
+      }
+    }" icon="i-heroicons-chevron-double-left-16-solid" variant="ghost" color="gray"
+      class="hover:bg-transparent transition-all" :class="app.sidebar ? 'rotate-0' : 'rotate-180'" />
 
     <div>
 

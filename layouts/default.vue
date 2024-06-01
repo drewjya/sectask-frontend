@@ -7,9 +7,9 @@ const app = useApp()
 <template>
   <div class="flex h-screen w-screen ">
     <Sidebar />
-    <div class="flex flex-col grow  bg-[#f8fafc] h-full overflow-hidden ">
+    <div class="flex flex-col flex-1  bg-[#f8fafc] h-full overflow-hidden ">
       <Navbar />
-      <div class="grow  overflow-hidden">
+      <div class="flex-1  overflow-hidden">
 
         <slot />
       </div>

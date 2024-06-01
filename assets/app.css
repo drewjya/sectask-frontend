@@ -32,3 +32,19 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-500;
 }
+
+.tiptap {
+  max-height: 16rem;
+  height: 16rem;
+  overflow-y: auto;
+  border: none;
+}
+
+.ProseMirror {
+  padding: 8px;
+  
+}
+
+.ProseMirror:focus {
+  outline: none;
+}

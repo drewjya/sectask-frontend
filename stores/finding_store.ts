@@ -212,33 +212,7 @@ export const findingStore = defineStore("finding-store", () => {
   });
   const router = useRouter();
   const route = useRoute();
-  const currentTab = computed({
-    get() {
-      const index = tabs.findIndex((t) => t.key === route.query.tab);
-      return index === -1 ? 0 : index;
-    },
-    set(value) {
-      router.replace({
-        query: { tab: tabs[value].key },
-      });
-      return value;
-    },
-  });
 
-  const tabs = [
-    {
-      label: "Document",
-      key: "document",
-    },
-    {
-      label: "CVSS",
-      key: "cvss",
-    },
-    {
-      label: "Discussion",
-      key: "discussion",
-    },
-  ];
   const getFinding = async () => {
     if (!id.value) {
       return;
@@ -362,8 +336,7 @@ export const findingStore = defineStore("finding-store", () => {
     loading,
 
     $reset,
-    tabs,
-    currentTab,
+
     name,
     category,
     location,

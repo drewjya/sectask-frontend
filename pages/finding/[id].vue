@@ -25,10 +25,36 @@ const updateNav = () => {
     app.navbarLink = []
   }
 }
+const router = useRouter()
+const tabs = [
+  {
+    label: "Document",
+    key: "document",
+  },
+  {
+    label: "CVSS",
+    key: "cvss",
+  },
+  {
+    label: "Discussion",
+    key: "discussion",
+  },
+];
+const currentTab = computed({
+  get() {
+    const index = tabs.findIndex((t) => t.key === route.query.tab);
+    return index === -1 ? 0 : index;
+  },
+  set(value) {
+    router.replace({
+      query: { tab: tabs[value].key },
+    });
+    return value;
+  },
+});
 onMounted(() => {
-  store.currentTab = 0;
+
   store.id = Number(route.params.id)
-  console.log(store.currentTab);
 
   updateNav()
 })
@@ -53,11 +79,12 @@ const loading = computed(() => store.loading);
 </script>
 
 <template>
-  <div class="flex  h-full ">
+
+  <div class="flex h-full w-full">
     <FindingLeft />
     <UDivider orientation="vertical" />
-    <div class="grow p-3 pb-6 h-full flex flex-col">
-      <UTabs v-model="store.currentTab" :items="store.tabs" :ui="{ wrapper: 'space-y-4', }">
+    <div class="flex-1  flex flex-col p-4 pb-6 ">
+      <UTabs v-model="currentTab" :items="tabs" :ui="{ wrapper: 'space-y-4', }">
       </UTabs>
 
       <div class="h-full overflow-y-auto  flex flex-col grow">
@@ -67,7 +94,7 @@ const loading = computed(() => store.loading);
           </div>
         </template>
         <template v-else>
-          <section class="size-full flex-grow h-full">
+          <section class="grow h-full w-full overflow-x-auto">
             <template v-if="!$route.query.tab || `${$route.query.tab}`.startsWith('document')">
               <DocumentEditor />
             </template>
@@ -80,12 +107,24 @@ const loading = computed(() => store.loading);
 
           </section>
         </template>
+
       </div>
 
 
 
     </div>
+
   </div>
+
+
+
+
+
+
+
+
+
+
 
 
 
