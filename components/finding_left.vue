@@ -108,7 +108,23 @@ const score = computed(() => {
 })
 
 
+let typingTimeout: ReturnType<typeof setTimeout> | null = null;
+const onInput = () => {
+  store.onEdit = true;
+  if (typingTimeout) clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => {
+    store.onEdit = false;
+  }, 500);
+}
 
+const onBlur = () => {
+  store.onEdit = false;
+  if (typingTimeout) clearTimeout(typingTimeout);
+};
+
+const onFocus = () => {
+  store.onEdit = true;
+};
 
 </script>
 
@@ -132,7 +148,8 @@ const score = computed(() => {
           <div class="text-sm font-semibold " v-if="store.isEditor === false">
             <div class="text-ellipsis  line-clamp-1 w-48">{{ store.name }}</div>
           </div>
-          <UInput class="text-sm font-semibold" v-else-if="store.isEditor === true" v-model="store.name" />
+          <UInput class="text-sm font-semibold" v-else-if="store.isEditor === true" v-model="store.name"
+            @input="onInput" @blur="onBlur" @focus="onFocus" />
           <div class="text-xs">Created By <span class="font-bold">{{ store.createdBy.name }}</span></div>
         </div>
       </div>

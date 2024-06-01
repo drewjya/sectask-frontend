@@ -20,7 +20,7 @@ const props = defineProps<{
         <UAvatar :alt="i.title" size="sm" />
         <div class="flex flex-col">
           <span class=" font-semibold">{{ i.title }}</span>
-          <span class="text-sm opacity-70">{{ i.description }}</span>
+          <span class="text-sm opacity-70" v-html="i.description"></span>
         </div>
 
       </div>

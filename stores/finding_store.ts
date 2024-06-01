@@ -32,6 +32,7 @@ export const findingStore = defineStore("finding-store", () => {
   const name = ref<string>() as Ref<string>;
   const category = ref<string>();
   const location = ref<string>();
+  const onEdit = ref<boolean>(false);
   const method = ref<string>();
   const isEditor = ref<boolean>(false);
   const environment = ref<string>();
@@ -50,8 +51,11 @@ export const findingStore = defineStore("finding-store", () => {
   const testerFinding = ref<TesterFinding[]>();
 
   const watcher = watchIgnorable(
-    [name],
+    [onEdit],
     useDebounceFn(() => {
+      if (onEdit.value) {
+        return
+      }
       if (!id.value) {
         return;
       }
@@ -203,9 +207,10 @@ export const findingStore = defineStore("finding-store", () => {
     conn.off(FINDING_EVENT.CVSS);
 
     loading.value = true;
+    name.value = undefined as any;
 
     watcher.ignoreUpdates(() => {
-      name.value = undefined as any;
+      onEdit.value = false;
     });
 
     findingWatcher.ignoreUpdates(() => {
@@ -254,8 +259,9 @@ export const findingStore = defineStore("finding-store", () => {
       const response = await api.get<FindingData>(`/finding/${id.value}`);
       const finding = response.data;
       if (finding) {
+        name.value = finding.name;
         watcher.ignoreUpdates(() => {
-          name.value = finding.name;
+          onEdit.value = false;
         });
         findingWatcher.ignoreUpdates(() => {
           category.value = finding.category;
@@ -398,5 +404,6 @@ export const findingStore = defineStore("finding-store", () => {
     createdBy,
     subproject,
     testerFinding,
+    onEdit,
   };
 });

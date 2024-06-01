@@ -209,3 +209,9 @@ export const downloadAs = (file: VFile) => {
     })
     .catch((error) => console.error("Download failed:", error));
 };
+
+export const createUrlFile = (file: VFile) => {
+  const url = useRuntimeConfig().public.FILE_URL + file.name;
+
+  return url;
+};

@@ -42,9 +42,26 @@ body {
 
 .ProseMirror {
   padding: 8px;
-  
 }
 
+.ProseMirror ol {
+  padding: 0 1rem;
+  list-style-type: decimal !important;
+}
+
+.ProseMirror ul {
+  padding: 0 1rem;
+  list-style-type: disc !important;
+}
 .ProseMirror:focus {
   outline: none;
+}
+
+code {
+  font-size: 0.8rem;
+  padding: 0.1em;
+  border-radius: 0.25em;
+  background-color: rgb(72, 66, 97);
+  color: white;
+  box-decoration-break: clone;
 }

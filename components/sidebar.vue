@@ -88,6 +88,9 @@ const initState = async () => {
         projectList.value[projectIndex].project.subproject = projectList.value[projectIndex].project.subproject.filter(i => i.id !== val.subproject.subprojectId)
         // projectList.value = projectList.value.filter(i => i.project.id !== val.project.projectId)
       } else if (val.type === 'edit') {
+        if (!projectList.value[projectIndex].project.subproject) {
+          return;
+        }
         for (const iterator of projectList.value[projectIndex].project.subproject) {
           if (iterator.id === val.subproject.subprojectId) {
             iterator.name = val.subproject.name

@@ -168,6 +168,9 @@ export const subprojectStore = (subprojectId: number) => {
           logs.value.forEach((ra) => {
             ra.createdAt = new Date(ra.createdAt);
           });
+          logs.value.sort(
+            (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+          );
           reports.value.forEach((r) => {
             r.createdAt = new Date(r.createdAt);
           });
@@ -249,6 +252,13 @@ export const subprojectStore = (subprojectId: number) => {
           });
         }
       });
+      conn.on(SUBPROJECT_EVENT.LOG, (data: LogData) => {
+        logs.value?.unshift({
+          description: data.description,
+          title: data.title,
+          createdAt: new Date(data.createdAt),
+        });
+      });
       conn.on(SUBPROJECT_EVENT.MEMBER, (data: EventMember) => {
         if (data.type === "add") {
           members.value?.push({
@@ -271,8 +281,12 @@ export const subprojectStore = (subprojectId: number) => {
               m.role = Role.CONSULTANT;
               m.name = data.member.name;
             }
+
             return m;
           });
+          myrole.value = members.value?.find(
+            (m) => m.id === app.user?.id
+          )?.role;
         } else if (data.type === "demote") {
           members.value = members.value?.map((m) => {
             if (m.id === data.member.id) {
@@ -281,6 +295,9 @@ export const subprojectStore = (subprojectId: number) => {
             }
             return m;
           });
+          myrole.value = members.value?.find(
+            (m) => m.id === app.user?.id
+          )?.role;
         }
       });
       conn.on(SUBPROJECT_EVENT.REPORT, (data: EventFile) => {

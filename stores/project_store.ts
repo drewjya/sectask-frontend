@@ -153,6 +153,9 @@ export const projectStore = (userId: number) => {
           logs.value.forEach((l) => {
             l.createdAt = new Date(l.createdAt);
           });
+          logs.value.sort(
+            (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+          );
 
           pm.value = project.members.find((m) => m.role === Role.PM);
           myrole.value = project.members.find(
@@ -256,6 +259,8 @@ export const projectStore = (userId: number) => {
       });
 
       conn.on(PROJECT_EVENT.HEADER, (data: ProjectEventHeader) => {
+        console.log(data);
+
         watcher.ignoreUpdates(() => {
           name.value = data.name;
           range.value = {
@@ -264,6 +269,13 @@ export const projectStore = (userId: number) => {
           };
         });
         picture.value = data.picture;
+      });
+      conn.on(PROJECT_EVENT.LOG, (data: LogData) => {
+        logs.value?.unshift({
+          createdAt: new Date(data.createdAt),
+          title: data.title,
+          description: data.description,
+        });
       });
     };
 
