@@ -1,7 +1,6 @@
 import type { VFile } from "../file";
 import type { OwnerFinding } from "../subproject/subproject";
 
-
 export type FindingData = {
   id: number;
   name: string;
@@ -79,4 +78,12 @@ export type CVSSData = {
   V: string;
   RE: string;
   U: string;
+};
+
+export type RoomChat = {
+  id: number;
+  title: string;
+  createdAt: Date;
+  findingId: number;
+  createdBy: OwnerFinding;
 };

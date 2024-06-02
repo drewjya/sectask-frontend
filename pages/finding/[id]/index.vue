@@ -115,19 +115,6 @@ const loading = computed(() => store.loading);
     </div>
 
   </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
 </template>
 
 <style scoped></style>

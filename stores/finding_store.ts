@@ -2,6 +2,7 @@ import { isApiError } from "~/types/api/error";
 import type {
   CVSSData,
   FindingData,
+  RoomChat,
   TesterFinding,
 } from "~/types/data/finding/finding";
 import type { EventMember } from "~/types/data/project/event";
@@ -49,7 +50,7 @@ export const findingStore = defineStore("finding-store", () => {
   const createdBy = ref<OwnerFinding>();
   const subproject = ref<SubprojectFinding>();
   const testerFinding = ref<TesterFinding[]>();
-
+  const discussions = ref<RoomChat[]>()
   const watcher = watchIgnorable(
     [onEdit],
     useDebounceFn(() => {
@@ -212,7 +213,7 @@ export const findingStore = defineStore("finding-store", () => {
     watcher.ignoreUpdates(() => {
       onEdit.value = false;
     });
-
+    discussions.value = undefined
     findingWatcher.ignoreUpdates(() => {
       category.value = undefined;
       location.value = undefined;
@@ -248,7 +249,7 @@ export const findingStore = defineStore("finding-store", () => {
     getFinding();
   });
   const router = useRouter();
-  const route = useRoute();
+  
 
   const getFinding = async () => {
     if (!id.value) {
@@ -405,5 +406,6 @@ export const findingStore = defineStore("finding-store", () => {
     subproject,
     testerFinding,
     onEdit,
+    discussions
   };
 });

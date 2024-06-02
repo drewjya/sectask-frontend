@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import type { VFile } from "~/types/data/file";
 
 export const getStatus = (props: { startDate: Date; endDate: Date }) => {
   const now = new Date();
@@ -24,4 +25,9 @@ export const getStatus = (props: { startDate: Date; endDate: Date }) => {
 
 export const formatDate = (date: Date, format: string) => {
   return dayjs(date).format(format);
+};
+
+export const formatImage = (image?: VFile) => {
+  const runtime = useRuntimeConfig();
+  return image ? `${runtime.public.FILE_URL}${image.name}` : undefined;
 };
