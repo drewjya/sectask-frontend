@@ -34,8 +34,6 @@ body {
 }
 
 .tiptap {
-  max-height: 16rem;
-  height: 16rem;
   overflow-y: auto;
   border: none;
 }

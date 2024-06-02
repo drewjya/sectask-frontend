@@ -33,15 +33,25 @@ export const SUBPROJECT_ACTION = {
 };
 
 export const FINDING_EVENT = {
-  SIDEBAR: 'findingSidebar',
-  HEADER: 'findingHeader',
-  ONLINE: 'onlineFindingMember',
-  FINDINGPROP: 'findingProperty',
-  RETEST: 'findingRetest',
-  CVSS: 'findingCVSS',
+  SIDEBAR: "findingSidebar",
+  HEADER: "findingHeader",
+  ONLINE: "onlineFindingMember",
+  FINDINGPROP: "findingProperty",
+  RETEST: "findingRetest",
+  CVSS: "findingCVSS",
+  ROOM: "findingRoomChat",
 };
 export const FINDING_ACTION = {
   JOIN: "onFindingJoin",
   LEAVE: "onFindingLeave",
   ONLINE_MEMBER: "getOnlineFindingMember",
+};
+
+export const ROOM_ACTION = {
+  JOIN: "onRoomJoin",
+  LEAVE: "onRoomLeave",
+};
+
+export const ROOM_EVENT = {
+  SEND: "roomReceiveMessage",
 };

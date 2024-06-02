@@ -80,10 +80,22 @@ export type CVSSData = {
   U: string;
 };
 
-export type RoomChat = {
+export interface RoomChat {
   id: number;
   title: string;
   createdAt: Date;
   findingId: number;
   createdBy: OwnerFinding;
-};
+}
+
+export interface RoomChatDetail extends RoomChat {
+  chats: Chat[];
+}
+
+export interface Chat {
+  content: string;
+  id: number
+  createdAt: Date;
+  sender: OwnerFinding;
+  replyChat?: Chat;
+}

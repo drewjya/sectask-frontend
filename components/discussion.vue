@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { isApiError } from "~/types/api/error";
 import type { RoomChat } from "~/types/data/finding/finding";
+import { FINDING_EVENT } from "~/types/enum/event.enum";
 import NewDiscussionModal from "./new-discussion-modal.vue";
 
 const modal = useModal();
@@ -12,6 +13,7 @@ const notif = useNotification();
 const isEdited = ref(false);
 const search = ref<string>();
 const searched = ref<RoomChat[]>();
+const socket = useSocket()
 onMounted(async () => {
   if (!store.discussions) {
     loading.value = true;
@@ -41,6 +43,13 @@ onMounted(async () => {
     } finally {
       loading.value = false;
     }
+    const conn = await socket.getConnection()
+    conn.on(FINDING_EVENT.ROOM, (data: RoomChat) => {
+      store.discussions?.unshift({
+        ...data,
+        createdAt: new Date(data.createdAt)
+      })
+    })
   }
 });
 let typingTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -122,14 +131,14 @@ const openModal = () => {
     <div v-else-if="search && search !== ''">
       <div v-if="!searched">Loading</div>
       <div v-else-if="searched.length === 0">Discussion Not Found</div>
-      <div v-else>
+      <div v-else class="flex flex-col gap-3">
         <DiscussionItem v-for="i in searched" :discussion="i" />
       </div>
     </div>
     <div v-else>
       <div v-if="!store.discussions">Loading</div>
       <div v-else-if="store.discussions.length === 0">Discussion Not Found</div>
-      <div v-else>
+      <div v-else class="flex flex-col gap-3">
         <DiscussionItem v-for="i in store.discussions" :discussion="i" />
       </div>
     </div>

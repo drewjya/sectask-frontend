@@ -69,6 +69,12 @@ onMounted(() => {
 
   const user = app.user?.name || 'anonymous'
   editor.value = new TipTap.Editor({
+    editorProps: {
+      attributes: {
+        class: 'max-h-64 h-64',
+
+      }
+    },
     onUpdate: async ({ transaction }) => {
       const getImageSrcs = (fragment: Fragment) => {
         let srcs = new Set<string>();
