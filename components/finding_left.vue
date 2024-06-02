@@ -178,7 +178,7 @@ const getRisk = (total: number) => {
           <div class="flex flex-col gap-1 py-2">
             <div class="font-['Roboto'] font-bold text-base">Finding Properties</div>
             <div class="flex flex-col gap-2">
-              <FindingItem :loading="loading" label="Category">
+              <FindingItem :loading="loading" label="Category" icon="material-symbols:category-rounded">
                 <div v-if="!store.isEditor || (!store.isEditor)">
                   {{ store.category ?? '-' }}
                 </div>
@@ -188,7 +188,7 @@ const getRisk = (total: number) => {
 
 
               </FindingItem>
-              <FindingItem :loading="loading" label="Location">
+              <FindingItem :loading="loading" label="Location" icon="i-material-symbols-location-searching-rounded">
                 <div v-if="!store.isEditor || (!store.isEditor)">
                   {{ store.location ?? '-' }}
                 </div>
@@ -197,7 +197,7 @@ const getRisk = (total: number) => {
                 </USelectMenu>
 
               </FindingItem>
-              <FindingItem :loading="loading" label="Method">
+              <FindingItem :loading="loading" label="Method" icon="i-material-symbols-search-rounded">
                 <div v-if="!store.isEditor || (!store.isEditor)">
                   {{ store.method ?? '-' }}
                 </div>
@@ -206,21 +206,22 @@ const getRisk = (total: number) => {
                 </USelectMenu>
 
               </FindingItem>
-              <FindingItem :loading="loading" label="Environment">
+              <FindingItem :loading="loading" label="Environment"
+                icon="i-material-symbols-nest-eco-leaf-outline-rounded">
                 <div v-if="!store.isEditor || (!store.isEditor)">
                   {{ store.environment ?? '-' }}
                 </div>
                 <UInput v-else v-model="store.environment" size="2xs" placeholder="Application Version" />
 
               </FindingItem>
-              <FindingItem :loading="loading" label="Application">
+              <FindingItem :loading="loading" label="Application" icon="i-heroicons-bars-3-bottom-left">
                 <div v-if="!store.isEditor || (!store.isEditor)">
                   {{ store.application ?? '-' }}
                 </div>
                 <UInput v-else v-model="store.application" size="2xs" placeholder="Application Name" />
 
               </FindingItem>
-              <FindingItem :loading="loading" label="Risk (Impact)">
+              <FindingItem :loading="loading" label="Impact" icon="i-material-symbols-bomb-outline-rounded">
                 <div v-if="!store.isEditor || (!store.isEditor)">
                   {{ store.impact ?? '-' }}
                 </div>
@@ -229,7 +230,7 @@ const getRisk = (total: number) => {
                 </USelectMenu>
 
               </FindingItem>
-              <FindingItem :loading="loading" label="Risk (Likelihood)">
+              <FindingItem :loading="loading" label="Likelihood" icon="i-material-symbols-speed-outline-rounded">
                 <div v-if="!store.isEditor || (!store.isEditor)">
                   {{ store.likelihood ?? '-' }}
                 </div>
