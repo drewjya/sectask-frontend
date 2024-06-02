@@ -6,16 +6,15 @@ import Document from '@tiptap/extension-document';
 import HardBreak from '@tiptap/extension-hard-break';
 import Heading from '@tiptap/extension-heading';
 import HighLight from '@tiptap/extension-highlight';
+import History from '@tiptap/extension-history';
+import Italic from '@tiptap/extension-italic';
 import ListItem from '@tiptap/extension-list-item';
 import OrderedList from '@tiptap/extension-ordered-list';
-import Strike from '@tiptap/extension-strike';
-import Underline from '@tiptap/extension-underline';
-
-import Italic from '@tiptap/extension-italic';
 import Paragraph from '@tiptap/extension-paragraph';
+import Strike from '@tiptap/extension-strike';
 import Text from '@tiptap/extension-text';
+import Underline from '@tiptap/extension-underline';
 import type { Fragment } from '@tiptap/pm/model';
-import StarterKit from '@tiptap/starter-kit';
 import * as TipTap from '@tiptap/vue-3';
 import { isApiError } from '~/types/api/error';
 import type { VFile } from '~/types/data/file';
@@ -27,10 +26,16 @@ const app = useApp();
 
 const model = defineModel<string>()
 
-
-watch(() => model.value, (val) => {
-  editor.value?.commands.setContent(val ?? '<p></p>')
+watch(model, (val) => {
+  if (!editor.value?.isFocused) {
+    editor.value?.commands.setContent(val ?? '<p></p>')
+  }
 })
+
+
+
+
+
 
 onMounted(() => {
 
@@ -68,7 +73,6 @@ onMounted(() => {
       },
 
     },
-    content: model.value,
     onUpdate: async ({ transaction, editor }) => {
       model.value = editor.getHTML()
       const getImageSrcs = (fragment: Fragment) => {
@@ -99,13 +103,11 @@ onMounted(() => {
 
       }
     },
-
-
     extensions: [
       Document,
       ListItem,
+      History,
       Code,
-      StarterKit,
       BulletList,
       Paragraph,
       Strike,
@@ -118,10 +120,10 @@ onMounted(() => {
       HardBreak,
       ImageResize,
       HighLight.configure({ HTMLAttributes: { class: 'bg-orange-300 rounded-none px-0.5' } }),
-
     ]
   })
 
+  editor.value.commands.setContent(model.value ?? '<p></p>')
 })
 
 const fileDialog = useFileDialog({
@@ -243,18 +245,6 @@ onBeforeRouteLeave(() => {
           disabled: false,
           onClicked: () => editor?.chain().focus().toggleCode().run(),
           active: editor.isActive('code') === true,
-        }, {
-          icon: 'material-symbols:format-quote',
-          tooltip: 'Quote',
-          disabled: false,
-          onClicked: () => editor?.chain().focus().toggleBlockquote().run(),
-          active: editor.isActive('blockquote') === true,
-        }, {
-          icon: 'material-symbols:horizontal-rule',
-          tooltip: 'Horizontal Rule',
-          disabled: false,
-          onClicked: () => editor?.chain().focus().setHorizontalRule().run(),
-          active: false,
         }, {
           icon: 'material-symbols:undo',
           tooltip: 'Undo',

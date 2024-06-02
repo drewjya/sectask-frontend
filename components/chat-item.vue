@@ -45,7 +45,7 @@ onClickOutside(target, () => {
 
 <template>
   <div class="relative w-full" @contextmenu.prevent="onClick" @click="onClick" ref="target">
-    <div class="bg-slate-100 border border-slate-300 p-1 rounded-md flex flex-col gap-2">
+    <div class="bg-slate-100 border border-slate-300 p-1 px-2 rounded-md flex flex-col gap-2">
       <div class="flex gap-2 items-center justify-between">
         <div class="flex items-center gap-2">
           <UAvatar size="sm" :src="formatImage(chat.sender.profilePicture)" :alt="chat.sender.name.toUpperCase()" />
@@ -66,7 +66,7 @@ onClickOutside(target, () => {
           <div v-html="chat.replyChat.content" class="bg-slate-200 p-1 rounded px-2 w-full"></div>
         </div>
       </div>
-      <div v-html="chat.content" class="bg-slate-200 p-1 rounded px-2"></div>
+      <div v-html="chat.content" class="bg-slate-200 p-1 rounded px-2 prose-p text-sm"></div>
     </div>
     <div class="absolute border bg-slate-100  rounded-sm p-2 z-50" :style="{
       top: `${y}px`,

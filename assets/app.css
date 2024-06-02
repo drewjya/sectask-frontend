@@ -47,6 +47,10 @@ body {
   list-style-type: decimal !important;
 }
 
+.ProseMirror p {
+  @apply text-xs;
+}
+
 .ProseMirror ul {
   padding: 0 1rem;
   list-style-type: disc !important;

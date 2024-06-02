@@ -91,11 +91,8 @@ onMounted(() => {
       if (currentSrcs.size === 0 && previousSrcs.size === 0) {
         return;
       }
-
       let deletedImageSrcs = [...previousSrcs].filter((src) => !currentSrcs.has(src));
-
       if (deletedImageSrcs.length > 0) {
-        //Handle deleting file on cloud here
         console.log(deletedImageSrcs);
         for (const iterator of deletedImageSrcs) {
           const urls = iterator.replaceAll(useRuntimeConfig().public.FILE_URL, '')
@@ -103,8 +100,6 @@ onMounted(() => {
         }
 
       }
-
-
     },
     editable: props.editable,
     extensions: [

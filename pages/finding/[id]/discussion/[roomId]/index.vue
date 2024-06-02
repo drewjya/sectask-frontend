@@ -173,9 +173,8 @@ onBeforeRouteLeave(async () => {
 
 <template>
   <div class="flex flex-col  h-full overflow-y-auto pb-64">
-    <div class="p-4 flex  justify-between" v-if="roomDetail">
+    <div class="p-4 flex  items-center gap-2" v-if="roomDetail">
       <div class="flex flex-col">
-
         <div class="font-bold text-2xl">
           {{ roomDetail.title }}
         </div>
