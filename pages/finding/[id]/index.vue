@@ -32,6 +32,10 @@ const tabs = [
     key: "document",
   },
   {
+    label: "Test Result",
+    key: "test",
+  },
+  {
     label: "CVSS",
     key: "cvss",
   },
@@ -97,6 +101,9 @@ const loading = computed(() => store.loading);
           <section class="grow h-full w-full overflow-x-auto">
             <template v-if="!$route.query.tab || `${$route.query.tab}`.startsWith('document')">
               <DocumentEditor />
+            </template>
+            <template v-else-if="`${$route.query.tab}`.startsWith('test')">
+              <TestResult />
             </template>
             <template v-else-if="`${$route.query.tab}`.startsWith('cvss')">
               <CvssEditor />

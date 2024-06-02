@@ -116,9 +116,9 @@ const editImage = () => {
         </div>
       </HeaderItem>
       <HeaderItem label="Project Active Period">
-        <div class=" w-max">
-          <RangeDatePicker v-model="range" :disabled="!userCanEditActivePeriode" variant="solid" color="white" />
-        </div>
+
+        <RangeDatePicker v-model="range" :disabled="!userCanEditActivePeriode" variant="solid" color="white" />
+
       </HeaderItem>
       <HeaderItem label="Project My Role">
         <div class="capitalize">

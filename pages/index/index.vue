@@ -74,7 +74,7 @@ const fileUrl = (file?: VFile) => {
     <div>
       <div class="font-bold text-lg font-['DM Sans']">Active Project</div>
       <div class="  overflow-x-auto flex gap-2  " :class="app.sidebar ? 'w-[calc(100vw-20rem)]' : 'w-full'">
-        <NuxtLink :to="`/project/${i.id}`" class="flex flex-col gap-2 p-2 rounded bg-gray-200" v-for="i in projects">
+        <NuxtLink :to="`/project/${i.id}`" class="flex flex-col gap-2 p-2 rounded bg-gray-100" v-for="i in projects">
           <div class="flex items-center gap-2">
             <UAvatar :alt="i.name.toUpperCase()" :src="fileUrl(i.projectPicture)" size="xl" />
             <div class="text-sm font-bold ">{{ i.name }}</div>
@@ -83,7 +83,7 @@ const fileUrl = (file?: VFile) => {
             {{ formatDate(i.startDate, "DD MMM, YYYY") }} → {{ formatDate(i.endDate, "DD MMM, YYYY") }}
           </div>
           <div>
-            <div class="text-[0.6rem]">Created By</div>
+
             <div class="text-xs flex gap-2 items-center w-max">
 
               <UAvatar :alt="i.owner.name.toUpperCase()" :src="fileUrl(i.owner.profilePicture)" size="sm" />
@@ -102,14 +102,13 @@ const fileUrl = (file?: VFile) => {
     <div>
       <div class="font-bold text-lg font-['DM Sans']">Recent Updates</div>
       <div class="  flex flex-col gap-2  " :class="app.sidebar ? 'w-[calc(100vw-20rem)]' : 'w-full'">
-        <NuxtLink :to="`/${i.type.toLowerCase()}/${i.documentId}`" class="flex flex-col gap-2 p-2 rounded bg-gray-200"
+        <NuxtLink :to="`/${i.type.toLowerCase()}/${i.documentId}`" class="flex flex-col gap-0.5 p-2 rounded bg-gray-200"
           v-for="i in logs">
-          <div class="flex items-center gap-2">
 
-            <div class="text-sm font-bold ">{{ i.title }}</div>
-          </div>
-          <div class="text-xs w-max">
-            {{ i.description }}
+          <div class="text-base font-bold ">{{ i.title }}</div>
+
+          <div class="text-xs w-max" v-html="i.description">
+
           </div>
           <div>
 

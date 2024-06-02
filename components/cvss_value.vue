@@ -23,14 +23,14 @@ const store = findingStore()
 <template>
   <UFormGroup>
     <template #label>
-      <div class="text-sm font-bold">{{ label }}</div>
+      <div class="text-sm  font-['Roboto'] text-black">{{ label }}</div>
     </template>
     <div class="flex items-center gap-5">
       <UButton v-for="i in items" :label="i.label"
         :variant="i.value === '' ? 'ghost' : (selected === i.value) ? 'solid' : 'outline'"
-        :color="selected === i.value ? 'green' : 'white'" size="2xs" :disabled="!store.isEditor"
+        :color="selected === i.value ? 'slate' : 'white'" size="2xs" :disabled="!store.isEditor"
         @click="i.value === '' || props.onSelect === undefined ? null : props.onSelect(i)"
-        class="max-w-40 justify-center min-w-28" />
+        class="max-w-40 justify-center min-w-28 font-normal" />
     </div>
 
 

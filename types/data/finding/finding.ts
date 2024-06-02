@@ -1,5 +1,6 @@
 import type { VFile } from "../file";
 import type { OwnerFinding } from "../subproject/subproject";
+import type { User } from "../user";
 
 export type FindingData = {
   id: number;
@@ -94,8 +95,20 @@ export interface RoomChatDetail extends RoomChat {
 
 export interface Chat {
   content: string;
-  id: number
+  id: number;
   createdAt: Date;
   sender: OwnerFinding;
   replyChat?: Chat;
+}
+
+export interface TestingHistory {
+  createdAt: Date;
+  status: string;
+  id: number;
+  version: string;
+  tester: User;
+}
+
+export interface TestingDetail extends TestingHistory {
+  content: string;
 }

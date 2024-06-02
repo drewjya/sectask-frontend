@@ -27,7 +27,7 @@ export const formatDate = (date: Date, format: string) => {
   return dayjs(date).format(format);
 };
 
-export const formatImage = (image?: VFile) => {
+export const formatImage = (image: VFile|null|undefined) => {
   const runtime = useRuntimeConfig();
   return image ? `${runtime.public.FILE_URL}${image.name}` : undefined;
 };

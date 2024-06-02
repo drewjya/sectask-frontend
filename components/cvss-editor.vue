@@ -503,7 +503,7 @@ const newC = computed(() => app.sidebar ? 'w-[calc(100vw-40rem)]' : 'w-[calc(100
 
 <style scoped>
 .cvsscontainer {
-  @apply w-full bg-gray-200 rounded-md p-2
+  @apply w-full bg-gray-100 rounded-md p-2
 }
 
 .cvssscroll {

@@ -26,6 +26,27 @@ export const findingStore = defineStore("finding-store", () => {
     };
   };
 
+  const statusList = ["Not Retested", "Not Fixed", "Partially Fixed", "Fixed"];
+  const categoryList = ["Infrastructure", "API", "IOS", "Android", "Web"];
+
+  const locationList = ["Internal", "External"];
+
+  const methodList = ["White Box", "Grey Box", "Black Box"];
+  const impactList = [
+    { label: "Inisgniificant", value: 1 },
+    { label: "Minor", value: 2 },
+    { label: "Moderate", value: 3 },
+    { label: "Major", value: 4 },
+    { label: "Catasrophic", value: 5 },
+  ];
+  const likelihoodList = [
+    { label: "Rare", value: 1 },
+    { label: "Unlikely", value: 2 },
+    { label: "Possible", value: 3 },
+    { label: "Likely", value: 4 },
+    { label: "Certainly", value: 5 },
+  ];
+
   const socket = useSocket();
   const loading = ref(true);
   const id = ref();
@@ -50,12 +71,12 @@ export const findingStore = defineStore("finding-store", () => {
   const createdBy = ref<OwnerFinding>();
   const subproject = ref<SubprojectFinding>();
   const testerFinding = ref<TesterFinding[]>();
-  const discussions = ref<RoomChat[]>()
+  const discussions = ref<RoomChat[]>();
   const watcher = watchIgnorable(
     [onEdit],
     useDebounceFn(() => {
       if (onEdit.value) {
-        return
+        return;
       }
       if (!id.value) {
         return;
@@ -213,7 +234,7 @@ export const findingStore = defineStore("finding-store", () => {
     watcher.ignoreUpdates(() => {
       onEdit.value = false;
     });
-    discussions.value = undefined
+    discussions.value = undefined;
     findingWatcher.ignoreUpdates(() => {
       category.value = undefined;
       location.value = undefined;
@@ -249,7 +270,6 @@ export const findingStore = defineStore("finding-store", () => {
     getFinding();
   });
   const router = useRouter();
-  
 
   const getFinding = async () => {
     if (!id.value) {
@@ -406,6 +426,12 @@ export const findingStore = defineStore("finding-store", () => {
     subproject,
     testerFinding,
     onEdit,
-    discussions
+    discussions,
+    statusList,
+    categoryList,
+    locationList,
+    methodList,
+    impactList,
+    likelihoodList,
   };
 });

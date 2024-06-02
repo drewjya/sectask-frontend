@@ -197,7 +197,7 @@ onBeforeRouteLeave(() => {
 </script>
 
 <template>
-  <div class="flex gap-1 flex-wrap" v-if="editor">
+  <div class="flex gap-1 flex-wrap" v-if="editor && props.editable">
     <UDropdown
       :items="[[{ label: 'Heading 1', click: () => editor.chain().focus().toggleHeading({ level: 1 }).run() }, { label: 'Heading 2', click: () => editor.chain().focus().toggleHeading({ level: 2 }).run() }, { label: 'Heading 3', click: () => editor.chain().focus().toggleHeading({ level: 3 }).run() }]]">
       <UButton

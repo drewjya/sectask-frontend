@@ -23,8 +23,12 @@ import type { VFile } from '~/types/data/file';
 
 const editor = ref<TipTap.Editor>()
 const app = useApp();
-
 const model = defineModel<string>()
+
+
+const props = defineProps<{
+  notEditable?: boolean
+}>()
 
 watch(model, (val) => {
   if (!editor.value?.isFocused) {
@@ -66,13 +70,7 @@ onMounted(() => {
   })
 
   editor.value = new TipTap.Editor({
-    editorProps: {
-
-      attributes: {
-        class: 'max-h-96',
-      },
-
-    },
+    editable: !(props.notEditable === true),
     onUpdate: async ({ transaction, editor }) => {
       model.value = editor.getHTML()
       const getImageSrcs = (fragment: Fragment) => {
@@ -191,7 +189,7 @@ onBeforeRouteLeave(() => {
 
   <div class="flex flex-col gap-2 p-2">
 
-    <div class="flex gap-1 flex-wrap" v-if="editor">
+    <div class="flex gap-1 flex-wrap" v-if="editor && !props.notEditable">
       <UDropdown
         :items="[[{ label: 'Heading 1', click: () => editor?.chain().focus().toggleHeading({ level: 1 }).run() }, { label: 'Heading 2', click: () => editor?.chain().focus().toggleHeading({ level: 2 }).run() }, { label: 'Heading 3', click: () => editor?.chain().focus().toggleHeading({ level: 3 }).run() }]]">
         <UButton

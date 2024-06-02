@@ -126,6 +126,24 @@ const onFocus = () => {
   store.onEdit = true;
 };
 
+
+
+const riskFormula = (impact: number, likelihood: number) => {
+  return impact * likelihood;
+}
+
+const getRisk = (total: number) => {
+  if (total <= 5) {
+    return "Low"
+  } else if (total <= 10) {
+    return "Medium"
+  } else if (total <= 15) {
+    return "High"
+  } else {
+    return "Extreme"
+  }
+}
+
 </script>
 
 <template>
@@ -164,49 +182,60 @@ const onFocus = () => {
                 <div v-if="!store.isEditor || (!store.isEditor)">
                   {{ store.category ?? '-' }}
                 </div>
-                <UInput v-else v-model="store.category" size="2xs" />
+                <USelectMenu v-else v-model="store.category" :options="store.categoryList" :size="'2xs'" class="w-full"
+                  placeholder="Select Category">
+                </USelectMenu>
+
 
               </FindingItem>
               <FindingItem :loading="loading" label="Location">
                 <div v-if="!store.isEditor || (!store.isEditor)">
                   {{ store.location ?? '-' }}
                 </div>
-                <UInput v-else v-model="store.location" size="2xs" />
+                <USelectMenu v-else v-model="store.location" :options="store.locationList" :size="'2xs'" class="w-full"
+                  placeholder="Select Location">
+                </USelectMenu>
 
               </FindingItem>
               <FindingItem :loading="loading" label="Method">
                 <div v-if="!store.isEditor || (!store.isEditor)">
                   {{ store.method ?? '-' }}
                 </div>
-                <UInput v-else v-model="store.method" size="2xs" />
+                <USelectMenu v-else v-model="store.method" :options="store.methodList" :size="'2xs'" class="w-full"
+                  placeholder="Select Method">
+                </USelectMenu>
 
               </FindingItem>
               <FindingItem :loading="loading" label="Environment">
                 <div v-if="!store.isEditor || (!store.isEditor)">
                   {{ store.environment ?? '-' }}
                 </div>
-                <UInput v-else v-model="store.environment" size="2xs" />
+                <UInput v-else v-model="store.environment" size="2xs" placeholder="Application Version" />
 
               </FindingItem>
               <FindingItem :loading="loading" label="Application">
                 <div v-if="!store.isEditor || (!store.isEditor)">
                   {{ store.application ?? '-' }}
                 </div>
-                <UInput v-else v-model="store.application" size="2xs" />
+                <UInput v-else v-model="store.application" size="2xs" placeholder="Application Name" />
 
               </FindingItem>
               <FindingItem :loading="loading" label="Risk (Impact)">
                 <div v-if="!store.isEditor || (!store.isEditor)">
                   {{ store.impact ?? '-' }}
                 </div>
-                <UInput v-else v-model="store.impact" size="2xs" />
+                <USelectMenu v-else v-model="store.impact" :options="store.impactList" :size="'2xs'" class="w-full"
+                  option-attribute="label" value-attribute="label" placeholder="Select Impact">
+                </USelectMenu>
 
               </FindingItem>
               <FindingItem :loading="loading" label="Risk (Likelihood)">
                 <div v-if="!store.isEditor || (!store.isEditor)">
                   {{ store.likelihood ?? '-' }}
                 </div>
-                <UInput v-else v-model="store.likelihood" size="2xs" />
+                <USelectMenu v-else v-model="store.likelihood" :options="store.likelihoodList" :size="'2xs'"
+                  class="w-full" placeholder="Select Likelihood" option-attribute="label" value-attribute="label">
+                </USelectMenu>
 
               </FindingItem>
 
@@ -227,20 +256,7 @@ const onFocus = () => {
                 -
 
               </FindingItem>
-              <FindingItem :loading="loading" label="Status">
-                <div>
-                  {{ store.status ?? '-' }}
-                </div>
 
-
-              </FindingItem>
-              <FindingItem :loading="loading" label="Releases">
-                <div>
-                  {{ store.releases ?? '-' }}
-                </div>
-
-
-              </FindingItem>
             </div>
           </div>
           <hr>
