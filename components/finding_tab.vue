@@ -1,35 +1,42 @@
 <script lang="ts" setup>
-import AddFindingModal from './add-finding-modal.vue';
+import AddFindingModal from "./add-finding-modal.vue";
 
+const app = useApp();
+const store = subprojectStore(app.user?.id ?? -1)();
 
-const app = useApp()
-const store = subprojectStore(app.user?.id ?? -1)()
-
-const modal = useModal()
+const modal = useModal();
 
 const addFindings = () => {
   // modal.openModal('addFindings')
   modal.open(AddFindingModal, {
     subprojectId: store.id ?? -1,
     onClose: () => {
-      modal.close()
-    }
+      modal.close();
+    },
+  });
+};
 
-  })
-}
-
-const canEdit = computed(() => store.myrole === Role.PM)
+const canEdit = computed(() => store.myrole === Role.PM);
 </script>
 
 <template>
-  <div class="px-2 flex flex-col gap-2 ">
+  <div class="px-2 flex flex-col gap-2">
     <div class="flex justify-between px-2">
       <div class="text-lg font-bold font-['DM Sans']">Findings</div>
-      <UButton label="Add" icon="i-heroicons-plus" size="sm" color="white" variant="solid"
-        v-if="store.myrole === Role.CONSULTANT" @click="addFindings()" />
+      <UButton
+        label="Add"
+        icon="i-heroicons-plus"
+        size="sm"
+        color="white"
+        variant="solid"
+        v-if="store.myrole === Role.CONSULTANT"
+        @click="addFindings()"
+      />
     </div>
-    <div class="grid px-2 gap-2 text-sm font-bold font-['DM Sans'] place-items-start"
-      :class="canEdit ? 'grid-cols-9' : 'grid-cols-8'">
+    <div
+      class="grid px-2 gap-2 text-sm font-bold font-['DM Sans'] place-items-start"
+      :class="canEdit ? 'grid-cols-9' : 'grid-cols-8'"
+    >
       <div class="col-span-2">
         <div>Findings</div>
       </div>
@@ -49,17 +56,22 @@ const canEdit = computed(() => store.myrole === Role.PM)
     <div v-if="store.loading && !store.findings"></div>
     <div v-else-if="store.findings?.length === 0">
       <div
-        class="bg-white rounded-md min-h-40 flex justify-center items-center  py-4 px-2 font-['DM Sans'] text-[#64748B] text-sm">
-        No findings</div>
+        class="bg-white dark:bg-gray-800 dark:text-white rounded-md min-h-40 flex justify-center items-center py-4 px-2 font-['DM Sans'] text-[#64748B] text-sm"
+      >
+        No findings
+      </div>
     </div>
     <div v-else class="flex flex-col gap-3">
-
-      <FindingsTabItem v-for="i in store.findings" :name="i.name" :createdBy="i.createdBy" :risk="'asjsaj'" :id="i.id"
-        :deletable="canEdit" :status="'ashsah'" />
+      <FindingsTabItem
+        v-for="i in store.findings"
+        :name="i.name"
+        :createdBy="i.createdBy"
+        :risk="'asjsaj'"
+        :id="i.id"
+        :deletable="canEdit"
+        :status="'ashsah'"
+      />
     </div>
-
-
-
   </div>
 </template>
 

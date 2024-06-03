@@ -91,7 +91,7 @@ const operTest = (test: TestingHistory) => {
       <div class="flex flex-col overflow-y-auto h-full gap-3" v-if="histories">
         <div
           v-for="i in histories"
-          class="bg-gray-100 rounded-sm p-3 font-['Roboto']"
+          class="bg-gray-100 dark:bg-slate-800 rounded p-3 font-['Roboto']"
           @click="operTest(i)"
         >
           <div class="flex items-center justify-between">

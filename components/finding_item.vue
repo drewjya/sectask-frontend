@@ -1,24 +1,23 @@
 <script lang="ts" setup>
-
 const props = defineProps<{
   label: string;
   loading: boolean;
-  icon?:string
-}>()
+  icon?: string;
+}>();
 </script>
 
 <template>
   <div class="grid grid-cols-2">
-    <div class="col-span-1 font-['Roboto'] text-sm text-gray-800 flex items-center">
-      <UIcon v-if="icon" :name="icon" class="mr-2" />
-      <span>
+    <div
+      class="col-span-1 font-['Roboto'] text-sm text-gray-800 flex items-center"
+    >
+      <UIcon v-if="icon" :name="icon" class="mr-2 dark:text-white" />
+      <span class="dark:text-white">
         {{ label }}
-
       </span>
     </div>
     <div class="col-span-1 flex flex-col items-center justify-center">
-      <template v-if="loading">
-        Loading</template>
+      <template v-if="loading"> Loading</template>
       <template v-else>
         <slot></slot>
       </template>
