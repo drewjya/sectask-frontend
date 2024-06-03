@@ -47,7 +47,7 @@ export default defineNuxtConfig({
       "timezone",
     ],
   },
-  colorMode: { preference: "dark", fallback: "light", classSuffix: "" },
+  colorMode: { preference: "system", fallback: "light", classSuffix: "" },
   app: {
     head: {
       title: "Notix",

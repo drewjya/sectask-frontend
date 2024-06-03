@@ -13,7 +13,7 @@ const notif = useNotification();
 const isEdited = ref(false);
 const search = ref<string>();
 const searched = ref<RoomChat[]>();
-const socket = useSocket()
+const socket = useSocket();
 onMounted(async () => {
   if (!store.discussions) {
     loading.value = true;
@@ -43,13 +43,13 @@ onMounted(async () => {
     } finally {
       loading.value = false;
     }
-    const conn = await socket.getConnection()
+    const conn = await socket.getConnection();
     conn.on(FINDING_EVENT.ROOM, (data: RoomChat) => {
       store.discussions?.unshift({
         ...data,
-        createdAt: new Date(data.createdAt)
-      })
-    })
+        createdAt: new Date(data.createdAt),
+      });
+    });
   }
 });
 let typingTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -123,21 +123,57 @@ const openModal = () => {
 <template>
   <div class="flex flex-col gap-4 p-2">
     <div class="flex gap-2">
-      <UInput v-model="search" @input="onSearch" @focus="onFocus" @blur="onBlur" placeholder="Search" class="w-full"
-        size="xs" />
-      <UButton icon="material-symbols:add" size="xs" color="slate" @click="openModal" />
+      <UInput
+        v-model="search"
+        @input="onSearch"
+        @focus="onFocus"
+        @blur="onBlur"
+        placeholder="Search"
+        class="w-full"
+        size="xs"
+      />
+      <UButton
+        icon="material-symbols:add"
+        size="xs"
+        color="slate"
+        @click="openModal"
+      />
     </div>
-    <div v-if="loading">Loading</div>
+    <div
+      class="flex justify-center items-center h-56 bg-gray-200 rounded-md dark:bg-gray-700 w-full"
+      v-if="loading"
+    >
+      <div class="text-center">Loading</div>
+    </div>
     <div v-else-if="search && search !== ''">
-      <div v-if="!searched">Loading</div>
-      <div v-else-if="searched.length === 0">Discussion Not Found</div>
+      <div
+        class="flex justify-center items-center h-56 bg-gray-200 rounded-md dark:bg-gray-700 w-full"
+        v-if="!searched"
+      >
+        <div class="text-center">Loading</div>
+      </div>
+
+      <div
+        class="flex justify-center items-center h-56 bg-gray-200 rounded-md dark:bg-gray-700 w-full"
+        v-else-if="searched.length === 0"
+      >
+        <div class="text-center">Not Found</div>
+      </div>
+
       <div v-else class="flex flex-col gap-3">
         <DiscussionItem v-for="i in searched" :discussion="i" />
       </div>
     </div>
     <div v-else>
       <div v-if="!store.discussions">Loading</div>
-      <div v-else-if="store.discussions.length === 0">Discussion Not Found</div>
+
+      <div
+        class="flex justify-center items-center h-56 bg-gray-200 rounded-md dark:bg-gray-700 w-full"
+        v-else-if="store.discussions.length === 0"
+      >
+        <div class="text-center">No Discussion</div>
+      </div>
+
       <div v-else class="flex flex-col gap-3">
         <DiscussionItem v-for="i in store.discussions" :discussion="i" />
       </div>

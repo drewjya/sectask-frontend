@@ -39,7 +39,10 @@ body {
 }
 
 .ProseMirror {
-  padding: 8px;
+  padding-top: 0.5rem;
+  padding-left: 8px;
+  padding-bottom: 0.5rem;
+  padding-right: 8px;
 }
 
 .ProseMirror ol {
@@ -48,7 +51,33 @@ body {
 }
 
 .ProseMirror p {
-  @apply text-xs;
+  @apply text-[0.8rem];
+}
+
+.collaboration-cursor__caret {
+  position: relative;
+  margin-left: 1px;
+  margin-right: -1px;
+  border-left: 1px solid #0d0d0d;
+  border-right: 1px solid #0d0d0d;
+  word-break: normal;
+  pointer-events: none;
+}
+
+.collaboration-cursor__label {
+  position: absolute;
+  top: -1.2em;
+  left: -1px;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  user-select: none;
+  color: #0d0d0d;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px 3px 3px 0;
+  white-space: nowrap;
+  opacity: 0.8;
 }
 
 .ProseMirror ul {

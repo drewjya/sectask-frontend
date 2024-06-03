@@ -69,7 +69,7 @@ onMounted(() => {
   editor.value = new TipTap.Editor({
     editorProps: {
       attributes: {
-        class: "max-h-64 h-64",
+        class: "max-h-64 h-64 py-8",
       },
     },
     onUpdate: async ({ transaction }) => {
@@ -98,7 +98,7 @@ onMounted(() => {
             useRuntimeConfig().public.FILE_URL,
             ""
           );
-          await api.post(`/finding/upload/${urls}`);
+          await api.post(`/finding/upload/delete/${urls}`);
         }
       }
     },
@@ -150,14 +150,23 @@ const upload = async (param: { files?: FileList | null }) => {
     const formData = new FormData();
     if (param.files && param.files.length > 0) {
       formData.append("file", param.files[0]);
-      const data = await api.post<VFile>(`/finding/upload`, {
-        body: formData,
-      });
+      const data = await api.post<VFile>(
+        `/finding/upload/${findingStore().id}`,
+        {
+          body: formData,
+        }
+      );
 
       if (data.data) {
         const url = await createUrlFile(data.data);
-        console.log(url);
-        editor.value.chain().focus().setImage({ src: url }).run();
+
+        editor.value
+          .chain()
+          .focus()
+          .setImage({
+            src: url + `?id=${data.data.id}&findingId=${findingStore().id}`,
+          })
+          .run();
       }
 
       notif.ok({

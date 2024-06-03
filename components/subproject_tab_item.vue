@@ -14,13 +14,12 @@ const status = computed(() =>
   })
 );
 
-const activePeriod = computed(
-  () =>
-    `${formatDate(props!.startDate, "DD MMM, YYYY")} → ${formatDate(
-      props!.endDate,
-      "DD MMM, YYYY"
-    )}`
-);
+const api = useEPrivateApi();
+const deleteSubproject = () => {
+  api.remove(`/subproject/${props.id}`, {
+    message: "Subproject deleted successfully",
+  });
+};
 
 const range = computed(() => {
   return {
@@ -31,18 +30,20 @@ const range = computed(() => {
 </script>
 
 <template>
-  <NuxtLink
+  <div
     class="grid bg-white dark:bg-gray-900 rounded-md border dark:border-gray-700 py-4 px-2 font-['DM Sans'] gap-2"
     :class="deletable ? 'grid grid-cols-8' : 'grid grid-cols-7'"
-    :to="`/subproject/${id}`"
   >
-    <div class="col-span-2 flex items-center gap-2">
+    <NuxtLink
+      :to="`/subproject/${id}`"
+      class="col-span-2 flex items-center gap-2"
+    >
       <UAvatar :alt="props?.name.toUpperCase()" />
       <div class="text-[#64748B] dark:text-white text-sm">
         {{ props?.name }}
       </div>
-    </div>
-    <div class="col-span-2 flex items-center">
+    </NuxtLink>
+    <NuxtLink :to="`/subproject/${id}`" class="col-span-2 flex items-center">
       <div
         :style="{
           color: status.color,
@@ -55,19 +56,27 @@ const range = computed(() => {
       >
         {{ status.value }}
       </div>
-    </div>
-    <div class="col-span-3 flex items-center text-xs">
+    </NuxtLink>
+    <NuxtLink
+      class="col-span-3 flex items-center text-xs"
+      :to="`/subproject/${id}`"
+    >
       <RangeDatePicker
         v-model="range"
         color="white"
         variant="solid"
         :disabled="true"
       />
-    </div>
+    </NuxtLink>
     <div class="col-span-1 flex items-center" v-if="deletable">
-      <UButton icon="i-heroicons-trash" variant="outline" color="red" />
+      <UButton
+        icon="i-heroicons-trash"
+        variant="outline"
+        color="red"
+        @click="deleteSubproject"
+      />
     </div>
-  </NuxtLink>
+  </div>
 </template>
 
 <style scoped></style>

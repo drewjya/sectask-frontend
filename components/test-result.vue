@@ -88,7 +88,22 @@ const operTest = (test: TestingHistory) => {
       v-if="store.isEditor"
     />
     <div class="h-[93%]">
-      <div class="flex flex-col overflow-y-auto h-full gap-3" v-if="histories">
+      <div
+        class="flex justify-center items-center h-56 bg-gray-200 rounded-md dark:bg-gray-700 w-full"
+        v-if="loading"
+      >
+        <div class="text-center">Loading</div>
+      </div>
+      <div
+        class="flex justify-center items-center h-56 bg-gray-200 rounded-md dark:bg-gray-700 w-full"
+        v-else-if="!histories || histories.length == 0"
+      >
+        <div class="text-center">No Test Result Yet</div>
+      </div>
+      <div
+        class="flex flex-col overflow-y-auto h-full gap-3"
+        v-else-if="histories"
+      >
         <div
           v-for="i in histories"
           class="bg-gray-100 dark:bg-slate-800 rounded p-3 font-['Roboto']"

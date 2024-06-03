@@ -1,4 +1,4 @@
-import type { ApiError } from "~/types/api/error";
+import { isApiError, type ApiError } from "~/types/api/error";
 import type { ApiParam } from "~/types/api/param";
 import { isResponse, type SResponse } from "~/types/api/response";
 import type { VFile } from "~/types/data/file";
@@ -214,4 +214,105 @@ export const createUrlFile = (file: VFile) => {
   const url = useRuntimeConfig().public.FILE_URL + file.name;
 
   return url;
+};
+
+export const useEPrivateApi = () => {
+  const config = useRuntimeConfig();
+  const notif = useNotification();
+  const router = useRouter();
+  const app = useApp();
+  const _request = async <T>(
+    url: string,
+    type: "POST" | "PUT" | "DELETE",
+    param?: {
+      param?: ApiParam;
+      message?: string;
+      onNoAccess?: () => void;
+      onForbidden?: () => void;
+    }
+  ) => {
+    try {
+      const response = await request<T>({
+        url: url,
+        baseUrl: config.public.API_BASE_URL,
+        param: {
+          method: type,
+          headers: {
+            Authorization: app.getAuthorization,
+          },
+          body: param?.param,
+        },
+      });
+      if (param?.message) {
+        notif.ok({ message: param.message });
+      }
+      return response;
+    } catch (error) {
+      if (isApiError(error)) {
+        const message = error.message;
+        notif.error({ message });
+
+        if (message.toLowerCase() === "unauthorized") {
+          app.resetToken();
+          router.push("/login");
+        } else if (
+          message.toLowerCase() === "notfound" ||
+          message.toLowerCase() === "noaccess"
+        ) {
+          if (param?.onNoAccess) {
+            param?.onNoAccess();
+          }
+        } else if (message.toLowerCase() === "forbidden") {
+          if (param?.onForbidden) {
+            param?.onForbidden();
+          }
+        }
+      } else {
+        notif.error({
+          message: "Try Again Later",
+        });
+      }
+    }
+  };
+  const post = async <T>(
+    url: string,
+    param?: {
+      param?: ApiParam;
+      message?: string;
+
+      onNoAccess?: () => void;
+      onForbidden?: () => void;
+    }
+  ) => {
+    return _request<T>(url, "POST", param);
+  };
+  const remove = async <T>(
+    url: string,
+    param?: {
+      param?: ApiParam;
+      message?: string;
+
+      onNoAccess?: () => void;
+      onForbidden?: () => void;
+    }
+  ) => {
+    return _request<T>(url, "DELETE", param);
+  };
+  const put = async <T>(
+    url: string,
+    param?: {
+      param?: ApiParam;
+      message?: string;
+
+      onNoAccess?: () => {};
+      onForbidden?: () => {};
+    }
+  ) => {
+    return _request<T>(url, "PUT", param);
+  };
+  return {
+    post,
+    put,
+    remove,
+  };
 };
