@@ -40,6 +40,7 @@ export const FINDING_EVENT = {
   RETEST: "findingRetest",
   CVSS: "findingCVSS",
   ROOM: "findingRoomChat",
+  TESTLIST:'findingTestList',
 };
 export const FINDING_ACTION = {
   JOIN: "onFindingJoin",

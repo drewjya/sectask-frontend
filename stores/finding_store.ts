@@ -2,11 +2,13 @@ import { isApiError } from "~/types/api/error";
 import type {
   CVSSData,
   FindingData,
+  RetestProperty,
   RoomChat,
   TesterFinding,
 } from "~/types/data/finding/finding";
 import type { EventMember } from "~/types/data/project/event";
 import type { OwnerFinding } from "~/types/data/subproject/subproject";
+import type { User } from "~/types/data/user";
 import {
   FINDING_ACTION,
   FINDING_EVENT,
@@ -61,7 +63,7 @@ export const findingStore = defineStore("finding-store", () => {
   const application = ref<string>();
   const impact = ref<string>();
   const likelihood = ref<string>();
-  const latestUpdate = ref<Date>();
+  const retestProperty = ref<RetestProperty>();
   const createdAt = ref<Date>();
   const status = ref<string>();
   const releases = ref<string>();
@@ -146,38 +148,6 @@ export const findingStore = defineStore("finding-store", () => {
         });
     })
   );
-  const findingRetest = watchIgnorable(
-    [latestUpdate, status, releases],
-    useDebounceFn(() => {
-      if (!id.value) {
-        return;
-      }
-
-      const data = {
-        latestUpdate: latestUpdate.value,
-        status: status.value,
-        releases: releases.value,
-      };
-      api
-        .post(`/finding/retest/${id.value}`, {
-          body: data,
-        })
-        .then(() => {})
-        .catch((error) => {
-          if (isApiError(error)) {
-            notif.error({
-              title: "Error",
-              message: error.message,
-            });
-          } else {
-            notif.error({
-              title: "Error",
-              message: "Try again later",
-            });
-          }
-        });
-    })
-  );
 
   const cvssWatcher = watchIgnorable(
     [cvss],
@@ -227,6 +197,7 @@ export const findingStore = defineStore("finding-store", () => {
     conn.off(SUBPROJECT_EVENT.MEMBER);
     conn.off(FINDING_EVENT.HEADER);
     conn.off(FINDING_EVENT.CVSS);
+    conn.off(FINDING_EVENT.RETEST);
 
     loading.value = true;
     name.value = undefined as any;
@@ -244,11 +215,7 @@ export const findingStore = defineStore("finding-store", () => {
       impact.value = undefined;
       likelihood.value = undefined;
     });
-    findingRetest.ignoreUpdates(() => {
-      latestUpdate.value = undefined;
-      status.value = undefined;
-      releases.value = undefined;
-    });
+    retestProperty.value = undefined;
     cvssWatcher.ignoreUpdates(() => {
       cvss.value = undefined;
     });
@@ -299,14 +266,14 @@ export const findingStore = defineStore("finding-store", () => {
           likelihood.value = finding.likelihood;
         });
         isEditor.value = finding.isEditor;
-        findingRetest.ignoreUpdates(() => {
-          latestUpdate.value = finding.latestUpdate
-            ? new Date(finding.latestUpdate)
-            : undefined;
-
-          status.value = finding.status;
-          releases.value = finding.releases;
-        });
+        if (finding.retestProperty) {
+          retestProperty.value = {
+            lastUpdated: new Date(finding.retestProperty.lastUpdated),
+            tester: finding.retestProperty.tester,
+            version: finding.retestProperty.version,
+            status: finding.retestProperty.status,
+          };
+        }
         createdAt.value = new Date(finding.createdAt);
         descriptionId.value = finding.descriptionId;
         threatAndRiskId.value = finding.threatAndRiskId;
@@ -358,6 +325,34 @@ export const findingStore = defineStore("finding-store", () => {
         name.value = data.name;
       });
     });
+    conn.on(
+      FINDING_EVENT.RETEST,
+      (data: {
+        createdAt: Date;
+        id: number;
+        version: string;
+        status: string;
+        tester: User;
+      }) => {
+        retestProperty.value = {
+          lastUpdated: new Date(data.createdAt),
+          tester: data.tester,
+          version: data.version,
+          status: data.status,
+        };
+      }
+    );
+    conn.on(FINDING_EVENT.FINDINGPROP, (data: FindingData) => {
+      findingWatcher.ignoreUpdates(() => {
+        category.value = data.category;
+        location.value = data.location;
+        method.value = data.method;
+        environment.value = data.environment;
+        application.value = data.application;
+        impact.value = data.impact;
+        likelihood.value = data.likelihood;
+      });
+     })
     conn.on(
       FINDING_EVENT.CVSS,
       (data: { findingId: number; cvss: CVSSData }) => {
@@ -415,7 +410,7 @@ export const findingStore = defineStore("finding-store", () => {
     application,
     impact,
     likelihood,
-    latestUpdate,
+    retestProperty,
     createdAt,
     status,
     releases,

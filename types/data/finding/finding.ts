@@ -2,6 +2,12 @@ import type { VFile } from "../file";
 import type { OwnerFinding } from "../subproject/subproject";
 import type { User } from "../user";
 
+export type RetestProperty = {
+  lastUpdated: Date;
+  tester: User;
+  version: string;
+  status: string;
+};
 export type FindingData = {
   id: number;
   name: string;
@@ -12,7 +18,7 @@ export type FindingData = {
   application?: string;
   impact?: string;
   likelihood?: string;
-  latestUpdate?: Date;
+  retestProperty?: RetestProperty;
   createdAt: Date;
   status?: string;
   releases?: string;
