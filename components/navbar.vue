@@ -5,15 +5,7 @@ const app = useApp();
 <template>
   <div class="border-b py-1 flex gap-2 items-center dark:border-gray-800">
     <UButton
-      @click="
-        () => {
-          if (app.sidebar) {
-            app.setSidebarVal('true');
-          } else {
-            app.setSidebarVal('false');
-          }
-        }
-      "
+      @click="() => app.setSidebarVal()"
       icon="i-heroicons-chevron-double-left-16-solid"
       variant="ghost"
       class="hover:bg-transparent transition-all dark:hover:bg-transparent"

@@ -85,6 +85,7 @@ export default defineNuxtConfig({
       REFRESH_TOKEN_KEY: "NOTIX_REFRESHTOKEN_STORAGE_KEY",
       API_BASE_URL: "http://localhost:3000/api",
       WS_BASE_URL: "http://localhost:3000/event",
+      HOCUSPOCUS:"ws://localhost:3100",
       FILE_URL: "http://localhost:3000/img/",
       FILE_MAX_SIZE: 5_000_000, // 5MB
     },

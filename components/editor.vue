@@ -13,7 +13,6 @@ import ListItem from "@tiptap/extension-list-item";
 import OrderedList from "@tiptap/extension-ordered-list";
 import Strike from "@tiptap/extension-strike";
 import Underline from "@tiptap/extension-underline";
-
 import Italic from "@tiptap/extension-italic";
 import Paragraph from "@tiptap/extension-paragraph";
 import Text from "@tiptap/extension-text";
@@ -39,9 +38,7 @@ function getRandomColorHex(): string {
 }
 
 watch(model, (val) => {
-  console.log(val, "MAsuk", !editor.value?.isFocused);
-
-  if (!editor.value?.isFocused) {
+  if (!editor.value?.isFocused && props.editable) {
     editor.value?.commands.setContent(val ?? "<p></p>");
   }
 });
@@ -85,34 +82,6 @@ onMounted(() => {
     },
     onUpdate: async ({ transaction, editor }) => {
       model.value = editor.getHTML();
-      const getImageSrcs = (fragment: Fragment) => {
-        let srcs = new Set<string>();
-        fragment.forEach((node) => {
-          if (node.type.name === "image") {
-            srcs.add(node.attrs.src);
-          }
-        });
-        return srcs;
-      };
-      let currentSrcs = getImageSrcs(transaction.doc.content);
-      let previousSrcs = getImageSrcs(transaction.before.content);
-
-      if (currentSrcs.size === 0 && previousSrcs.size === 0) {
-        return;
-      }
-      let deletedImageSrcs = [...previousSrcs].filter(
-        (src) => !currentSrcs.has(src)
-      );
-      if (deletedImageSrcs.length > 0) {
-        console.log(deletedImageSrcs);
-        for (const iterator of deletedImageSrcs) {
-          const urls = iterator.replaceAll(
-            useRuntimeConfig().public.FILE_URL,
-            ""
-          );
-          await api.post(`/finding/upload/delete/${urls}`);
-        }
-      }
     },
     editable: props.editable,
     extensions: [
@@ -147,7 +116,9 @@ onMounted(() => {
     ],
   });
   model.value = editor.value.getHTML();
-  editor.value.commands.setContent(model.value ?? "<p></p>");
+  if (props.editable) {
+    editor.value.commands.setContent(model.value ?? "<p></p>");
+  }
 });
 
 const fileDialog = useFileDialog({

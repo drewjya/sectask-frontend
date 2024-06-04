@@ -1,5 +1,18 @@
 import type { User } from "~/types/data/user";
 
+const getDb = async () => {
+  return new Promise<IDBDatabase>((resolve, reject) => {
+    const request = indexedDB.open("sectask");
+    request.onsuccess = (e) => {
+      resolve(request.result);
+    };
+    request.onerror = () => {
+      reject(request.error);
+    };
+    request.onupgradeneeded = () => {};
+  });
+};
+
 export const useApp = defineStore("sectask-store", () => {
   const accessToken = useCookie("access_token_sectask", {
     maxAge: 60 * 60,
@@ -44,17 +57,14 @@ export const useApp = defineStore("sectask-store", () => {
       : undefined
   );
 
-  const sidebarVal = useCookie("sidebar", {
+  const sidebarVal = useCookie("sidebar-sectask", {
     maxAge: 60 * 60 * 24 * 30,
   });
 
-  const setSidebarVal = (value?: string) => {
-    sidebarVal.value = value;
-    console.log(sidebarVal.value);
+  const sidebar = ref(true);
+  const setSidebarVal = () => {
+    sidebar.value = !sidebar.value;
   };
-  const sidebar = computed(
-    () => sidebarVal.value === undefined || sidebarVal.value === "false"
-  );
   return {
     getAuthorization,
     getRefreshToken,

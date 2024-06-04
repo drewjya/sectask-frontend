@@ -1,40 +1,20 @@
 <script lang="ts" setup>
-import { DocType } from "~/types/data/finding/finding";
-import VersionsSlider from "./versions-slider.vue";
-
 const store = findingStore();
 const loading = computed(() => store.loading);
 const isEditable = computed(() => store.isEditor);
 
-const slider = useSlideover();
-
 const api = useEPrivateApi();
 
-const openSldie = (type: "DESCRIPTION" | "THREAT") => {
-  slider.open(VersionsSlider, {
-    findingId: store.id,
-    onSelect: (value) => {
-      if (type === "DESCRIPTION") {
-        description.value = value.content;
-      } else {
-        threat.value = value.content;
-      }
-      save(type, value.id);
-      slider.close();
-    },
-    type: type === "DESCRIPTION" ? DocType.DESCRIPTION : DocType.THREAT,
-  });
-};
-
-const description = ref<string>();
-const threat = ref<string>();
-
-const save = (type: "DESCRIPTION" | "THREAT", id?: number) => {
+const notif = useNotification();
+const save = (type: "DESCRIPTION" | "THREAT", value: string | undefined) => {
+  if (!value) {
+    notif.warn({ message: "Please insert content" });
+    return;
+  }
   api.post(`/finding/versions/${store.id}?type=${type}`, {
     param: {
       body: {
-        content: type === "DESCRIPTION" ? description.value : threat.value,
-        basedOnId: id,
+        content: value,
       },
     },
   });
@@ -43,7 +23,13 @@ const save = (type: "DESCRIPTION" | "THREAT", id?: number) => {
 
 <template>
   <div class="flex flex-col gap-4">
-    <div class="flex flex-col gap-2">
+    <VEditor
+      :editor-id="store.descriptionId"
+      :is-editable="isEditable"
+      v-if="store.descriptionId"
+      :type="'DESCRIPTION'"
+      v-slot="{ text }"
+    >
       <div class="flex items-center justify-between pr-2">
         <div class="text-lg font-bold">Description</div>
         <UButton
@@ -51,42 +37,31 @@ const save = (type: "DESCRIPTION" | "THREAT", id?: number) => {
           color="blue"
           size="xs"
           variant="outline"
-          @click="save('DESCRIPTION')"
+          @click="save('DESCRIPTION', text)"
           v-if="isEditable"
         />
       </div>
+    </VEditor>
 
-      <div class="bg-gray-100 w-full h-64 rounded-lg" v-if="loading"></div>
-      <Editor
-        v-model="description"
-        :editor-id="store.descriptionId"
-        v-if="store.descriptionId"
-        @open="openSldie('DESCRIPTION')"
-        :editable="isEditable"
-      />
-    </div>
-    <div class="flex flex-col gap-2">
+    <VEditor
+      :editor-id="store.threatAndRiskId"
+      :is-editable="isEditable"
+      v-if="store.threatAndRiskId"
+      :type="'THREAT'"
+      v-slot="{ text }"
+    >
       <div class="flex items-center justify-between pr-2">
-        <div class="text-lg font-bold">Threat & Risk</div>
+        <div class="text-lg font-bold">Threat and Risk</div>
         <UButton
           label="Save"
           color="blue"
           size="xs"
           variant="outline"
-          @click="save('THREAT')"
+          @click="save('THREAT', text)"
           v-if="isEditable"
         />
       </div>
-
-      <div class="bg-red-100 w-full h-64 rounded-lg" v-if="loading"></div>
-      <Editor
-        v-model="threat"
-        :editor-id="store.threatAndRiskId"
-        v-else-if="store.threatAndRiskId"
-        :editable="isEditable"
-        @open="openSldie('THREAT')"
-      />
-    </div>
+    </VEditor>
   </div>
 </template>
 
