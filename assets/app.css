@@ -96,3 +96,61 @@ code {
   color: white;
   box-decoration-break: clone;
 }
+.sx__calendar-header {
+  @apply dark:!bg-slate-900 dark:!border-slate-700 !items-center bg-white dark:!text-white;
+}
+
+.sx__view-container {
+  @apply dark:!bg-slate-900 dark:!border-slate-700 bg-white dark:!text-white;
+}
+
+.sx__month-grid-day {
+  @apply dark:!border-slate-700;
+}
+
+.sx__month-grid-week {
+  @apply dark:!border-slate-700;
+}
+
+.sx__calendar {
+  @apply dark:!border-slate-800;
+}
+.sx__chevron {
+  @apply dark:!border-white;
+}
+
+.sx__chevron-wrapper {
+  @apply hover:dark:!bg-slate-800 focus:dark:!bg-slate-800 dark:!text-white;
+}
+
+.sx__today-button {
+  @apply hover:dark:!bg-slate-800 focus:dark:!bg-slate-800 !py-1 dark:!border-slate-800 dark:!text-white;
+}
+.sx__view-selection-selected-item {
+  @apply hover:dark:!bg-slate-800 focus:dark:!bg-slate-800 !py-1 dark:!border-slate-800 dark:!text-white;
+}
+.sx__date-input {
+  @apply dark:!bg-slate-900 hover:dark:!bg-slate-800 focus:dark:!bg-slate-800 !py-1 dark:!border-slate-800 dark:!text-white;
+}
+.sx__month-agenda-week {
+  @apply dark:!border-slate-700;
+}
+
+.sx__date-input-label {
+  @apply dark:!bg-slate-900 dark:!border-slate-700 bg-white dark:!text-white;
+}
+
+.sx__date-picker-popup {
+  @apply dark:!bg-slate-900 dark:!border-slate-700 bg-white dark:!text-white;
+}
+
+.sx__date-picker__day {
+  @apply dark:!border-slate-700 dark:!text-white;
+}
+.is-leading-or-trailing {
+  @apply dark:!border-slate-700 dark:!text-gray-400;
+}
+
+.sx__date-picker__month-view-header__month-year {
+  @apply dark:!text-white;
+}

@@ -14,6 +14,18 @@ importers:
       '@pandatix/js-cvss':
         specifier: ^0.4.4
         version: 0.4.4
+      '@schedule-x/calendar':
+        specifier: ^1.43.0
+        version: 1.43.0(@preact/signals@1.2.3(preact@10.22.0))(preact@10.22.0)
+      '@schedule-x/events-service':
+        specifier: ^1.43.0
+        version: 1.43.0
+      '@schedule-x/theme-default':
+        specifier: ^1.43.0
+        version: 1.43.0
+      '@schedule-x/vue':
+        specifier: ^1.40.0
+        version: 1.40.0(@schedule-x/calendar@1.43.0(@preact/signals@1.2.3(preact@10.22.0))(preact@10.22.0))(vue@3.4.27)
       '@tiptap/extension-bold':
         specifier: ^2.4.0
         version: 2.4.0(@tiptap/core@2.4.0(@tiptap/pm@2.4.0))
@@ -931,6 +943,14 @@ packages:
   '@popperjs/core@2.11.8':
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
 
+  '@preact/signals-core@1.6.0':
+    resolution: {integrity: sha512-O/XGxwP85h1F7+ouqTMOIZ3+V1whfaV9ToIVcuyGriD4JkSD00cQo54BKdqjvBJxbenvp7ynfqRHEwI6e+NIhw==}
+
+  '@preact/signals@1.2.3':
+    resolution: {integrity: sha512-M2DXse3Wi8HwjI1d2vQWOLJ3lHogvqTsJYvl4ofXRXgMFQzJ7kmlZvlt5i8x5S5VwgZu0ghru4HkLqOoFfU2JQ==}
+    peerDependencies:
+      preact: 10.x
+
   '@remirror/core-constants@2.0.2':
     resolution: {integrity: sha512-dyHY+sMF0ihPus3O27ODd4+agdHMEmuRdyiZJ2CCWjPV5UFmn17ZbElvk6WOGVE4rdCJKZQCrPV2BcikOMLUGQ==}
 
@@ -1092,6 +1112,24 @@ packages:
 
   '@samk-dev/nuxt-vcalendar@1.0.3':
     resolution: {integrity: sha512-xpT3lD+lVFfZ5HlXZ0EhxLjsS/OvIAhc3mRLHRu0bZF6e+E6Oer4FIIwWfptUqsWkvJCxucxfzYxJqfOPuOkXw==}
+
+  '@schedule-x/calendar@1.43.0':
+    resolution: {integrity: sha512-W2E3nvJBA64x49j6RIooidwi66cIRxKrm+Fb4QefCWiqdArvMfSNeqfn7hIxFwJr7mPzOkXQadABtwPSKIFDCQ==}
+    peerDependencies:
+      '@preact/signals': ^1.1.5
+      preact: ^10.19.2
+
+  '@schedule-x/events-service@1.43.0':
+    resolution: {integrity: sha512-eEuwpAXmnbfWJUnknEgkJup5w4Gpk9EI6VDV+M9fhosrZcdm4p7iJ8soDdwnLOO3YRjz+dvwgVPYFMbPfLzbbQ==}
+
+  '@schedule-x/theme-default@1.43.0':
+    resolution: {integrity: sha512-ifX2peyk2DzlolCONyPYAt2eLKvGdiF1SzTCfipr2i+6KK2+A/0H8IfNleZU3g/Y6HV8f7TCOZYkezleqCcfPQ==}
+
+  '@schedule-x/vue@1.40.0':
+    resolution: {integrity: sha512-wbKTeC8939eWyDEIBf3Eojq6vvO/3iHVypHlmh7xPAAgSkiBYug5YqvuhFQsRiEFDQrH6qKL0H3kieNNz5+DBg==}
+    peerDependencies:
+      '@schedule-x/calendar': 1.43.0
+      vue: ^3
 
   '@shikijs/core@1.5.2':
     resolution: {integrity: sha512-wSAOgaz48GmhILFElMCeQypSZmj6Ru6DttOOtl3KNkdJ17ApQuGNCfzpk4cClasVrnIu45++2DBwG4LNMQAfaA==}
@@ -3786,6 +3824,9 @@ packages:
     resolution: {integrity: sha512-Wglpdk03BSfXkHoQa3b/oulrotAkwrlLDRSOb9D0bN86FdRyE9lppSp33aHNPgBa0JKCoB+drFLZkQoRRYae5A==}
     engines: {node: ^10 || ^12 || >=14}
 
+  preact@10.22.0:
+    resolution: {integrity: sha512-RRurnSjJPj4rp5K6XoP45Ui33ncb7e4H7WiOHVpjbkvqvA3U+N8Z6Qbo0AE6leGYBV66n8EhEaFixvIu3SkxFw==}
+
   prebuild-install@7.1.2:
     resolution: {integrity: sha512-UnNke3IQb6sgarcZIDU3gbMeTp/9SSU1DAIkil7PrqG1vZlBtY5msYccSKSHDqa3hNg436IXK+SNImReuA1wEQ==}
     engines: {node: '>=10'}
@@ -5915,6 +5956,13 @@ snapshots:
 
   '@popperjs/core@2.11.8': {}
 
+  '@preact/signals-core@1.6.0': {}
+
+  '@preact/signals@1.2.3(preact@10.22.0)':
+    dependencies:
+      '@preact/signals-core': 1.6.0
+      preact: 10.22.0
+
   '@remirror/core-constants@2.0.2': {}
 
   '@rollup/plugin-alias@5.1.0(rollup@4.18.0)':
@@ -6044,6 +6092,20 @@ snapshots:
       - rollup
       - supports-color
       - vue
+
+  '@schedule-x/calendar@1.43.0(@preact/signals@1.2.3(preact@10.22.0))(preact@10.22.0)':
+    dependencies:
+      '@preact/signals': 1.2.3(preact@10.22.0)
+      preact: 10.22.0
+
+  '@schedule-x/events-service@1.43.0': {}
+
+  '@schedule-x/theme-default@1.43.0': {}
+
+  '@schedule-x/vue@1.40.0(@schedule-x/calendar@1.43.0(@preact/signals@1.2.3(preact@10.22.0))(preact@10.22.0))(vue@3.4.27)':
+    dependencies:
+      '@schedule-x/calendar': 1.43.0(@preact/signals@1.2.3(preact@10.22.0))(preact@10.22.0)
+      vue: 3.4.27
 
   '@shikijs/core@1.5.2': {}
 
@@ -9232,6 +9294,8 @@ snapshots:
       nanoid: 3.3.7
       picocolors: 1.0.1
       source-map-js: 1.2.0
+
+  preact@10.22.0: {}
 
   prebuild-install@7.1.2:
     dependencies:

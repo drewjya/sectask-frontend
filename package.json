@@ -12,6 +12,10 @@
   "dependencies": {
     "@hocuspocus/provider": "^2.13.0",
     "@pandatix/js-cvss": "^0.4.4",
+    "@schedule-x/calendar": "^1.43.0",
+    "@schedule-x/events-service": "^1.43.0",
+    "@schedule-x/theme-default": "^1.43.0",
+    "@schedule-x/vue": "^1.40.0",
     "@tiptap/extension-bold": "^2.4.0",
     "@tiptap/extension-bubble-menu": "^2.4.0",
     "@tiptap/extension-bullet-list": "^2.4.0",

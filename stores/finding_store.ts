@@ -195,6 +195,7 @@ export const findingStore = defineStore("finding-store", () => {
     );
     conn.emit(FINDING_ACTION.LEAVE, JSON.stringify({ findingId: id.value }));
     conn.off(PROJECT_EVENT.MEMBER);
+    conn.off(SUBPROJECT_EVENT.HEADER);
     conn.off(SUBPROJECT_EVENT.MEMBER);
     conn.off(FINDING_EVENT.HEADER);
     conn.off(FINDING_EVENT.CVSS);
