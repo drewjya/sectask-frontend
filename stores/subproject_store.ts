@@ -2,10 +2,11 @@ import { isApiError } from "~/types/api/error";
 import type { EventFile, VFile } from "~/types/data/file";
 import type {
   EventMember,
+  ProjectEventHeader,
   SubprojectEventHeader,
 } from "~/types/data/project/event";
 import { type LogData, type ProjectMember } from "~/types/data/project/project";
-import type { FindingSidebar } from "~/types/data/sidebar/project";
+import type { ProjectSubproject } from "~/types/data/sidebar/project";
 import type { SocketFindingAction } from "~/types/data/subproject/socket";
 import type {
   FindingSubproject,
@@ -28,7 +29,7 @@ export const subprojectStore = (subprojectId: number) => {
     const socket = useSocket();
     const range = ref<RangeDatePickerModel>() as Ref<RangeDatePickerModel>;
     const findings = ref<FindingSubproject[]>();
-    const project = ref<FindingSidebar>();
+    const project = ref<ProjectSubproject>();
     const members = ref<ProjectMember[]>();
     const reports = ref<VFile[]>();
     const attachments = ref<VFile[]>();
@@ -94,12 +95,14 @@ export const subprojectStore = (subprojectId: number) => {
         SUBPROJECT_ACTION.LEAVE,
         JSON.stringify({ subprojectId: id.value })
       );
+      conn.off(PROJECT_EVENT.HEADER);
       conn.off(PROJECT_EVENT.MEMBER);
       conn.off(SUBPROJECT_EVENT.REPORT);
       conn.off(SUBPROJECT_EVENT.ATTACHMENT);
       conn.off(SUBPROJECT_EVENT.FINDING);
       conn.off(SUBPROJECT_EVENT.HEADER);
       conn.off(SUBPROJECT_EVENT.LOG);
+      conn.off(SUBPROJECT_EVENT.DELETE);
       conn.off(SUBPROJECT_EVENT.MEMBER);
       watcher.ignoreUpdates(() => {
         name.value = undefined as any;
@@ -154,8 +157,18 @@ export const subprojectStore = (subprojectId: number) => {
           reports.value = subproject.reports ?? [];
           members.value = subproject.subprojectMember ?? [];
           attachments.value = subproject.attachments ?? [];
-          project.value = subproject.project;
+          project.value = {
+            name: subproject.project.name,
+            endDate: new Date(subproject.project.endDate),
+            startDate: new Date(subproject.project.startDate),
+            id: subproject.project.id,
+          };
           findings.value = subproject.findings ?? [];
+          findings.value.forEach((f) => {
+            if (f.deletedAt) {
+              f.deletedAt = new Date(f.deletedAt);
+            }
+          });
           pm.value = subproject.subprojectMember.find(
             (m) => m.role === Role.PM
           );
@@ -226,6 +239,14 @@ export const subprojectStore = (subprojectId: number) => {
           }
         }
       });
+      conn.on(PROJECT_EVENT.HEADER, (data: ProjectEventHeader) => {
+        project.value = {
+          name: data.name,
+          endDate: new Date(data.endDate),
+          startDate: new Date(data.startDate),
+          id: project.value?.id ?? 0,
+        };
+      });
       conn.on(SUBPROJECT_EVENT.FINDING, (data: SocketFindingAction) => {
         if (data.type === "add") {
           const findingId = findings.value?.find(
@@ -238,6 +259,9 @@ export const subprojectStore = (subprojectId: number) => {
             id: data.finding.findingId,
             createdBy: data.finding.owner,
             name: data.finding.name,
+            deletedAt: data.finding.deletedAt
+              ? new Date(data.finding.deletedAt)
+              : undefined,
           });
         } else if (data.type === "remove") {
           findings.value = findings.value?.filter(
@@ -247,6 +271,10 @@ export const subprojectStore = (subprojectId: number) => {
           findings.value = findings.value?.map((e) => {
             if (e.id === data.finding.findingId) {
               e.name = data.finding.name;
+              e.deletedAt = data.finding.deletedAt
+                ? new Date(data.finding.deletedAt)
+                : undefined;
+              e.createdBy = data.finding.owner;
             }
             return e;
           });
@@ -324,6 +352,16 @@ export const subprojectStore = (subprojectId: number) => {
             (r) => r.id !== data.file.id
           );
         }
+      });
+
+      conn.on(SUBPROJECT_EVENT.DELETE, (payload: { subprojectId: number }) => {
+        console.log(payload);
+
+        notif.info({
+          title: "Deleted",
+          message: "Subproject has been deleted",
+        });
+        router.push(`/project/${project.value?.id}`);
       });
 
       conn.on(SUBPROJECT_EVENT.HEADER, (data: SubprojectEventHeader) => {

@@ -9,50 +9,44 @@ const props = defineProps<{
   chat: Chat;
 }>();
 
-const show = ref(false);
-const x = ref(0);
-const y = ref(0);
+const { x, y } = useMouse();
+const { y: windowY } = useWindowScroll();
 
-const onClick = (source: MouseEvent) => {
-  show.value = true;
-  const client = { x: source.offsetX, y: source.offsetX };
-  const page = { x: source.pageX, y: source.pageY };
-  const val = { x: source.x, y: source.y };
-  console.log(
-    `${JSON.stringify(client)} ${JSON.stringify(page)} ${JSON.stringify(val)}`
-  );
+const isOpen = ref(false);
+const virtualElement = ref({ getBoundingClientRect: () => ({}) });
 
-  x.value = source.offsetX;
-  y.value = source.offsetY;
+const onClick = () => {
+  const top = unref(y) - unref(windowY);
+  const left = unref(x);
+
+  virtualElement.value.getBoundingClientRect = () => ({
+    width: 0,
+    height: 0,
+    top,
+    left,
+  });
+
+  isOpen.value = true;
 };
 
 const onClickReply = () => {
   emits("reply", props.chat);
-  show.value = false;
+  isOpen.value = false;
   x.value = 0;
   y.value = 0;
 };
-
-const target = ref();
-
-onClickOutside(target, () => {
-  show.value = false;
-  x.value = 0;
-  y.value = 0;
-});
 </script>
 
 <template>
-  <div
-    class="relative w-full"
-    @contextmenu.prevent="onClick"
-    @click="onClick"
-    ref="target"
-  >
+  <div class="relative w-full">
     <div
       class="bg-slate-100 dark:bg-gray-800 dark:border-slate-700 border border-slate-300 p-1 px-2 rounded-md flex flex-col gap-2"
     >
-      <div class="flex gap-2 items-center justify-between">
+      <div
+        class="flex gap-2 items-center justify-between"
+        @contextmenu.prevent="onClick"
+        @click="onClick"
+      >
         <div class="flex items-center gap-2">
           <UAvatar
             size="sm"
@@ -94,21 +88,14 @@ onClickOutside(target, () => {
         class="bg-slate-200 p-1 rounded px-2 prose-p text-sm dark:bg-slate-700"
       ></div>
     </div>
-    <div
-      class="absolute border bg-slate-100 dark:bg-slate-800 dark:border-slate-700 rounded-sm p-2 z-50"
-      :style="{
-        top: `${y}px`,
-        left: `${x}px`,
-      }"
-      v-if="show && x !== 0 && y !== 0"
-    >
+    <UContextMenu v-model="isOpen" :virtual-element="virtualElement">
       <UButton
         label="Reply"
         @click="onClickReply"
         color="black"
         class="rounded px-4"
       />
-    </div>
+    </UContextMenu>
   </div>
 </template>
 

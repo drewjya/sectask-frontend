@@ -1,5 +1,5 @@
 import type { VFile } from "../file";
-import type { ProjectMember } from "../project/project";
+import type { ProjectMember, SubprojectProject } from "../project/project";
 import type { FindingSidebar } from "../sidebar/project";
 
 export type SubProjectData = {
@@ -14,12 +14,13 @@ export type SubProjectData = {
   recentActivities: LogData[];
   subprojectMember: ProjectMember[];
   findings: FindingSubproject[];
-  project: FindingSidebar;
+  project: SubprojectProject;
 };
 
 export type FindingSubproject = {
   id: number;
   name: string;
+  deletedAt?: Date;
   createdBy: OwnerFinding;
 };
 

@@ -143,8 +143,8 @@ const getRisk = (total: number) => {
 </script>
 
 <template>
-  <div class="w-80 min-w-80 max-w-80 p-6 pb-6 h-full">
-    <div class="h-full flex flex-col gap-2">
+  <div class="w-80 min-w-80 max-w-80 p-6 py-3 h-full">
+    <div class="h-full flex flex-col gap-1">
       <div class="flex justify-end">
         <p class="text-[0.6rem]" v-if="loading">Loading</p>
         <p class="text-[0.6rem]" v-else-if="store.createdAt">
@@ -152,15 +152,19 @@ const getRisk = (total: number) => {
         </p>
       </div>
       <div class="flex items-center gap-2 pb-4">
-        <UAvatar :alt="store.name?.toUpperCase()" class="w-12 h-12" />
+        <UBadge
+          class="w-12 h-12 flex justify-center object-center text-2xl"
+          :label="store.id?.toString() ?? '-'"
+          color="gray"
+        />
         <div class="flex justify-center flex-col" v-if="loading">
           <div class="text-sm font-semibold">Loading</div>
           <div class="text-xs">
-            Created By <span class="font-bold">Loading</span>
+            <span class="font-bold">Loading</span>
           </div>
         </div>
         <div
-          class="flex justify-center flex-col"
+          class="flex justify-center flex-col gap-1"
           v-else-if="store.name && store.createdBy"
         >
           <div class="text-sm font-semibold" v-if="store.isEditor === false">
@@ -174,15 +178,20 @@ const getRisk = (total: number) => {
             @blur="onBlur"
             @focus="onFocus"
           />
-          <div class="text-xs">
-            Created By <span class="font-bold">{{ store.createdBy.name }}</span>
+          <div class="text-xs flex items-center gap-2">
+            <UAvatar
+              :src="formatImage(store.createdBy.profilePicture)"
+              :alt="store.createdBy.name.toUpperCase()"
+              size="2xs"
+            />
+            <div>{{ store.createdBy.name }}</div>
           </div>
         </div>
       </div>
-      <hr />
+      <UDivider />
       <div class="grow overflow-y-auto">
         <div class="flex flex-col h-full">
-          <div class="flex flex-col gap-1 py-2">
+          <div class="flex flex-col gap-1 py-2 pb-4">
             <div class="font-['Roboto'] font-bold text-base">
               Finding Properties
             </div>
@@ -292,7 +301,7 @@ const getRisk = (total: number) => {
               </FindingItem>
             </div>
           </div>
-          <hr />
+          <UDivider />
           <div class="flex flex-col gap-1 py-2">
             <div class="font-['Roboto'] font-bold text-base">
               Retest Properties
@@ -337,18 +346,16 @@ const getRisk = (total: number) => {
               <FindingItem :loading="loading" label="Last Updated">
                 -
               </FindingItem>
-              <FindingItem :loading="loading" label="Tester"> - </FindingItem>
-              <FindingItem :loading="loading" label="Version"> - </FindingItem>
-              <FindingItem :loading="loading" label="Status"> - </FindingItem>
             </div>
           </div>
-          <hr />
+          <UDivider />
           <div class="flex flex-col gap-1 py-2">
             <div class="font-['Roboto'] font-bold text-base">CVSS</div>
             <div class="text-sm">
-              <div class="w-64 overflow-x-auto">
-                <div>{{ score.value }}</div>
+              <div class="w-64 overflow-x-auto flex h-10 items-center">
+                <div v-for="i in score.value">{{ i }}</div>
               </div>
+
               <div class="text-xs">
                 CVSS v4.0 Score: <span>{{ score.score }}</span>
               </div>
@@ -356,10 +363,19 @@ const getRisk = (total: number) => {
           </div>
           <div class="flex flex-col gap-1 py-2">
             <div class="font-['Roboto'] font-bold text-base">Testers</div>
-            <div class="text-sm">
-              <div>CVSS:4.0</div>
-              <div class="text-xs">
-                CVSS v4.0 Score: <span>7.7 / High</span>
+
+            <div
+              class="max-h-60 overflow-y-auto bg-gray-200 dark:bg-gray-900 py-4 rounded-md border dark:border-slate-700"
+            >
+              <div
+                class="grid grid-cols-2 place-items-center place-content-center gap-2"
+              >
+                <div v-for="i in 20" class="flex flex-col items-center text-xs">
+                  <UBadge class="w-12 h-12 flex items-center justify-center">
+                    <div class="text-xl">A</div>
+                  </UBadge>
+                  <div>A</div>
+                </div>
               </div>
             </div>
           </div>

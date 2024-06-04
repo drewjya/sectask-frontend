@@ -118,3 +118,18 @@ export interface TestingHistory {
 export interface TestingDetail extends TestingHistory {
   content: string;
 }
+
+export enum DocType {
+  THREAT = "THREAT",
+  DESCRIPTION = "DESCRIPTION",
+}
+
+export type VersionType = {
+  id: number;
+  findingId: number;
+  type: Number;
+  content: string;
+  createdAt: Date;
+  basedOn?: Date;
+  user: OwnerFinding;
+};

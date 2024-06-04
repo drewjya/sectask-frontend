@@ -19,5 +19,6 @@ export type SocketFindingAction = {
         risk?: string;
         status?: string;
         owner: OwnerFinding;
+        deletedAt?: Date;
       }
 }

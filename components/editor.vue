@@ -27,17 +27,28 @@ const props = defineProps<{
   editable: boolean;
 }>();
 
-const editor = ref();
+const emits = defineEmits(["open"]);
+const model = defineModel<string>();
+
+const editor = ref<TipTap.Editor>();
 const app = useApp();
 function getRandomColorHex(): string {
   const randomInt = Math.floor(Math.random() * 16777215);
   const hexString = randomInt.toString(16).padStart(6, "0");
   return `#${hexString}`;
 }
+
+watch(model, (val) => {
+  console.log(val, "MAsuk", !editor.value?.isFocused);
+
+  if (!editor.value?.isFocused) {
+    editor.value?.commands.setContent(val ?? "<p></p>");
+  }
+});
 onMounted(() => {
   const provider = new HocuspocusProvider({
     url: "ws://localhost:3100",
-    name: props.editorId,
+    name: props.editorId ?? "Test Editor Heheh",
   });
   type Levels = 1 | 2 | 3;
 
@@ -72,7 +83,8 @@ onMounted(() => {
         class: "max-h-64 h-64 py-8",
       },
     },
-    onUpdate: async ({ transaction }) => {
+    onUpdate: async ({ transaction, editor }) => {
+      model.value = editor.getHTML();
       const getImageSrcs = (fragment: Fragment) => {
         let srcs = new Set<string>();
         fragment.forEach((node) => {
@@ -134,6 +146,8 @@ onMounted(() => {
       }),
     ],
   });
+  model.value = editor.value.getHTML();
+  editor.value.commands.setContent(model.value ?? "<p></p>");
 });
 
 const fileDialog = useFileDialog({
@@ -161,7 +175,7 @@ const upload = async (param: { files?: FileList | null }) => {
         const url = await createUrlFile(data.data);
 
         editor.value
-          .chain()
+          ?.chain()
           .focus()
           .setImage({
             src: url + `?id=${data.data.id}&findingId=${findingStore().id}`,
@@ -199,7 +213,7 @@ fileDialog.onChange((files) =>
 );
 
 onBeforeRouteLeave(() => {
-  editor.value.destroy();
+  editor.value?.destroy();
 });
 </script>
 
@@ -211,26 +225,26 @@ onBeforeRouteLeave(() => {
           {
             label: 'Heading 1',
             click: () =>
-              editor.chain().focus().toggleHeading({ level: 1 }).run(),
+              editor?.chain().focus().toggleHeading({ level: 1 }).run(),
           },
           {
             label: 'Heading 2',
             click: () =>
-              editor.chain().focus().toggleHeading({ level: 2 }).run(),
+              editor?.chain().focus().toggleHeading({ level: 2 }).run(),
           },
           {
             label: 'Heading 3',
             click: () =>
-              editor.chain().focus().toggleHeading({ level: 3 }).run(),
+              editor?.chain().focus().toggleHeading({ level: 3 }).run(),
           },
         ],
       ]"
     >
       <UButton
         :label="
-          editor.isActive('heading', { level: 1 })
+          editor?.isActive('heading', { level: 1 })
             ? 'Heading 1'
-            : editor.isActive('heading', { level: 2 })
+            : editor?.isActive('heading', { level: 2 })
             ? 'Heading 2'
             : 'Heading 3'
         "
@@ -245,86 +259,73 @@ onBeforeRouteLeave(() => {
         {
           icon: 'i-heroicons-bold',
           tooltip: 'Bold',
-          disabled: !editor.can().chain().focus().toggleBold().run(),
-          onClicked: () => editor.chain().focus().toggleBold().run(),
-          active: editor.isActive('bold') === true,
+          disabled: !editor?.can().chain().focus().toggleBold().run(),
+          onClicked: () => editor?.chain().focus().toggleBold().run(),
+          active: editor?.isActive('bold') === true,
         },
         {
           icon: 'i-heroicons-italic',
           tooltip: 'Italic',
-          disabled: !editor.can().chain().focus().toggleItalic().run(),
-          onClicked: () => editor.chain().focus().toggleItalic().run(),
-          active: editor.isActive('italic') === true,
+          disabled: !editor?.can().chain().focus().toggleItalic().run(),
+          onClicked: () => editor?.chain().focus().toggleItalic().run(),
+          active: editor?.isActive('italic') === true,
         },
         {
           icon: 'i-heroicons-underline',
           tooltip: 'Underline',
           disabled: false,
-          onClicked: () => editor.chain().focus().toggleUnderline().run(),
-          active: editor.isActive('underline') === true,
+          onClicked: () => editor?.chain().focus().toggleUnderline().run(),
+          active: editor?.isActive('underline') === true,
         },
         {
           icon: 'material-symbols:format-list-bulleted-rounded',
           tooltip: 'Bullet List',
           disabled: false,
-          onClicked: () => editor.chain().focus().toggleBulletList().run(),
-          active: editor.isActive('bulletList') === true,
+          onClicked: () => editor?.chain().focus().toggleBulletList().run(),
+          active: editor?.isActive('bulletList') === true,
         },
         {
           icon: 'material-symbols:format-list-numbered',
           tooltip: 'Numbered List',
           disabled: false,
-          onClicked: () => editor.chain().focus().toggleOrderedList().run(),
-          active: editor.isActive('orderedList') === true,
+          onClicked: () => editor?.chain().focus().toggleOrderedList().run(),
+          active: editor?.isActive('orderedList') === true,
         },
         {
           icon: 'material-symbols:format-strikethrough',
           tooltip: 'Strike',
-          disabled: editor.can().chain().focus().toggleStrike().run(),
-          onClicked: () => editor.chain().focus().toggleStrike().run(),
-          active: editor.isActive('strike') === true,
+          disabled: editor?.can().chain().focus().toggleStrike().run(),
+          onClicked: () => editor?.chain().focus().toggleStrike().run(),
+          active: editor?.isActive('strike') === true,
         },
         {
           icon: 'material-symbols:code',
           tooltip: 'Code',
           disabled: false,
-          onClicked: () => editor.chain().focus().toggleCode().run(),
-          active: editor.isActive('code') === true,
+          onClicked: () => editor?.chain().focus().toggleCode().run(),
+          active: editor?.isActive('code') === true,
         },
-        {
-          icon: 'material-symbols:format-quote',
-          tooltip: 'Quote',
-          disabled: false,
-          onClicked: () => editor.chain().focus().toggleBlockquote().run(),
-          active: editor.isActive('blockquote') === true,
-        },
-        {
-          icon: 'material-symbols:horizontal-rule',
-          tooltip: 'Horizontal Rule',
-          disabled: false,
-          onClicked: () => editor.chain().focus().setHorizontalRule().run(),
-          active: false,
-        },
+
         {
           icon: 'material-symbols:undo',
           tooltip: 'Undo',
-          disabled: !editor.can().chain().focus().undo().run(),
-          onClicked: () => editor.chain().focus().undo().run(),
+          disabled: !editor?.can().chain().focus().undo().run(),
+          onClicked: () => editor?.chain().focus().undo().run(),
           active: false,
         },
         {
           icon: 'material-symbols:redo',
           tooltip: 'Redo',
-          disabled: !editor.can().chain().focus().redo().run(),
-          onClicked: () => editor.chain().focus().redo().run(),
+          disabled: !editor?.can().chain().focus().redo().run(),
+          onClicked: () => editor?.chain().focus().redo().run(),
           active: false,
         },
         {
           icon: 'material-symbols-light:format-ink-highlighter-outline-rounded',
           tooltip: 'Highlight',
           disabled: false,
-          onClicked: () => editor.chain().focus().toggleHighlight().run(),
-          active: editor.isActive('highlight') === true,
+          onClicked: () => editor?.chain().focus().toggleHighlight().run(),
+          active: editor?.isActive('highlight') === true,
         },
       ]"
       :icon="i.icon"
@@ -342,6 +343,13 @@ onBeforeRouteLeave(() => {
       size="2xs"
       class="rounded-sm px-1.5"
       @click="fileDialog.open()"
+    />
+    <UButton
+      label="Version"
+      color="blue"
+      size="xs"
+      variant="ghost"
+      @click="emits('open')"
     />
   </div>
   <div class="w-full bg-slate-200 max-h-64 h-64 rounded-lg dark:bg-slate-700">

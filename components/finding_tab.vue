@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import dayjs from "dayjs";
 import AddFindingModal from "./add-finding-modal.vue";
 
 const app = useApp();
@@ -7,7 +8,6 @@ const store = subprojectStore(app.user?.id ?? -1)();
 const modal = useModal();
 
 const addFindings = () => {
-  // modal.openModal('addFindings')
   modal.open(AddFindingModal, {
     subprojectId: store.id ?? -1,
     onClose: () => {
@@ -15,8 +15,14 @@ const addFindings = () => {
     },
   });
 };
+const isOnRange = computed(
+  () => store.range.end >= dayjs().startOf("date").toDate()
+);
 
-const canEdit = computed(() => store.myrole === Role.PM);
+const consultantPrivilege = computed(
+  () => store.myrole === Role.CONSULTANT && isOnRange.value
+);
+const pmPrivilege = computed(() => store.myrole === Role.PM);
 </script>
 
 <template>
@@ -29,13 +35,15 @@ const canEdit = computed(() => store.myrole === Role.PM);
         size="sm"
         color="white"
         variant="solid"
-        v-if="store.myrole === Role.CONSULTANT"
+        v-if="consultantPrivilege"
         @click="addFindings()"
       />
     </div>
     <div
       class="grid px-2 gap-2 text-sm font-bold font-['DM Sans'] place-items-start"
-      :class="canEdit ? 'grid-cols-9' : 'grid-cols-8'"
+      :class="
+        consultantPrivilege || pmPrivilege ? 'grid-cols-9' : 'grid-cols-8'
+      "
     >
       <div class="col-span-2">
         <div>Findings</div>
@@ -49,7 +57,7 @@ const canEdit = computed(() => store.myrole === Role.PM);
       <div class="col-span-2">
         <div>Status</div>
       </div>
-      <div class="col-span-1" v-if="canEdit">
+      <div class="col-span-1" v-if="consultantPrivilege || pmPrivilege">
         <div>Action</div>
       </div>
     </div>
@@ -64,12 +72,9 @@ const canEdit = computed(() => store.myrole === Role.PM);
     <div v-else class="flex flex-col gap-3">
       <FindingsTabItem
         v-for="i in store.findings"
-        :name="i.name"
-        :createdBy="i.createdBy"
-        :risk="'asjsaj'"
-        :id="i.id"
-        :deletable="canEdit"
-        :status="'ashsah'"
+        :finding="i"
+        :deletable="consultantPrivilege"
+        :approvedDelete="pmPrivilege"
       />
     </div>
   </div>

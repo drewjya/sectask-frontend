@@ -6,6 +6,8 @@ const modal = useModal();
 const addSubproject = () => {
   modal.open(AddSubprojectModal, {
     projectId: store.id ?? -1,
+    minDate: store.range?.start ?? new Date(),
+    maxDate: store.range?.end ?? new Date(),
     onClose: () => {
       modal.close();
     },

@@ -3,6 +3,7 @@ import Image from "@tiptap/extension-image";
 export const ImageResize = Image.extend({
   addAttributes() {
     return {
+      
       src: {
         default: null,
       },

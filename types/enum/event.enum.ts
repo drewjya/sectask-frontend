@@ -23,6 +23,7 @@ export const SUBPROJECT_EVENT = {
   MEMBER: "subprojectMember",
   HEADER: "subprojectHeader",
   LOG: "subprojectLog",
+  DELETE: "subprojectDeleted",
   FINDING: "subprojectFinding",
 };
 
@@ -40,7 +41,8 @@ export const FINDING_EVENT = {
   RETEST: "findingRetest",
   CVSS: "findingCVSS",
   ROOM: "findingRoomChat",
-  TESTLIST:'findingTestList',
+  TESTLIST: "findingTestList",
+  DELETE: "findingDeleted",
 };
 export const FINDING_ACTION = {
   JOIN: "onFindingJoin",

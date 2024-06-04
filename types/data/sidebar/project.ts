@@ -15,3 +15,11 @@ export type FindingSidebar = {
   name: string;
   id: number;
 };
+
+
+export type ProjectSubproject = {
+  name: string;
+  id: number;
+  startDate: Date;
+  endDate: Date;
+}

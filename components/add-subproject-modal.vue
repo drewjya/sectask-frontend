@@ -7,6 +7,8 @@ import { isApiError } from '~/types/api/error';
 const emits = defineEmits(['close']);
 const props = defineProps<{
   projectId: number;
+  minDate: Date;
+  maxDate: Date;
 }>();
 
 const onClose = () => {
@@ -87,7 +89,7 @@ const notif = useNotification()
             <section class="flex w-full flex-col">
               <span class="text-base font-bold">Active Period</span>
               <UFormGroup name="range" class="mt-2 w-full">
-                <RangeDatePicker v-model="formD.state.range" :min-date="$dayjs().startOf('day').toDate()" color="white"
+                <RangeDatePicker v-model="formD.state.range" :min-date="minDate" :max-date="maxDate" color="white"
                   variant="solid" />
               </UFormGroup>
             </section>

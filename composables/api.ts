@@ -240,7 +240,7 @@ export const useEPrivateApi = () => {
           headers: {
             Authorization: app.getAuthorization,
           },
-          body: param?.param,
+          body: param?.param?.body,
         },
       });
       if (param?.message) {

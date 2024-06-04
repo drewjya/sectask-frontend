@@ -50,6 +50,7 @@ export const findingStore = defineStore("finding-store", () => {
   ];
 
   const socket = useSocket();
+
   const loading = ref(true);
   const id = ref();
   const notif = useNotification();
@@ -197,6 +198,8 @@ export const findingStore = defineStore("finding-store", () => {
     conn.off(SUBPROJECT_EVENT.MEMBER);
     conn.off(FINDING_EVENT.HEADER);
     conn.off(FINDING_EVENT.CVSS);
+    conn.off(FINDING_EVENT.DELETE);
+    conn.off(SUBPROJECT_EVENT.DELETE);
     conn.off(FINDING_EVENT.RETEST);
 
     loading.value = true;
@@ -352,7 +355,7 @@ export const findingStore = defineStore("finding-store", () => {
         impact.value = data.impact;
         likelihood.value = data.likelihood;
       });
-     })
+    });
     conn.on(
       FINDING_EVENT.CVSS,
       (data: { findingId: number; cvss: CVSSData }) => {
@@ -392,6 +395,27 @@ export const findingStore = defineStore("finding-store", () => {
           isEditor.value = false;
         }
       }
+    });
+    conn.on(
+      FINDING_EVENT.DELETE,
+      (payload: { findingId: number; status: "deleted" | "approved" }) => {
+        if (payload.status === "approved") {
+          notif.info({
+            title: "Deleted",
+            message: "Finding has been deleted",
+          });
+          router.push(`/subproject/${subproject.value?.id}`);
+        } else {
+          isEditor.value = false;
+        }
+      }
+    );
+    conn.on(SUBPROJECT_EVENT.DELETE, (payload: { subprojectId: number }) => {
+      notif.info({
+        title: "Deleted",
+        message: "Subproject has been deleted",
+      });
+      router.push(`/project/${subproject.value?.project.id}`);
     });
   };
 

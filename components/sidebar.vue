@@ -12,6 +12,7 @@ import {
 import NewProjectModal from "./new-project-modal.vue";
 
 const app = useApp();
+const router = useRouter();
 
 type EventSidebarProjectItem = {
   project: {
@@ -49,6 +50,7 @@ const projectList = ref<
 const loading = ref(true);
 const api = usePrivateApi();
 const socket = useSocket();
+const route = useRoute();
 const initState = async () => {
   try {
     const projects = await api.get<ProjectSidebar[]>("/project/sidebar");
@@ -92,6 +94,8 @@ const initState = async () => {
       if (projectIndex === -1) {
         return;
       }
+      console.log(route.fullPath);
+
       if (val.type === "add") {
         projectList.value[projectIndex].project.subproject.push({
           id: val.subproject.subprojectId,
@@ -100,12 +104,14 @@ const initState = async () => {
           findings: [],
         });
       } else if (val.type === "remove") {
-        projectList.value[projectIndex].project.subproject = projectList.value[
-          projectIndex
-        ].project.subproject.filter(
-          (i) => i.id !== val.subproject.subprojectId
-        );
-        // projectList.value = projectList.value.filter(i => i.project.id !== val.project.projectId)
+        if (projectList.value[projectIndex]?.project) {
+          if (projectList.value[projectIndex].project.subproject) {
+            projectList.value[projectIndex].project.subproject =
+              projectList.value[projectIndex].project.subproject.filter(
+                (i) => i.id !== val.subproject.subprojectId
+              );
+          }
+        }
       } else if (val.type === "edit") {
         if (!projectList.value[projectIndex].project.subproject) {
           return;
@@ -121,16 +127,16 @@ const initState = async () => {
     });
     conn.on(FINDING_EVENT.SIDEBAR, (val: EventSidebarFindingItem) => {
       console.log(val);
-
       const projectIndex = projectList.value.findIndex(
         (i) => i.project.id === val.projectId
       );
       if (projectIndex === -1) {
         return;
       }
-      const subprojectIndex = projectList.value[
-        projectIndex
-      ].project.subproject.findIndex((i) => i.id === val.subprojectId);
+      const subprojectIndex =
+        projectList.value[projectIndex].project.subproject?.findIndex(
+          (i) => i.id === val.subprojectId
+        ) ?? -1;
       if (subprojectIndex === -1) {
         return;
       }
