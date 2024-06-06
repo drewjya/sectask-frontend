@@ -47,6 +47,7 @@ body {
 
 .ProseMirror ol {
   padding: 0 1rem;
+  font-size: 0.8rem;
   list-style-type: decimal !important;
 }
 
@@ -82,6 +83,7 @@ body {
 
 .ProseMirror ul {
   padding: 0 1rem;
+  font-size: 0.7rem;
   list-style-type: disc !important;
 }
 .ProseMirror:focus {

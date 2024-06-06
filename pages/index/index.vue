@@ -109,8 +109,7 @@ const fileUrl = (file?: VFile) => {
         class="flex flex-col gap-2"
         :class="app.sidebar ? 'w-[calc(100vw-20rem)]' : 'w-full'"
       >
-        <NuxtLink
-          :to="`/${i.type.toLowerCase()}/${i.documentId}`"
+        <div
           class="flex flex-col gap-0.5 p-2 rounded bg-gray-200 dark:bg-slate-800"
           v-for="i in logs"
         >
@@ -122,7 +121,7 @@ const fileUrl = (file?: VFile) => {
               <div>{{ formatDate(i.createdAt, "DD MMM, YYYY") }}</div>
             </div>
           </div>
-        </NuxtLink>
+        </div>
       </div>
     </div>
   </div>
