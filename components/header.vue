@@ -34,6 +34,10 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  maxDate: {
+    type: Date,
+    required: false,
+  },
 });
 
 const name = defineModel("name", {
@@ -133,6 +137,8 @@ const editImage = () => {
       <HeaderItem label="Project Active Period">
         <RangeDatePicker
           v-model="range"
+          :max-date="maxDate"
+          :min-date="range.start"
           :disabled="!userCanEditActivePeriode"
           variant="solid"
           color="white"

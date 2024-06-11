@@ -124,22 +124,6 @@ const onBlur = () => {
 const onFocus = () => {
   store.onEdit = true;
 };
-
-const riskFormula = (impact: number, likelihood: number) => {
-  return impact * likelihood;
-};
-
-const getRisk = (total: number) => {
-  if (total <= 5) {
-    return "Low";
-  } else if (total <= 10) {
-    return "Medium";
-  } else if (total <= 15) {
-    return "High";
-  } else {
-    return "Extreme";
-  }
-};
 </script>
 
 <template>
@@ -152,11 +136,14 @@ const getRisk = (total: number) => {
         </p>
       </div>
       <div class="flex items-center gap-2 pb-4">
-        <UBadge
-          class="w-12 h-12 flex justify-center object-center text-2xl"
-          :label="store.id?.toString() ?? '-'"
-          color="gray"
-        />
+        <div class="flex flex-col justify-center items-center gap-2">
+          <UBadge
+            class="w-12 h-12 flex justify-center object-center text-2xl"
+            :label="store.score"
+            color="gray"
+          />
+          <p class="text-xs font-semibold">{{ store.findingStatus }}</p>
+        </div>
         <div class="flex justify-center flex-col" v-if="loading">
           <div class="text-sm font-semibold">Loading</div>
           <div class="text-xs">

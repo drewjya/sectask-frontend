@@ -59,13 +59,17 @@ const canDelete = computed(() => {
       :to="`/finding/${props.finding.id}`"
       class="col-span-2 flex items-center text-xs"
     >
-      RISK
+      <div class="text-sm font-bold">
+        {{ props.finding.risk }}
+      </div>
     </NuxtLink>
     <NuxtLink
       :to="`/finding/${props.finding.id}`"
       class="col-span-2 flex items-center text-xs"
     >
-      STATUS
+      <div class="text-sm font-bold">
+        {{ props.finding.status }}
+      </div>
     </NuxtLink>
     <div class="col-span-1 flex items-center" v-if="canDelete || canApproved">
       <UButton

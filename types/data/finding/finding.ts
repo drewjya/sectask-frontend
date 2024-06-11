@@ -30,6 +30,8 @@ export type FindingData = {
   createdBy: OwnerFinding;
   subProject: {
     id: number;
+    startDate: Date;
+    endDate: Date;
     name: string;
     project: {
       id: number;
@@ -132,4 +134,52 @@ export type VersionType = {
   createdAt: Date;
   basedOn?: Date;
   user: OwnerFinding;
+};
+
+export const riskFormula = (param: { impact: number; likelihood: number }) => {
+  return param.impact * param.likelihood;
+};
+
+
+
+export const getRisk = (total: number) => {
+  if (total <= 5) {
+    return "Low";
+  } else if (total <= 10) {
+    return "Medium";
+  } else if (total <= 15) {
+    return "High";
+  } else {
+    return "Extreme";
+  }
+};
+
+const impactList = [
+  { label: "Inisgniificant", value: 1 },
+  { label: "Minor", value: 2 },
+  { label: "Moderate", value: 3 },
+  { label: "Major", value: 4 },
+  { label: "Catasrophic", value: 5 },
+];
+
+export const getImpact = (value?: string) => {
+  return impactList.find((item) => item.label === value)?.value || 1;
+};
+const likelihoodList = [
+  { label: "Rare", value: 1 },
+  { label: "Unlikely", value: 2 },
+  { label: "Possible", value: 3 },
+  { label: "Likely", value: 4 },
+  { label: "Certainly", value: 5 },
+];
+
+export const getLikelihood = (value?: string) => {
+  return likelihoodList.find((item) => item.label === value)?.value || 1;
+};
+
+export const riskFormulaString = (param: { impact: string; likelihood: string }) => {
+
+  const impact = getImpact(param.impact);
+  const likelihood = getLikelihood(param.likelihood);
+  return impact * likelihood;
 };

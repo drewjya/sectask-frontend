@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import dayjs from "dayjs";
 import AddSubprojectModal from "./add-subproject-modal.vue";
 const app = useApp();
 const store = projectStore(app.user?.id ?? -1)();
@@ -6,8 +7,9 @@ const modal = useModal();
 const addSubproject = () => {
   modal.open(AddSubprojectModal, {
     projectId: store.id ?? -1,
-    minDate: store.range?.start ?? new Date(),
-    maxDate: store.range?.end ?? new Date(),
+    startDate: store.range?.start ?? new Date(),
+    minDate: dayjs().subtract(10, "day").toDate(),
+    maxDate: dayjs().add(10, "day").toDate(),
     onClose: () => {
       modal.close();
     },

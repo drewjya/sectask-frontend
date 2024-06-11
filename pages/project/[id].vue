@@ -177,6 +177,7 @@ const fileUrl = useRuntimeConfig().public.FILE_URL;
                   :attachments="store.attachments"
                   :reports="store.reports"
                   :loading="store.loading"
+                  :max-date="store.range?.end ?? new Date()"
                   :myRole="store.myrole ?? Role.VIEWER"
                   :docId="store.id ?? -1"
                   doctype="project"

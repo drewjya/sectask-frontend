@@ -1,10 +1,12 @@
 import { isApiError } from "~/types/api/error";
-import type {
-  CVSSData,
-  FindingData,
-  RetestProperty,
-  RoomChat,
-  TesterFinding,
+import {
+  getRisk,
+  riskFormula,
+  type CVSSData,
+  type FindingData,
+  type RetestProperty,
+  type RoomChat,
+  type TesterFinding,
 } from "~/types/data/finding/finding";
 import type { EventMember } from "~/types/data/project/event";
 import type { OwnerFinding } from "~/types/data/subproject/subproject";
@@ -22,6 +24,8 @@ export const findingStore = defineStore("finding-store", () => {
   type SubprojectFinding = {
     id: number;
     name: string;
+    startDate: Date;
+    endDate: Date;
     project: {
       id: number;
       name: string;
@@ -75,6 +79,9 @@ export const findingStore = defineStore("finding-store", () => {
   const subproject = ref<SubprojectFinding>();
   const testerFinding = ref<TesterFinding[]>();
   const discussions = ref<RoomChat[]>();
+  const score = ref(0);
+  const findingStatus = ref<"Low" | "Medium" | "High" | "Extreme">("Low");
+
   const watcher = watchIgnorable(
     [onEdit],
     useDebounceFn(() => {
@@ -119,7 +126,16 @@ export const findingStore = defineStore("finding-store", () => {
       if (!id.value) {
         return;
       }
+      const imp = impactList.find((i) => i.label === impact.value)?.value;
+      const like = likelihoodList.find(
+        (i) => i.label === likelihood.value
+      )?.value;
 
+      score.value = riskFormula({
+        impact: imp ?? 0,
+        likelihood: like ?? 0,
+      });
+      findingStatus.value = getRisk(score.value);
       const data = {
         category: category.value,
         location: location.value,
@@ -218,6 +234,16 @@ export const findingStore = defineStore("finding-store", () => {
       application.value = undefined;
       impact.value = undefined;
       likelihood.value = undefined;
+      const imp = impactList.find((i) => i.label === impact.value)?.value;
+      const like = likelihoodList.find(
+        (i) => i.label === likelihood.value
+      )?.value;
+
+      score.value = riskFormula({
+        impact: imp ?? 0,
+        likelihood: like ?? 0,
+      });
+      findingStatus.value = getRisk(score.value);
     });
     retestProperty.value = undefined;
     cvssWatcher.ignoreUpdates(() => {
@@ -260,14 +286,20 @@ export const findingStore = defineStore("finding-store", () => {
           location.value = finding.location;
           method.value = finding.method;
 
-          environment.value = undefined;
-          application.value = undefined;
-          impact.value = undefined;
-          likelihood.value = undefined;
           environment.value = finding.environment;
           application.value = finding.application;
           impact.value = finding.impact;
           likelihood.value = finding.likelihood;
+          const imp = impactList.find((i) => i.label === impact.value)?.value;
+          const like = likelihoodList.find(
+            (i) => i.label === likelihood.value
+          )?.value;
+
+          score.value = riskFormula({
+            impact: imp ?? 0,
+            likelihood: like ?? 0,
+          });
+          findingStatus.value = getRisk(score.value);
         });
         isEditor.value = finding.isEditor;
         if (finding.retestProperty) {
@@ -286,6 +318,12 @@ export const findingStore = defineStore("finding-store", () => {
         });
         createdBy.value = finding.createdBy;
         subproject.value = finding.subProject;
+        subproject.value.startDate = new Date(subproject.value.startDate);
+        subproject.value.endDate = new Date(subproject.value.endDate);
+
+        isEditor.value =
+          isEditor.value && subproject.value.endDate.valueOf() > Date.now();
+
         testerFinding.value = finding.testerFinding;
       }
     } catch (error) {
@@ -453,5 +491,7 @@ export const findingStore = defineStore("finding-store", () => {
     methodList,
     impactList,
     likelihoodList,
+    score,
+    findingStatus,
   };
 });

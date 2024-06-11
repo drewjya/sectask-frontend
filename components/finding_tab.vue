@@ -35,7 +35,10 @@ const pmPrivilege = computed(() => store.myrole === Role.PM);
         size="sm"
         color="white"
         variant="solid"
-        v-if="consultantPrivilege"
+        v-if="
+          consultantPrivilege &&
+          (store.range.end.valueOf() ?? Date.now()) > Date.now()
+        "
         @click="addFindings()"
       />
     </div>
@@ -73,8 +76,13 @@ const pmPrivilege = computed(() => store.myrole === Role.PM);
       <FindingsTabItem
         v-for="i in store.findings"
         :finding="i"
-        :deletable="consultantPrivilege"
-        :approvedDelete="pmPrivilege"
+        :deletable="
+          consultantPrivilege &&
+          (store.range.end.valueOf() ?? Date.now()) > Date.now()
+        "
+        :approvedDelete="
+          pmPrivilege && (store.range.end.valueOf() ?? Date.now()) > Date.now()
+        "
       />
     </div>
   </div>

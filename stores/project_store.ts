@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { isApiError } from "~/types/api/error";
 import type { EventFile, VFile } from "~/types/data/file";
 import type {
@@ -21,6 +22,8 @@ export const projectStore = (userId: number) => {
     const loading = ref(true);
 
     const name = ref<string>();
+    const startDate = ref<Date>();
+    const endDate = ref<Date>();
     const range = ref<RangeDatePickerModel>();
     const picture = ref<VFile>();
     const subprojects = ref<SubprojectProject[]>();
@@ -52,6 +55,55 @@ export const projectStore = (userId: number) => {
             name.value = "Untitled Project";
           });
         }
+        console.log(range.value, startDate.value, endDate.value, "Log cuy");
+
+        if (
+          range.value?.start !== undefined &&
+          range.value?.end !== undefined &&
+          startDate.value !== undefined &&
+          endDate.value !== undefined
+        ) {
+          const strt = dayjs(range.value.start).valueOf();
+          const end = range.value.end.valueOf();
+          const initStrt = startDate.value.valueOf();
+          const initEnd = endDate.value.valueOf();
+          console.log(strt, end, initStrt, initEnd, "Log cuy date ms");
+
+          if (strt !== initStrt) {
+            notif.info({
+              message: "You cannot change start date",
+            });
+            watcher.ignoreUpdates(() => {
+              if (
+                range.value?.start !== undefined &&
+                range.value?.end !== undefined &&
+                startDate.value !== undefined &&
+                endDate.value !== undefined
+              ) {
+                range.value.start = startDate.value;
+                range.value.end = endDate.value;
+              }
+            });
+            return;
+          }
+          if (end < initEnd) {
+            notif.info({
+              message: "You cannot fasten your end date",
+            });
+            watcher.ignoreUpdates(() => {
+              if (
+                range.value?.start !== undefined &&
+                range.value?.end !== undefined &&
+                startDate.value !== undefined &&
+                endDate.value !== undefined
+              ) {
+                range.value.start = startDate.value;
+                range.value.end = endDate.value;
+              }
+            });
+            return;
+          }
+        }
         const data = {
           name: name.value,
           startDate: range.value?.start,
@@ -62,7 +114,14 @@ export const projectStore = (userId: number) => {
           .post(`/project/${id.value}/edit`, {
             body: data,
           })
-          .then(() => {})
+          .then(() => {
+            startDate.value = range.value?.start;
+            endDate.value = range.value?.end;
+            notif.ok({
+              title: "Success",
+              message: "Project updated",
+            });
+          })
           .catch((error) => {
             if (isApiError(error)) {
               notif.error({
@@ -90,6 +149,8 @@ export const projectStore = (userId: number) => {
       conn.off(PROJECT_EVENT.HEADER);
       loading.value = true;
       error.value = undefined;
+      startDate.value = undefined;
+      endDate.value = undefined;
       watcher.ignoreUpdates(() => {
         name.value = undefined;
         range.value = undefined;
@@ -110,6 +171,8 @@ export const projectStore = (userId: number) => {
         name.value = undefined;
         range.value = undefined;
       });
+      startDate.value = undefined;
+      endDate.value = undefined;
       picture.value = undefined;
       error.value = undefined;
       subprojects.value = undefined;
@@ -126,6 +189,8 @@ export const projectStore = (userId: number) => {
               start: new Date(project.startDate),
               end: new Date(project.endDate),
             };
+            startDate.value = new Date(project.startDate);
+            endDate.value = new Date(project.endDate);
           });
           picture.value = project.projectPicture;
           subprojects.value = project.subProjects;

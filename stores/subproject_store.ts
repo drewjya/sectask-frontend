@@ -1,5 +1,6 @@
 import { isApiError } from "~/types/api/error";
 import type { EventFile, VFile } from "~/types/data/file";
+import { getRisk, riskFormulaString } from "~/types/data/finding/finding";
 import type {
   EventMember,
   ProjectEventHeader,
@@ -165,6 +166,15 @@ export const subprojectStore = (subprojectId: number) => {
           };
           findings.value = subproject.findings ?? [];
           findings.value.forEach((f) => {
+            f.risk = getRisk(
+              riskFormulaString({
+                likelihood: f.likelihood ?? "",
+                impact: f.impact ?? "",
+              })
+            );
+
+            f.status = f.retestHistories?.[0]?.status ?? "-";
+
             if (f.deletedAt) {
               f.deletedAt = new Date(f.deletedAt);
             }
@@ -175,8 +185,6 @@ export const subprojectStore = (subprojectId: number) => {
           myrole.value = subproject.subprojectMember.find(
             (m) => m.id === app.user?.id
           )?.role;
-
-          console.log();
 
           logs.value.forEach((ra) => {
             ra.createdAt = new Date(ra.createdAt);
@@ -259,6 +267,7 @@ export const subprojectStore = (subprojectId: number) => {
             id: data.finding.findingId,
             createdBy: data.finding.owner,
             name: data.finding.name,
+            retestHistories: [],
             deletedAt: data.finding.deletedAt
               ? new Date(data.finding.deletedAt)
               : undefined,
