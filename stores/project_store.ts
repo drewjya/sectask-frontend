@@ -259,12 +259,22 @@ export const projectStore = (userId: number) => {
       conn.emit(PROJECT_ACTION.JOIN, JSON.stringify({ projectId: id.value }));
       conn.on(PROJECT_EVENT.SUBPROJECT, (data: SocketSubprojectAction) => {
         if (data.type === "add") {
-          subprojects.value?.push({
-            id: data.subproject.subprojectId,
-            startDate: new Date(data.subproject.startDate),
-            endDate: new Date(data.subproject.endDate),
-            name: data.subproject.name,
-          });
+          if (
+            subprojects.value?.find(
+              (e) => e.id === data.subproject.subprojectId
+            )
+          ) {
+            return;
+          }
+          subprojects.value = [
+            ...(subprojects.value ?? []),
+            {
+              id: data.subproject.subprojectId,
+              startDate: new Date(data.subproject.startDate),
+              endDate: new Date(data.subproject.endDate),
+              name: data.subproject.name,
+            },
+          ];
         } else if (data.type === "remove") {
           subprojects.value = subprojects.value?.filter(
             (sp) => sp.id !== data.subproject.subprojectId

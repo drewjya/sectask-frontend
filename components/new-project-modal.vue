@@ -128,6 +128,7 @@ const addMember = () => {
                 v-model="formD.state.range"
                 color="white"
                 variant="solid"
+                :min-date="dayjs().toDate()"
               />
             </UFormGroup>
           </section>

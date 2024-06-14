@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { VFile } from "~/types/data/file";
+import type { ProjectActive } from "~/types/api/response";
 
 const auth = useAuth();
 const app = useApp();
@@ -24,19 +24,6 @@ type RecentActivities = {
   createdAt: Date;
   type: DocType;
 };
-type ProjectActive = {
-  id: number;
-  owner: {
-    name: string;
-    email: string;
-    profilePicture?: VFile;
-  };
-  name: string;
-  projectPicture?: VFile;
-  archived: boolean;
-  startDate: Date;
-  endDate: Date;
-};
 
 const activeProject = async () => {
   const res = await api.get<ProjectActive[]>("/project/active");
@@ -58,10 +45,6 @@ const recentUpdates = async () => {
     });
   }
 };
-
-const fileUrl = (file?: VFile) => {
-  return file ? `${useRuntimeConfig().public.FILE_URL}${file.name}` : undefined;
-};
 </script>
 
 <template>
@@ -71,8 +54,9 @@ const fileUrl = (file?: VFile) => {
       <div
         class="overflow-x-auto flex gap-2"
         :class="app.sidebar ? 'w-[calc(100vw-20rem)]' : 'w-full'"
+        v-if="projects"
       >
-        <NuxtLink
+        <!-- <NuxtLink
           :to="`/project/${i.id}`"
           class="flex flex-col gap-2 p-2 rounded bg-gray-100 dark:bg-slate-800"
           v-for="i in projects"
@@ -97,6 +81,33 @@ const fileUrl = (file?: VFile) => {
                 size="sm"
               />
               <div class="line-clamp-2">{{ i.owner.name }}</div>
+            </div>
+          </div>
+        </NuxtLink> -->
+        <NuxtLink
+          :to="`/project/${i.id}`"
+          v-for="i in projects"
+          class="flex gap-2 bg-gray-200 dark:bg-slate-700 p-2 px-4 rounded-2xl hover:bg-gray-300 dark:hover:bg-slate-800 items-center"
+        >
+          <UAvatar
+            :src="fileUrl(i.projectPicture)"
+            :alt="i.name.toUpperCase()"
+            size="xl"
+          />
+          <div>
+            <div class="font-bold text-lg">
+              {{ i.name }}
+            </div>
+            <div class="text-xs w-max">
+              {{ formatDate(i.startDate, "DD MMM, YYYY") }} →
+              {{ formatDate(i.endDate, "DD MMM, YYYY") }}
+            </div>
+            <div>
+              <div class="text-xs flex gap-2 items-center w-max">
+                <div class="line-clamp-2 text-sm font-semibold">
+                  PM : {{ i.owner.name }}
+                </div>
+              </div>
             </div>
           </div>
         </NuxtLink>

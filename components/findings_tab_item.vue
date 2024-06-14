@@ -60,7 +60,7 @@ const canDelete = computed(() => {
       class="col-span-2 flex items-center text-xs"
     >
       <div class="text-sm font-bold">
-        {{ props.finding.risk }}
+        {{ props.finding.risk }} ({{ props.finding.riskValue }})
       </div>
     </NuxtLink>
     <NuxtLink

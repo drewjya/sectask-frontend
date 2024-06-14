@@ -7,9 +7,9 @@ const modal = useModal();
 const addSubproject = () => {
   modal.open(AddSubprojectModal, {
     projectId: store.id ?? -1,
-    startDate: store.range?.start ?? new Date(),
-    minDate: dayjs().subtract(10, "day").toDate(),
-    maxDate: dayjs().add(10, "day").toDate(),
+    startDate: new Date(),
+    minDate: dayjs().startOf("day").toDate(),
+    maxDate: store.range?.end ?? dayjs().startOf("day").toDate(),
     onClose: () => {
       modal.close();
     },

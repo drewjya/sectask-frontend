@@ -97,12 +97,18 @@ const initState = async () => {
       console.log(route.fullPath);
 
       if (val.type === "add") {
-        projectList.value[projectIndex].project.subproject.push({
-          id: val.subproject.subprojectId,
-          name: val.subproject.name,
-          expanded: false,
-          findings: [],
-        });
+        if (
+          projectList.value[projectIndex] &&
+          projectList.value[projectIndex].project &&
+          projectList.value[projectIndex].project.subproject
+        ) {
+          projectList.value[projectIndex].project.subproject.push({
+            id: val.subproject.subprojectId,
+            name: val.subproject.name,
+            expanded: false,
+            findings: [],
+          });
+        }
       } else if (val.type === "remove") {
         if (projectList.value[projectIndex]?.project) {
           if (projectList.value[projectIndex].project.subproject) {
@@ -290,6 +296,15 @@ const addProject = () => {
         class="justify-start text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 dark:text-gray-400"
         color="gray"
         @click="$router.push('/setting')"
+      />
+      <UButton
+        label="Archived"
+        icon="i-solar-archive-check-linear"
+        variant="ghost"
+        size="sm"
+        class="justify-start text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 dark:text-gray-400"
+        color="gray"
+        @click="$router.push('/archived')"
       />
       <UButton
         label="Add Project"

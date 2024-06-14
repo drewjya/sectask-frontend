@@ -23,8 +23,8 @@ export type FindingSubproject = {
   createdBy: OwnerFinding;
   likelihood?: string;
   impact?: string;
-  //manual
   risk?: string;
+  riskValue?: number;
   retestHistories: {
     status: string;
   }[];

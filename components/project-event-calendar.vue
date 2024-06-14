@@ -45,6 +45,67 @@ onMounted(async () => {
     });
   }, 500);
 });
+
+const data = computed(() => store.subprojects ?? []);
+watch(data, async (val) => {
+  console.log("EV AS ", val);
+  const keys = Object.keys(calendarConfig);
+  const configLength = keys.length;
+  try {
+    const ids = val.map((e) => e.id);
+    const { remove, present } = eventsServicePlugin.getAll().reduce(
+      (a, b) => {
+        let rem = a.remove;
+        let pres = a.present;
+        if (ids.includes(Number(b.id))) {
+          pres = [...pres, Number(b.id)];
+        } else {
+          rem = [...rem, Number(b.id)];
+        }
+        return {
+          remove: [...rem],
+          present: [...pres],
+        };
+      },
+      {
+        remove: <number[]>[],
+        present: <number[]>[],
+      }
+    );
+    // const isPresent = eve;
+    console.log(remove, "remove");
+    console.log(present, "present");
+    console.log(ids, "id");
+    const newVal = val.filter((e) => {
+      return !present.includes(e.id);
+    });
+    remove.forEach((e) => {
+      eventsServicePlugin.remove(e);
+    });
+
+    console.log(newVal, "New Val");
+
+    await setTimeout(() => {
+      const events =
+        newVal.map((i, index) => {
+          return {
+            id: i.id,
+            title: i.name,
+            start: dayjs(i.startDate).format("YYYY-MM-DD"),
+            end: dayjs(i.endDate).format("YYYY-MM-DD"),
+            calendarId: keys[Date.now() % configLength],
+          };
+        }) ?? [];
+
+      events.forEach((e) => {
+        eventsServicePlugin.add(e);
+        console.log(eventsServicePlugin.getAll(), "NEw Er");
+      });
+    }, 500);
+  } catch (error) {
+    console.log("ERROR CYUY", error);
+  }
+});
 </script>
 
 <template>
@@ -52,6 +113,4 @@ onMounted(async () => {
     <ScheduleXCalendar :calendar-app="calendarApp" />
   </div>
 </template>
-<style scoped>
-
-</style>
+<style scoped></style>

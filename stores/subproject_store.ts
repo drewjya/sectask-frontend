@@ -21,6 +21,51 @@ import {
 } from "~/types/enum/event.enum";
 
 // import {SUBPROJECT_ACTION SUBSUBPROJECT_ACTION,, SUBPROJECT_ACTION SUBPROJECT_EVENT m";
+function swap<T>(arr: T[], el1: number, el2: number) {
+  let swapped = arr[el1];
+  arr[el1] = arr[el2];
+  arr[el2] = swapped;
+}
+function quickSort<T>(
+  arr: T[],
+  leftPost: number,
+  rightPost: number,
+  arrLength: number,
+  compare: (a: T, b: T) => number
+) {
+  let initialLeftPos = leftPost;
+  let initialRightPos = rightPost;
+
+  let direction = true;
+  let pivot = rightPost;
+  while (leftPost - rightPost < 0) {
+    if (direction) {
+      if (compare(arr[pivot], arr[leftPost]) < 0) {
+        swap(arr, pivot, leftPost);
+        pivot = leftPost;
+        rightPost--;
+        direction = !direction;
+      } else {
+        leftPost++;
+      }
+    } else {
+      if (compare(arr[pivot], arr[rightPost]) <= 0) {
+        rightPost--;
+      } else {
+        swap(arr, pivot, rightPost);
+        leftPost++;
+        pivot = rightPost;
+        direction = !direction;
+      }
+    }
+  }
+  if (pivot - 1 > initialLeftPos) {
+    quickSort(arr, initialLeftPos, pivot - 1, arrLength, compare);
+  }
+  if (pivot + 1 < initialRightPos) {
+    quickSort(arr, pivot + 1, initialRightPos, arrLength, compare);
+  }
+}
 
 export const subprojectStore = (subprojectId: number) => {
   return defineStore("subproject-store_" + subprojectId.toString(), () => {
@@ -166,19 +211,25 @@ export const subprojectStore = (subprojectId: number) => {
           };
           findings.value = subproject.findings ?? [];
           findings.value.forEach((f) => {
-            f.risk = getRisk(
-              riskFormulaString({
-                likelihood: f.likelihood ?? "",
-                impact: f.impact ?? "",
-              })
-            );
-
+            f.riskValue = riskFormulaString({
+              likelihood: f.likelihood ?? "",
+              impact: f.impact ?? "",
+            });
+            f.risk = getRisk(f.riskValue ?? 0);
             f.status = f.retestHistories?.[0]?.status ?? "-";
-
             if (f.deletedAt) {
               f.deletedAt = new Date(f.deletedAt);
             }
           });
+
+          quickSort(
+            findings.value ?? [],
+            0,
+            (findings.value ?? []).length - 1,
+            (findings.value ?? []).length,
+            (a, b) => b.riskValue! - a.riskValue!
+          );
+
           pm.value = subproject.subprojectMember.find(
             (m) => m.role === Role.PM
           );
@@ -263,15 +314,32 @@ export const subprojectStore = (subprojectId: number) => {
           if (findingId) {
             return;
           }
-          findings.value?.push({
+          let f: FindingSubproject = {
             id: data.finding.findingId,
             createdBy: data.finding.owner,
             name: data.finding.name,
             retestHistories: [],
+            impact: data.finding.impact,
+            likelihood: data.finding.likelihood,
             deletedAt: data.finding.deletedAt
               ? new Date(data.finding.deletedAt)
               : undefined,
+          };
+
+          f.riskValue = riskFormulaString({
+            likelihood: data.finding.likelihood ?? "",
+            impact: data.finding.impact ?? "",
           });
+          f.risk = getRisk(f.riskValue ?? 0);
+          f.status = data.finding.status ?? "-";
+          findings.value?.push(f);
+          quickSort(
+            findings.value ?? [],
+            0,
+            (findings.value ?? []).length - 1,
+            (findings.value ?? []).length,
+            (a, b) => b.riskValue! - a.riskValue!
+          );
         } else if (data.type === "remove") {
           findings.value = findings.value?.filter(
             (e) => e.id !== data.finding.findingId
@@ -284,9 +352,24 @@ export const subprojectStore = (subprojectId: number) => {
                 ? new Date(data.finding.deletedAt)
                 : undefined;
               e.createdBy = data.finding.owner;
+              e.impact = data.finding.impact;
+              e.status = data.finding.status ?? "-";
+              e.likelihood = data.finding.likelihood;
+              e.riskValue = riskFormulaString({
+                likelihood: data.finding.likelihood ?? "",
+                impact: data.finding.impact ?? "",
+              });
+              e.risk = getRisk(e.riskValue ?? 0);
             }
             return e;
           });
+          quickSort(
+            findings.value ?? [],
+            0,
+            (findings.value ?? []).length - 1,
+            (findings.value ?? []).length,
+            (a, b) => b.riskValue! - a.riskValue!
+          );
         }
       });
       conn.on(SUBPROJECT_EVENT.LOG, (data: LogData) => {

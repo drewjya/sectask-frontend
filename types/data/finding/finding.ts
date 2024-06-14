@@ -140,8 +140,6 @@ export const riskFormula = (param: { impact: number; likelihood: number }) => {
   return param.impact * param.likelihood;
 };
 
-
-
 export const getRisk = (total: number) => {
   if (total <= 5) {
     return "Low";
@@ -163,7 +161,7 @@ const impactList = [
 ];
 
 export const getImpact = (value?: string) => {
-  return impactList.find((item) => item.label === value)?.value || 1;
+  return impactList.find((item) => item.label === value)?.value || 0;
 };
 const likelihoodList = [
   { label: "Rare", value: 1 },
@@ -177,8 +175,10 @@ export const getLikelihood = (value?: string) => {
   return likelihoodList.find((item) => item.label === value)?.value || 1;
 };
 
-export const riskFormulaString = (param: { impact: string; likelihood: string }) => {
-
+export const riskFormulaString = (param: {
+  impact: string;
+  likelihood: string;
+}) => {
   const impact = getImpact(param.impact);
   const likelihood = getLikelihood(param.likelihood);
   return impact * likelihood;

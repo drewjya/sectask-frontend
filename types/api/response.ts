@@ -1,3 +1,5 @@
+import type { VFile } from "../data/file";
+
 export type SResponse<T> = {
   status: number;
   message: string;
@@ -15,3 +17,17 @@ export function isResponse<T>(obj: any): obj is SResponse<T> {
     typeof obj.error === 'object'
   );
 }
+
+export type ProjectActive = {
+  id: number;
+  owner: {
+    name: string;
+    email: string;
+    profilePicture?: VFile;
+  };
+  name: string;
+  projectPicture?: VFile;
+  archived: boolean;
+  startDate: Date;
+  endDate: Date;
+};
