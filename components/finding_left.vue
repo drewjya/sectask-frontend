@@ -356,12 +356,33 @@ const onFocus = () => {
             >
               <div
                 class="grid grid-cols-2 place-items-center place-content-center gap-2"
+                v-if="store.testerFinding"
               >
-                <div v-for="i in 20" class="flex flex-col items-center text-xs">
-                  <UBadge class="w-12 h-12 flex items-center justify-center">
-                    <div class="text-xl">A</div>
-                  </UBadge>
-                  <div>A</div>
+                <div
+                  v-for="i in store.testerFinding"
+                  class="flex flex-col items-center text-xs"
+                >
+                  <UAvatar
+                    size="lg"
+                    :alt="i.user?.name.toUpperCase()"
+                    :src="
+                      i.user?.profilePicture?.name
+                        ? `${fileUrl}${i.user.profilePicture.name}`
+                        : undefined
+                    "
+                  >
+                  </UAvatar>
+                  <div class="font-semibold text-base">{{ i.user.name }}</div>
+                  <div
+                    class="border px-1 text-2xs rounded-md"
+                    :class="
+                      i.active
+                        ? 'border-green-700 text-green-700 bg-green-100'
+                        : 'border-red-700 text-red-700 bg-red-100'
+                    "
+                  >
+                    {{ i.active ? "Active" : "Non Active" }}
+                  </div>
                 </div>
               </div>
             </div>

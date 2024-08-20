@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import ConfirmationModal from "./confirmation-modal.vue";
+
 const props = defineProps<{
   name: string;
   endDate: Date;
@@ -6,6 +8,7 @@ const props = defineProps<{
   id: number;
   deletable: boolean;
 }>();
+const modal = useModal();
 
 const status = computed(() =>
   getStatus({
@@ -16,8 +19,20 @@ const status = computed(() =>
 
 const api = useEPrivateApi();
 const deleteSubproject = () => {
-  api.remove(`/subproject/${props.id}`, {
-    message: "Subproject deleted successfully",
+  modal.open(ConfirmationModal, {
+    title: "Delete",
+    message: "Are you sure to delete this subproject?",
+    confirmLabel: "Yes",
+    cancelLabel: "No",
+    onYes: () => {
+      api.remove(`/subproject/${props.id}`, {
+        message: "Subproject deleted successfully",
+      });
+      modal.close();
+    },
+    onNo: () => {
+      modal.close();
+    },
   });
 };
 
@@ -36,10 +51,10 @@ const range = computed(() => {
   >
     <NuxtLink
       :to="`/subproject/${id}`"
-      class="col-span-2 flex items-center gap-2"
+      class="col-span-2 flex items-center gap-2 break-all"
     >
       <UAvatar :alt="props?.name.toUpperCase()" />
-      <div class="text-[#64748B] dark:text-white text-sm">
+      <div class="text-[#64748B] dark:text-white text-sm break-all">
         {{ props?.name }}
       </div>
     </NuxtLink>

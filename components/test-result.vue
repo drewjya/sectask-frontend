@@ -38,13 +38,16 @@ onMounted(async () => {
   if (histories.value) {
     const conn = await socket.getConnection();
     conn.on(FINDING_EVENT.TESTLIST, (data: TestingHistory) => {
-      histories.value?.unshift({
-        createdAt: new Date(data.createdAt),
-        id: data.id,
-        status: data.status,
-        tester: data.tester,
-        version: data.version,
-      });
+      let find = (histories.value ?? []).find((e) => e.id === data.id);
+      if (!find) {
+        histories.value?.unshift({
+          createdAt: new Date(data.createdAt),
+          id: data.id,
+          status: data.status,
+          tester: data.tester,
+          version: data.version,
+        });
+      }
     });
   }
 });

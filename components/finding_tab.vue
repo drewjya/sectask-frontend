@@ -43,24 +43,33 @@ const pmPrivilege = computed(() => store.myrole === Role.PM);
       />
     </div>
     <div
-      class="grid px-2 gap-2 text-sm font-bold font-['DM Sans'] place-items-start"
+      class="grid px-2 gap-2 text-sm font-bold font-['DM Sans'] place-items-start w-full"
       :class="
-        consultantPrivilege || pmPrivilege ? 'grid-cols-9' : 'grid-cols-8'
+        (consultantPrivilege || pmPrivilege) &&
+        (store.range.end.valueOf() ?? Date.now()) > Date.now()
+          ? 'grid-cols-9 '
+          : 'grid-cols-8'
       "
     >
-      <div class="col-span-2">
+      <div class="col-span-2 w-full">
         <div>Findings</div>
       </div>
-      <div class="col-span-2">
+      <div class="col-span-2 w-full">
         <div>Created By</div>
       </div>
-      <div class="col-span-2">
+      <div class="col-span-2 w-full">
         <div>Risk</div>
       </div>
-      <div class="col-span-2">
+      <div class="col-span-2 w-full">
         <div>Status</div>
       </div>
-      <div class="col-span-1" v-if="consultantPrivilege || pmPrivilege">
+      <div
+        class="col-span-1 w-full"
+        v-if="
+          (consultantPrivilege || pmPrivilege) &&
+          (store.range.end.valueOf() ?? Date.now()) > Date.now()
+        "
+      >
         <div>Action</div>
       </div>
     </div>

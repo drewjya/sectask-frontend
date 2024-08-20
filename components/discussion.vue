@@ -45,10 +45,13 @@ onMounted(async () => {
     }
     const conn = await socket.getConnection();
     conn.on(FINDING_EVENT.ROOM, (data: RoomChat) => {
-      store.discussions?.unshift({
-        ...data,
-        createdAt: new Date(data.createdAt),
-      });
+      let find = (store.discussions ?? []).find((e) => e.id == data.id);
+      if (!find) {
+        store.discussions?.unshift({
+          ...data,
+          createdAt: new Date(data.createdAt),
+        });
+      }
     });
   }
 });

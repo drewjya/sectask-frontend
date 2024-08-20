@@ -10,6 +10,7 @@ import {
   SUBPROJECT_EVENT,
 } from "~/types/enum/event.enum";
 import NewProjectModal from "./new-project-modal.vue";
+import SearchModal from "./search-modal.vue";
 
 const app = useApp();
 const router = useRouter();
@@ -241,6 +242,13 @@ const addProject = () => {
     },
   });
 };
+const searchProject = () => {
+  modal.open(SearchModal, {
+    onClose: () => {
+      modal.close();
+    },
+  });
+};
 </script>
 
 <template>
@@ -275,6 +283,7 @@ const addProject = () => {
         icon="i-heroicons-magnifying-glass"
         variant="ghost"
         size="sm"
+        @click="() => searchProject()"
         class="justify-start text-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700 dark:text-gray-400"
       />
       <UButton

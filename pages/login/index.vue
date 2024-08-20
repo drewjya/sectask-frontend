@@ -13,8 +13,8 @@ const form = useForm({
     await useAuth().login(event.data);
   },
   initial: {
-    email: "andre@email.com",
-    password: "password",
+    // email: "andre@email.com",
+    // password: "password",
   },
 });
 </script>
@@ -24,10 +24,12 @@ const form = useForm({
     <div class="flex flex-col justify-end items-center">
       <vform :form="form" class="flex flex-col gap-4">
         <UFormGroup label="Email" name="email">
-          <UInput placeholder="Email" v-model="form.state.email" />
+          <div>
+            <UInput placeholder="Email" v-model="form.state.email" />
+          </div>
         </UFormGroup>
         <UFormGroup label="Password" name="password">
-          <UButtonGroup size="sm" orientation="horizontal">
+          <UButtonGroup size="sm" orientation="horizontal" class="flex w-full">
             <UInput
               placeholder="Password"
               :type="`${isSecure ? 'password' : 'text'}`"
@@ -41,7 +43,7 @@ const form = useForm({
           </UButtonGroup>
         </UFormGroup>
         <div class="flex flex-col items-end gap-4">
-          <NuxtLink class="text-xs underline">Forgot Password?</NuxtLink>
+          <!-- <NuxtLink class="text-xs underline">Forgot Password?</NuxtLink> -->
           <UButton class="w-full justify-center" @click="form.submit.value"
             >Login</UButton
           >

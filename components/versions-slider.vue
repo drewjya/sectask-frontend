@@ -61,7 +61,7 @@ const selected = ref<VersionType>();
               <div
                 v-for="i in version"
                 @click="selected = i"
-                class="dark:bg-gray-800 w-full font-['Lato'] flex gap-1 flex-col py-2"
+                class="dark:bg-gray-800 bg-gray-200 w-full font-['Lato'] flex gap-1 flex-col py-2"
               >
                 <div class="flex gap-1 items-center">
                   <UIcon name="material-symbols:arrow-right" class="text-xl" />
@@ -96,7 +96,7 @@ const selected = ref<VersionType>();
             </div>
             <div
               v-if="selected"
-              class="flex-1 bg-gray-700 p-4 rounded-sm h-[75vh] max-h-[75vh] overflow-y-auto"
+              class="flex-1 dark:bg-gray-700 bg-gray-300 p-4 rounded-sm h-[75vh] max-h-[75vh] overflow-y-auto"
             >
               <div v-if="selected" v-html="selected.content"></div>
             </div>

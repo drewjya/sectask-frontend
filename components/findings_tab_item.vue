@@ -11,10 +11,17 @@ const runtime = useRuntimeConfig();
 const api = useEPrivateApi();
 const deleteFinding = async () => {
   api.remove(`/finding/${props.finding.id}`, {
-    message: "Finding deleted successfully",
+    message: canApproved
+      ? "Finding deleted successfully"
+      : "Request to delete finding",
   });
 };
 
+const rejectFindingDeletion = async () => {
+  api.post(`/finding/reject/${props.finding.id}`, {
+    message: "Success reject to delete finding",
+  });
+};
 const canApproved = computed(() => {
   return props.finding.deletedAt && props.approvedDelete;
 });
@@ -71,13 +78,26 @@ const canDelete = computed(() => {
         {{ props.finding.status }}
       </div>
     </NuxtLink>
-    <div class="col-span-1 flex items-center" v-if="canDelete || canApproved">
-      <UButton
-        icon="i-heroicons-trash"
-        variant="outline"
-        color="red"
-        @click="deleteFinding"
-      />
+    <div
+      class="col-span-1 flex items-center gap-2 justify-center"
+      v-if="canDelete || canApproved"
+    >
+      <UTooltip text="Reject" v-if="canApproved">
+        <UButton
+          icon="i-heroicons-x-mark"
+          variant="outline"
+          color="orange"
+          @click="rejectFindingDeletion"
+        />
+      </UTooltip>
+      <UTooltip :text="canApproved ? 'Approve Delete' : 'Request Delete'">
+        <UButton
+          icon="i-heroicons-trash"
+          variant="outline"
+          color="red"
+          @click="deleteFinding"
+        />
+      </UTooltip>
     </div>
   </div>
 </template>

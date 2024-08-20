@@ -35,8 +35,8 @@ const form = useForm({
           </UButtonGroup>
         </UFormGroup>
         <div class="flex flex-col items-end gap-4">
-          <NuxtLink class="text-xs underline">Forgot Password?</NuxtLink>
-          <UButton class="w-full justify-center" @click="form.submit.value">Login</UButton>
+          <!-- <NuxtLink class="text-xs underline">Forgot Password?</NuxtLink> -->
+          <UButton class="w-full justify-center" @click="form.submit.value">Register</UButton>
         </div>
         <div class="flex items-center gap-2 text-xs">
           <hr class="grow">

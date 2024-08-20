@@ -66,7 +66,7 @@ const notif = useNotification();
     >
       <template #header>
         <div class="flex w-full items-center gap-2">
-          <span class="text-2xl font-bold"> Create Project </span>
+          <span class="text-2xl font-bold"> Create Subproject </span>
         </div>
       </template>
 
